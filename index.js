@@ -1,7 +1,6 @@
 'use strict';
-var _ = require('lodash');
-function InlineExtHtmlWebpackPlugin (options) {
-  this.options = _.extend({}, options);
+
+function InlineExtHtmlWebpackPlugin () {
 }
 
 InlineExtHtmlWebpackPlugin.prototype.apply = function (compiler) {

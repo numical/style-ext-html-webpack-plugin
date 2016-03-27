@@ -1,11 +1,11 @@
 {
   "name": "inline-ext-html-webpack-plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Enhances html-webpack-plugin functionality by enabling inline styles.",
   "main": "index.js",
   "files": [
     "index.js",
-    "lib/"
+    "loader.js"
   ],
   "scripts": {
     "pretest": "semistandard",
@@ -41,6 +41,5 @@
     "webpack": "^1.12.14"
   },
   "dependencies": {
-    "lodash": "^4.6.1"
   }
 }
