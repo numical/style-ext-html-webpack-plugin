@@ -1,16 +1,16 @@
 'use strict';
 
-function InlineExtHtmlWebpackPlugin () {
+function StyleExtHtmlWebpackPlugin () {
 }
 
-InlineExtHtmlWebpackPlugin.prototype.apply = function (compiler) {
+StyleExtHtmlWebpackPlugin.prototype.apply = function (compiler) {
   var self = this;
   compiler.plugin('compilation', function (compilation) {
     compilation.plugin('html-webpack-plugin-after-html-processing', self.addInlineCss);
   });
 };
 
-InlineExtHtmlWebpackPlugin.prototype.addInlineCss = function (htmlPluginData, callback) {
+StyleExtHtmlWebpackPlugin.prototype.addInlineCss = function (htmlPluginData, callback) {
   // compilation passed as this
   if (this.inlineCss) {
     var splitHtml = htmlPluginData.html.split('</head>');
@@ -27,7 +27,7 @@ InlineExtHtmlWebpackPlugin.prototype.addInlineCss = function (htmlPluginData, ca
 /**
  * Inject loader for in-line styles
  */
-InlineExtHtmlWebpackPlugin.inline = function (loaders) {
+StyleExtHtmlWebpackPlugin.inline = function (loaders) {
   var inlineLoader = require.resolve('./loader.js');
   if (loaders) {
     loaders = [ inlineLoader ].concat(loaders).join('!');
@@ -37,4 +37,4 @@ InlineExtHtmlWebpackPlugin.inline = function (loaders) {
   return loaders;
 };
 
-module.exports = InlineExtHtmlWebpackPlugin;
+module.exports = StyleExtHtmlWebpackPlugin;

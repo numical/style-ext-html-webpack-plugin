@@ -1,4 +1,4 @@
-Inline Extension for HTML Webpack Plugin
+Style Extension for HTML Webpack Plugin
 ========================================
 Enhances [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin)
 functionality by enabling inline styles. 
@@ -11,7 +11,7 @@ Installation
 ------------
 Install the plugin with npm:
 ```shell
-$ npm install --save-dev numical/inline-ext-html-webpack-plugin
+$ npm install --save-dev numical/style-ext-html-webpack-plugin
 ```
 
 Basic Usage and Configuration
@@ -23,12 +23,12 @@ inlined:
 ```javascript
 module: {
   loaders: [
-    { test: /\.css$/, loader: InlineExtHtmlWebpackPlugin.inline() }
+    { test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline() }
   ]           
 },
 plugins: [
   new HtmlWebpackPlugin(),
-  new InlineExtHtmlWebpackPlugin()
+  new StyleExtHtmlWebpackPlugin()
 ]  
 ```
 
@@ -37,7 +37,7 @@ The inline loader can be the end of a chain of CSS loaders, though note that any
 ```javascript
 module: {
   loaders: [
-    { test: /\.css$/, loader: InlineExtHtmlWebpackPlugin.inline('postcss-loader') }
+    { test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline('postcss-loader') }
   ]           
 },
 postcss: [
@@ -45,7 +45,7 @@ postcss: [
 ],
 plugins: [
   new HtmlWebpackPlugin(),
-  new InlineExtHtmlWebpackPlugin()
+  new StyleExtHtmlWebpackPlugin()
 ]  
 ```
 

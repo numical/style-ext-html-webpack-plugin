@@ -17,7 +17,7 @@ var fs = require('fs');
 var webpack = require('webpack');
 var rm_rf = require('rimraf');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var InlineExtHtmlWebpackPlugin = require('../index.js');
+var StyleExtHtmlWebpackPlugin = require('../index.js');
 
 var OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -50,7 +50,7 @@ function testPlugin (webpackConfig, expectedResults, done, showHtml) {
   });
 }
 
-describe('InlineExtHtmlWebpackPlugin', function () {
+describe('StyleExtHtmlWebpackPlugin', function () {
   beforeEach(function (done) {
     rm_rf(OUTPUT_DIR, done);
   });
@@ -64,12 +64,12 @@ describe('InlineExtHtmlWebpackPlugin', function () {
         },
         module: {
           loaders: [
-            {test: /\.css$/, loader: InlineExtHtmlWebpackPlugin.inline()}
+            {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
           ]
         },
         plugins: [
           new HtmlWebpackPlugin(),
-          new InlineExtHtmlWebpackPlugin()
+          new StyleExtHtmlWebpackPlugin()
         ]
       },
       [/(<style>[\s\S]*<\/style>){1}/],
@@ -85,12 +85,12 @@ describe('InlineExtHtmlWebpackPlugin', function () {
         },
         module: {
           loaders: [
-            {test: /\.css$/, loader: InlineExtHtmlWebpackPlugin.inline()}
+            {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
           ]
         },
         plugins: [
           new HtmlWebpackPlugin(),
-          new InlineExtHtmlWebpackPlugin()
+          new StyleExtHtmlWebpackPlugin()
         ]
       },
       [/(<style>[\s\S]*<\/style>){2}/],
@@ -106,7 +106,7 @@ describe('InlineExtHtmlWebpackPlugin', function () {
         },
         module: {
           loaders: [
-            {test: /\.css$/, loader: InlineExtHtmlWebpackPlugin.inline('postcss-loader')}
+            {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline('postcss-loader')}
           ]
         },
         postcss: [
@@ -114,7 +114,7 @@ describe('InlineExtHtmlWebpackPlugin', function () {
         ],
         plugins: [
           new HtmlWebpackPlugin(),
-          new InlineExtHtmlWebpackPlugin()
+          new StyleExtHtmlWebpackPlugin()
         ]
       },
       [/color: gray/],
@@ -131,7 +131,7 @@ describe('InlineExtHtmlWebpackPlugin', function () {
         },
         module: {
           loaders: [
-            { test: /\.css$/, loader: InlineExtHtmlWebpackPlugin.inline() }
+            { test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline() }
           ]
         },
         plugins: [
@@ -140,7 +140,7 @@ describe('InlineExtHtmlWebpackPlugin', function () {
               minifyCSS: true
             }
           }),
-          new InlineExtHtmlWebpackPlugin()
+          new StyleExtHtmlWebpackPlugin()
         ]
       },
       [/(<style>.*<\/style>){2}/],

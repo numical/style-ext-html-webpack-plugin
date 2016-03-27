@@ -1,6 +1,6 @@
 {
-  "name": "inline-ext-html-webpack-plugin",
-  "version": "0.1.1",
+  "name": "style-ext-html-webpack-plugin",
+  "version": "0.2.0",
   "description": "Enhances html-webpack-plugin functionality by enabling inline styles.",
   "main": "index.js",
   "files": [
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/numical/inline-ext-html-webpack-plugin.git"
+    "url": "https://github.com/numical/style-ext-html-webpack-plugin.git"
   },
   "keywords": [
     "webpack",
@@ -27,9 +27,9 @@
   "author": "Mike Evans <mike.evans@numical.com> (https://github.com/numical)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/numical/inline-ext-html-webpack-plugin/issues"
+    "url": "https://github.com/numical/style-ext-html-webpack-plugin/issues"
   },
-  "homepage": "https://github.com/numical/inline-ext-html-webpack-plugin",
+  "homepage": "https://github.com/numical/style-ext-html-webpack-plugin",
   "devDependencies": {
     "css-loader": "^0.23.1",
     "html-webpack-plugin": "^2.12.0",

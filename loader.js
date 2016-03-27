@@ -10,5 +10,5 @@ module.exports = function (content) {
   } else {
     compilation.inlineCss = compilation.inlineCss.concat(content);
   }
-  return '/* removed by inline-ext-html-webpack-plugin */';
+  return '/* removed by style-ext-html-webpack-plugin */';
 };
