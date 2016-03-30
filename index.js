@@ -6,20 +6,19 @@ function StyleExtHtmlWebpackPlugin () {
 StyleExtHtmlWebpackPlugin.prototype.apply = function (compiler) {
   var self = this;
   compiler.plugin('compilation', function (compilation) {
-    compilation.plugin('html-webpack-plugin-after-html-processing', self.addInlineCss);
+    compilation.plugin('html-webpack-plugin-after-html-processing', function (htmlPluginData, callback) {
+      self.addInlineCss(compilation, htmlPluginData, callback);
+    });
   });
 };
 
-StyleExtHtmlWebpackPlugin.prototype.addInlineCss = function (htmlPluginData, callback) {
+StyleExtHtmlWebpackPlugin.prototype.addInlineCss = function (compilation, htmlPluginData, callback) {
   // compilation passed as this
-  if (this.inlineCss) {
-    var splitHtml = htmlPluginData.html.split('</head>');
-    var head = splitHtml[0];
-    var body = splitHtml[1];
-    var scripts = this.inlineCss.map(function (css) {
-      return '<style>' + css + '</style>';
+  if (compilation.inlineCss) {
+    var styles = '<style>' + compilation.inlineCss.join('\n') + '</style>';
+    htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, function (match) {
+      return styles + match;
     });
-    htmlPluginData.html = [head].concat(scripts).concat('</head>').concat(body).join('');
   }
   callback();
 };
@@ -29,12 +28,8 @@ StyleExtHtmlWebpackPlugin.prototype.addInlineCss = function (htmlPluginData, cal
  */
 StyleExtHtmlWebpackPlugin.inline = function (loaders) {
   var inlineLoader = require.resolve('./loader.js');
-  if (loaders) {
-    loaders = [ inlineLoader ].concat(loaders).join('!');
-  } else {
-    loaders = inlineLoader;
-  }
-  return loaders;
+  // add the inline loader before all other loaders
+  return [ inlineLoader ].concat(loaders || []).join('!');
 };
 
 module.exports = StyleExtHtmlWebpackPlugin;
