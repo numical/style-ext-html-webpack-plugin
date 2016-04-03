@@ -18,6 +18,7 @@ var webpack = require('webpack');
 var rm_rf = require('rimraf');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var StyleExtHtmlWebpackPlugin = require('../index.js');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -72,7 +73,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
           new StyleExtHtmlWebpackPlugin()
         ]
       },
-      [/(<style>.*<\/style>){1}/],
+      [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
       done);
   });
 
@@ -93,7 +94,8 @@ describe('StyleExtHtmlWebpackPlugin', function () {
           new StyleExtHtmlWebpackPlugin()
         ]
       },
-      [/(<style>.*<\/style>){2}/],
+      // note British spelling
+      [/<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/],
       done);
   });
 
@@ -117,12 +119,12 @@ describe('StyleExtHtmlWebpackPlugin', function () {
           new StyleExtHtmlWebpackPlugin()
         ]
       },
-      [/color: gray/],
+      // note US spelling
+      [/<style>[\s\S]*background: snow;[\s\S]*color: gray;[\s\S]*<\/style>/],
       done);
   });
 
-  /* Will not pass until additional event added to HtmlWebpackPlugin
-  it('inlined stylesheets are minified if minify options are set', function (done) {
+  it('inlining works alongside webpack css loaders', function (done) {
     testPlugin(
       { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
         output: {
@@ -131,20 +133,44 @@ describe('StyleExtHtmlWebpackPlugin', function () {
         },
         module: {
           loaders: [
-            { test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline() }
+            { test: /stylesheet1.css/, loader: 'style-loader!css-loader' },
+            { test: /stylesheet2.css/, loader: StyleExtHtmlWebpackPlugin.inline() }
           ]
         },
         plugins: [
-          new HtmlWebpackPlugin({
-            minify: {
-              minifyCSS: true
-            }
-          }),
+          new HtmlWebpackPlugin(),
           new StyleExtHtmlWebpackPlugin()
         ]
       },
-      [/(<style>.*<\/style>){2}/],
+      // contains second stylesheet content but none of the first
+      [/<style>[\s\S]*colour: grey;[\s\S]*<\/style>/, /^(?!.background: snow)/],
       done);
   });
-  */
+
+  it('inlining works alongside linked stylesheets', function (done) {
+    testPlugin(
+      { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'index_bundle.js'
+        },
+        module: {
+          loaders: [
+            { test: /stylesheet1.css/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') },
+            { test: /stylesheet2.css/, loader: StyleExtHtmlWebpackPlugin.inline() }
+          ]
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new ExtractTextPlugin('styles.css'),
+          new StyleExtHtmlWebpackPlugin()
+        ]
+      },
+      [/<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*colour: grey;[\s\S]*<\/style>/],
+      done);
+  });
+
+  it('inlined stylesheets can be minified', function (done) {
+    done();
+  });
 });
