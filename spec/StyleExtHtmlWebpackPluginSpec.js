@@ -72,7 +72,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
           new StyleExtHtmlWebpackPlugin()
         ]
       },
-      [fs.readFileSync(path.join(__dirname, 'fixtures', 'exptected_one_stylesheet.html'))],
+      [/(<style>.*<\/style>){1}/],
       done);
   });
 
@@ -93,7 +93,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
           new StyleExtHtmlWebpackPlugin()
         ]
       },
-      [fs.readFileSync(path.join(__dirname, 'fixtures', 'exptected_two_stylesheets.html'))],
+      [/(<style>.*<\/style>){2}/],
       done);
   });
 

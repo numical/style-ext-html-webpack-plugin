@@ -13,7 +13,6 @@ StyleExtHtmlWebpackPlugin.prototype.apply = function (compiler) {
 };
 
 StyleExtHtmlWebpackPlugin.prototype.addInlineCss = function (compilation, htmlPluginData, callback) {
-  // compilation passed as this
   if (compilation.inlineCss) {
     var styles = '<style>' + compilation.inlineCss.join('\n') + '</style>';
     htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, function (match) {
@@ -28,7 +27,6 @@ StyleExtHtmlWebpackPlugin.prototype.addInlineCss = function (compilation, htmlPl
  */
 StyleExtHtmlWebpackPlugin.inline = function (loaders) {
   var inlineLoader = require.resolve('./loader.js');
-  // add the inline loader before all other loaders
   return [ inlineLoader ].concat(loaders || []).join('!');
 };
 

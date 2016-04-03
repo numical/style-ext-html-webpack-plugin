@@ -1,3 +1,4 @@
 body {
-  color: grey;
+  /* deliberate British spelling to be corrected by postcss proessing */
+  colour: grey;
 }
