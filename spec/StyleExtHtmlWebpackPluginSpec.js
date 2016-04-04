@@ -22,32 +22,50 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var OUTPUT_DIR = path.join(__dirname, '../dist');
 
-function testPlugin (webpackConfig, expectedResults, done, showHtml) {
-  var outputFile = 'index.html';
+function testPlugin (webpackConfig, expectedHtmlContent, expectedJsContent, done) {
+  if (typeof expectedJsContent === 'function') {
+    done = expectedJsContent;
+    expectedJsContent = [];
+  }
   webpack(webpackConfig, function (err, stats) {
     expect(err).toBeFalsy();
     var compilationErrors = (stats.compilation.errors || []).join('\n');
     expect(compilationErrors).toBe('');
     var compilationWarnings = (stats.compilation.warnings || []).join('\n');
     expect(compilationWarnings).toBe('');
-    var outputFileExists = fs.existsSync(path.join(OUTPUT_DIR, outputFile));
-    expect(outputFileExists).toBe(true);
-    if (!outputFileExists) {
-      return done();
-    }
-    var htmlContent = fs.readFileSync(path.join(OUTPUT_DIR, outputFile)).toString();
-    if (showHtml) {
-      console.log(htmlContent);
-    }
-    for (var i = 0; i < expectedResults.length; i++) {
-      var expectedResult = expectedResults[i];
-      if (expectedResult instanceof RegExp) {
-        expect(htmlContent).toMatch(expectedResult);
-      } else {
-        expect(htmlContent).toContain(expectedResult);
+
+    if (expectedHtmlContent.length > 0) {
+      var htmlContent = getFileContent('index.html');
+      if (htmlContent === null) {
+        return done();
       }
+      testContent(htmlContent, expectedHtmlContent);
+    }
+
+    if (expectedJsContent.length > 0) {
+      var jsContent = getFileContent('index_bundle.js');
+      if (jsContent === null) {
+        return done();
+      }
+      testContent(jsContent, expectedJsContent);
     }
     done();
+  });
+}
+
+function getFileContent (file) {
+  var fileExists = fs.existsSync(path.join(OUTPUT_DIR, file));
+  expect(fileExists).toBe(true);
+  return fileExists ? fs.readFileSync(path.join(OUTPUT_DIR, file)).toString() : null;
+}
+
+function testContent (content, expectedContents) {
+  expectedContents.forEach(function (expectedContent) {
+    if (expectedContent instanceof RegExp) {
+      expect(content).toMatch(expectedContent);
+    } else {
+      expect(content).toContain(expectedContent);
+    }
   });
 }
 
@@ -74,6 +92,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
         ]
       },
       [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
+      [/(removed by style-ext-html-webpack-plugin){1}/],
       done);
   });
 
@@ -96,6 +115,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
       },
       // note British spelling
       [/<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/],
+      [/(removed by style-ext-html-webpack-plugin){1}/],
       done);
   });
 
@@ -119,7 +139,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
           new StyleExtHtmlWebpackPlugin()
         ]
       },
-      // note US spelling
+      // note British spelling converted to US spelling
       [/<style>[\s\S]*background: snow;[\s\S]*color: gray;[\s\S]*<\/style>/],
       done);
   });
@@ -144,6 +164,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
       },
       // contains second stylesheet content but none of the first
       [/<style>[\s\S]*colour: grey;[\s\S]*<\/style>/, /^(?!.background: snow)/],
+      [/(removed by style-ext-html-webpack-plugin){1}/, /(background: snow){1}/],
       done);
   });
 
@@ -167,6 +188,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
         ]
       },
       [/<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*colour: grey;[\s\S]*<\/style>/],
+      [/(removed by style-ext-html-webpack-plugin){1}/, /(removed by extract-text-webpack-plugin){1}/],
       done);
   });
 
