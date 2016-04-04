@@ -12,15 +12,15 @@ if (typeof v8debug === 'object') {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 }
 
-var path = require('path');
-var fs = require('fs');
-var webpack = require('webpack');
-var rm_rf = require('rimraf');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var StyleExtHtmlWebpackPlugin = require('../index.js');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
+const fs = require('fs');
+const webpack = require('webpack');
+const rm_rf = require('rimraf');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const StyleExtHtmlWebpackPlugin = require('../index.js');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-var OUTPUT_DIR = path.join(__dirname, '../dist');
+const OUTPUT_DIR = path.join(__dirname, '../dist');
 
 function testPlugin (webpackConfig, expectedHtmlContent, expectedJsContent, done) {
   if (typeof expectedJsContent === 'function') {
@@ -29,13 +29,13 @@ function testPlugin (webpackConfig, expectedHtmlContent, expectedJsContent, done
   }
   webpack(webpackConfig, function (err, stats) {
     expect(err).toBeFalsy();
-    var compilationErrors = (stats.compilation.errors || []).join('\n');
+    const compilationErrors = (stats.compilation.errors || []).join('\n');
     expect(compilationErrors).toBe('');
-    var compilationWarnings = (stats.compilation.warnings || []).join('\n');
+    const compilationWarnings = (stats.compilation.warnings || []).join('\n');
     expect(compilationWarnings).toBe('');
 
     if (expectedHtmlContent.length > 0) {
-      var htmlContent = getFileContent('index.html');
+      const htmlContent = getFileContent('index.html');
       if (htmlContent === null) {
         return done();
       }
@@ -43,7 +43,7 @@ function testPlugin (webpackConfig, expectedHtmlContent, expectedJsContent, done
     }
 
     if (expectedJsContent.length > 0) {
-      var jsContent = getFileContent('index_bundle.js');
+      const jsContent = getFileContent('index_bundle.js');
       if (jsContent === null) {
         return done();
       }
@@ -54,13 +54,13 @@ function testPlugin (webpackConfig, expectedHtmlContent, expectedJsContent, done
 }
 
 function getFileContent (file) {
-  var fileExists = fs.existsSync(path.join(OUTPUT_DIR, file));
+  const fileExists = fs.existsSync(path.join(OUTPUT_DIR, file));
   expect(fileExists).toBe(true);
   return fileExists ? fs.readFileSync(path.join(OUTPUT_DIR, file)).toString() : null;
 }
 
 function testContent (content, expectedContents) {
-  expectedContents.forEach(function (expectedContent) {
+  expectedContents.forEach((expectedContent) => {
     if (expectedContent instanceof RegExp) {
       expect(content).toMatch(expectedContent);
     } else {
@@ -69,12 +69,12 @@ function testContent (content, expectedContents) {
   });
 }
 
-describe('StyleExtHtmlWebpackPlugin', function () {
-  beforeEach(function (done) {
+describe('StyleExtHtmlWebpackPlugin', () => {
+  beforeEach((done) => {
     rm_rf(OUTPUT_DIR, done);
   });
 
-  it('inlines a single stylesheet', function (done) {
+  it('inlines a single stylesheet', (done) => {
     testPlugin(
       { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
         output: {
@@ -96,7 +96,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
       done);
   });
 
-  it('inlines multiple stylesheets', function (done) {
+  it('inlines multiple stylesheets', (done) => {
     testPlugin(
       { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
         output: {
@@ -119,7 +119,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
       done);
   });
 
-  it('inlining works with postcss-loader', function (done) {
+  it('inlining works with postcss-loader', (done) => {
     testPlugin(
       { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
         output: {
@@ -144,7 +144,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
       done);
   });
 
-  it('inlining works alongside webpack css loaders', function (done) {
+  it('inlining works alongside webpack css loaders', (done) => {
     testPlugin(
       { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
         output: {
@@ -175,7 +175,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
       done);
   });
 
-  it('inlining works alongside linked stylesheets', function (done) {
+  it('inlining works alongside linked stylesheets', (done) => {
     testPlugin(
       { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
         output: {
@@ -202,7 +202,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
       done);
   });
 
-  it('inlining works alongside linked stylesheets - more general RegEx', function (done) {
+  it('inlining works alongside linked stylesheets - more general RegEx', (done) => {
     testPlugin(
       { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
         output: {
@@ -232,7 +232,7 @@ describe('StyleExtHtmlWebpackPlugin', function () {
       done);
   });
 /*
-  it('inlined stylesheets can be minified', function (done) {
+  it('inlined stylesheets can be minified', (done) => {
     done();
   });
   */
