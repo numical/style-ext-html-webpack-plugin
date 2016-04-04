@@ -49,10 +49,48 @@ plugins: [
 ]  
 ```
 
-You may also wish to minify the in-lined CSS.
+Using with Non-Inlined CSS
+--------------------------
+You may wish to have only some of your CSS inlined.
 
-This will come in the next release, dependent on a pull request to [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin).
- 
+This can be achieved by using this plugin alongside webpack's conventional [CSS](https://www.npmjs.com/package/css-loader) [loaders](https://www.npmjs.com/package/style-loader) and/or the
+[ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin).  The trick is to define multiple, distinct CSS loader paths in webpack's configuration:
+
+Example: to have stylesheet 1 inlined and stylesheets 2-9 loaded via javascript:
+```javascript
+module: {
+  loaders: [
+    { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
+    { test: /stylesheet[2-9].css/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') }
+  ]
+},
+plugins: [
+  new HtmlWebpackPlugin(),
+  new StyleExtHtmlWebpackPlugin(),
+  new ExtractTextPlugin('styles.css')
+]
+```
+
+Example: to have stylesheet 1 inlined and stylesheets 2-9 combined and `<link>`'d in `styles.css`:
+```javascript
+module: {
+  loaders: [
+    { test: /stylesheet1.css/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') },
+    { test: /stylesheet[2-9].css/, loader: StyleExtHtmlWebpackPlugin.inline() }
+  ]
+},
+plugins: [
+  new HtmlWebpackPlugin(),
+  new StyleExtHtmlWebpackPlugin(),
+  new ExtractTextPlugin('styles.css')
+]
+```
+Of course, more sophisticated `RegEx`'s offer more selectivity. Make sure `test` patterns do not overlap else you will end up with CSS in multiple places.
+
+Minification
+------------
+Coming soon!
+
 Alternative
 -----------
 Note that an alternative mechanism to inline CSS is possible, using the

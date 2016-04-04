@@ -153,8 +153,8 @@ describe('StyleExtHtmlWebpackPlugin', function () {
         },
         module: {
           loaders: [
-            { test: /stylesheet1.css/, loader: 'style-loader!css-loader' },
-            { test: /stylesheet2.css/, loader: StyleExtHtmlWebpackPlugin.inline() }
+            { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
+            { test: /stylesheet2.css/, loader: 'style-loader!css-loader' }
           ]
         },
         plugins: [
@@ -162,9 +162,16 @@ describe('StyleExtHtmlWebpackPlugin', function () {
           new StyleExtHtmlWebpackPlugin()
         ]
       },
-      // contains second stylesheet content but none of the first
-      [/<style>[\s\S]*colour: grey;[\s\S]*<\/style>/, /^(?!.background: snow)/],
-      [/(removed by style-ext-html-webpack-plugin){1}/, /(background: snow){1}/],
+      // html contains first stylesheet content but none of the second
+      [
+        /<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
+        /^(?!.colour: grey)/
+      ],
+      // js contains secons stylesheet content
+      [
+        /(removed by style-ext-html-webpack-plugin){1}/,
+        /(colour: grey){1}/
+      ],
       done);
   });
 
@@ -177,22 +184,56 @@ describe('StyleExtHtmlWebpackPlugin', function () {
         },
         module: {
           loaders: [
-            { test: /stylesheet1.css/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') },
-            { test: /stylesheet2.css/, loader: StyleExtHtmlWebpackPlugin.inline() }
+            { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
+            { test: /stylesheet2.css/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') }
           ]
         },
         plugins: [
           new HtmlWebpackPlugin(),
-          new ExtractTextPlugin('styles.css'),
-          new StyleExtHtmlWebpackPlugin()
+          new StyleExtHtmlWebpackPlugin(),
+          new ExtractTextPlugin('styles.css')
         ]
       },
-      [/<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*colour: grey;[\s\S]*<\/style>/],
-      [/(removed by style-ext-html-webpack-plugin){1}/, /(removed by extract-text-webpack-plugin){1}/],
+      [/<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
+      [
+        /(removed by style-ext-html-webpack-plugin){1}/,
+        /(removed by extract-text-webpack-plugin){1}/
+      ],
       done);
   });
 
+  it('inlining works alongside linked stylesheets - more general RegEx', function (done) {
+    testPlugin(
+      { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'index_bundle.js'
+        },
+        module: {
+          loaders: [
+            { test: /stylesheet1\.css$/, loader: StyleExtHtmlWebpackPlugin.inline() },
+            { test: /stylesheet[2-9]\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') }
+          ]
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new StyleExtHtmlWebpackPlugin(),
+          new ExtractTextPlugin('styles.css')
+        ]
+      },
+      [
+        /<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
+        /^(?!colour: grey)/
+      ],
+      [
+        /(removed by style-ext-html-webpack-plugin){1}/,
+        /(removed by extract-text-webpack-plugin){1}/
+      ],
+      done);
+  });
+/*
   it('inlined stylesheets can be minified', function (done) {
     done();
   });
+  */
 });
