@@ -11,7 +11,7 @@ Installation
 ------------
 Install the plugin with npm:
 ```shell
-$ npm install --save-dev numical/style-ext-html-webpack-plugin
+$ npm install --save-dev style-ext-html-webpack-plugin
 ```
 
 Basic Usage and Configuration
