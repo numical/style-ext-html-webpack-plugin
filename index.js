@@ -45,8 +45,11 @@ class StyleExtHtmlWebpackPlugin {
         throw error;
       }
       if (minified) {
-        if (minified.errors) compilation.errors.push(...minified.errors);
-        if (minified.warnings) compilation.warnings.push(...minified.warnings);
+        // spread operator does not work on node v4.x
+        // if (minified.errors) compilation.errors.push(...minified.errors);
+        // if (minified.warnings) compilation.warnings.push(...minified.warnings);
+        if (minified.errors) Array.prototype.push.apply(compilation.errors, minified.errors);
+        if (minified.warnings) Array.prototype.push.apply(compilation.warnings, minified.warnings);
         this.insertStylesInHead(minified.styles, htmlPluginData, callback);
       }
     });
