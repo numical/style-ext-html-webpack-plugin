@@ -1,5 +1,10 @@
 Style Extension for HTML Webpack Plugin
 ========================================
+[![npm version](https://badge.fury.io/js/style-ext-html-webpack-plugin.svg)](http://badge.fury.io/js/style-ext-html-webpack-plugin) [![Dependency Status](https://david-dm.org/numical/style-ext-html-webpack-plugin.svg)](https://david-dm.org/numical/style-ext-html-webpack-plugin) [![Build status](https://travis-ci.org/numical/style-ext-html-webpack-plugin.svg)](https://travis-ci.org/numical/style-ext-html-webpack-plugin) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
+
+[![NPM](https://nodei.co/npm/style-ext-html-webpack-plugin.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/style-ext-html-webpack-plugin/)
+
+
 Enhances [HtmlWebpackPlugin](https://github.com/ampedandwired/html-webpack-plugin)
 functionality by enabling inline styles. 
 
