@@ -18,10 +18,10 @@ class StyleExtHtmlWebpackPlugin {
 
   addInlineCss (compilation, htmlPluginData, callback) {
     if (compilation[INLINE_CSS]) {
-      var styles = compilation[INLINE_CSS].join('\n');
       if (this.options.minify) {
-        this.minify(styles, htmlPluginData, callback);
+        this.minify(compilation, htmlPluginData, callback);
       } else {
+        const styles = this.combineInlineCss(compilation);
         this.insertStylesInHead(styles, htmlPluginData, callback);
       }
     } else {
@@ -29,15 +29,26 @@ class StyleExtHtmlWebpackPlugin {
     }
   }
 
-  minify (styles, htmlPluginData, callback) {
+  combineInlineCss (compilation) {
+    return compilation[INLINE_CSS].join('\n');
+  }
+
+  minify (compilation, htmlPluginData, callback) {
     const CleanCSS = require('clean-css');
     if (typeof this.options.minify !== 'object') {
       this.options.minify = {};
     }
     const minifier = new CleanCSS(this.options.minify);
+    const styles = this.combineInlineCss(compilation);
     minifier.minify(styles, (error, minified) => {
-      if (error) throw error;
-      this.insertStylesInHead(minified.styles, htmlPluginData, callback);
+      if (error) {
+        throw error;
+      }
+      if (minified) {
+        if (minified.errors) compilation.errors.push(...minified.errors);
+        if (minified.warnings) compilation.warnings.push(...minified.warnings);
+        this.insertStylesInHead(minified.styles, htmlPluginData, callback);
+      }
     });
   }
 
