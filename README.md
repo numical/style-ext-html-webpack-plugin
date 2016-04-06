@@ -14,15 +14,16 @@ The raw [HtmlWebpackPlugin](https://github.com/ampedandwired/html-webpack-plugin
 
 Installation
 ------------
+You must be running webpack on node v4.x or v5.x.
+
 Install the plugin with npm:
 ```shell
 $ npm install --save-dev style-ext-html-webpack-plugin
 ```
 
-Basic Usage and Configuration
------------------------------
-The plugin has no configuration options.
-However it must be set up as a plugin *and* as the final loader for the CSS assets you wish to be
+Basic Usage
+-----------
+The plugin must be added to the webpack config as both a plugin *and* as the final loader for the CSS assets you wish to be
 inlined:
 
 ```javascript
