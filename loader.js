@@ -1,6 +1,6 @@
 'use strict';
 
-const INLINE_CSS = require.resolve('./constant.js');
+const INLINE_CSS = require('./constant.js');
 
 module.exports = function (content) {
   // The context is passed as 'this' via fn.apply in webpack code.

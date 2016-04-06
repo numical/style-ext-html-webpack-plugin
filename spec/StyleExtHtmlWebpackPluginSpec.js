@@ -231,9 +231,75 @@ describe('StyleExtHtmlWebpackPlugin', () => {
       ],
       done);
   });
-/*
-  it('inlined stylesheets can be minified', (done) => {
-    done();
+
+  it('can minify a single stylesheet', (done) => {
+    testPlugin(
+      { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'index_bundle.js'
+        },
+        module: {
+          loaders: [
+            {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+          ]
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new StyleExtHtmlWebpackPlugin({minify: true})
+        ]
+      },
+      [/<style>body{background:snow}<\/style>/],
+      done);
   });
-  */
+
+  it('can minify multiple stylesheets after post-css processing', (done) => {
+    testPlugin(
+      { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'index_bundle.js'
+        },
+        module: {
+          loaders: [
+            {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline('postcss-loader')}
+          ]
+        },
+        postcss: [
+          require('postcss-spiffing')
+        ],
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new StyleExtHtmlWebpackPlugin({minify: true})
+        ]
+      },
+      // note US spelling
+      [/<style>body{background:snow;color:gray}<\/style>/],
+      done);
+  });
+
+  it('can pass minification options', (done) => {
+    testPlugin(
+      { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'index_bundle.js'
+        },
+        module: {
+          loaders: [
+            {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+          ]
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new StyleExtHtmlWebpackPlugin({
+            minify: {
+              keepBreaks: true // note: this is not chaning css-clean behaviour - to investigate
+            }
+          })
+        ]
+      },
+      [/<style>body{background:snow}<\/style>/],
+      done);
+  });
 });

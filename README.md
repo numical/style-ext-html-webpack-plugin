@@ -1,11 +1,11 @@
 Style Extension for HTML Webpack Plugin
 ========================================
-Enhances [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin)
+Enhances [HtmlWebpackPlugin](https://github.com/ampedandwired/html-webpack-plugin)
 functionality by enabling inline styles. 
 
-This is an extension plugin for the [webpack](http://webpack.github.io) plugin [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) - a plugin that simplifies the creation of HTML files to serve your webpack bundles.
+This is an extension plugin for the [Webpack](http://webpack.github.io) plugin [HtmlWebpackPlugin](https://github.com/ampedandwired/html-webpack-plugin) - a plugin that simplifies the creation of HTML files to serve your webpack bundles.
 
-The raw [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) can bundle CSS assets as `<link>` elements if used in conjunction with [extract-text-webpack-plugin](https://github.com/webpack/extract-text-webpack-plugin).  This extension plugin offers an alternative - inline `<style>` elements instead of `<link>` elements.
+The raw [HtmlWebpackPlugin](https://github.com/ampedandwired/html-webpack-plugin) can bundle CSS assets as `<link>` elements if used in conjunction with [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin).  This extension plugin offers an alternative - inline `<style>` elements instead of `<link>` elements.
 
 Installation
 ------------
@@ -89,11 +89,42 @@ Of course, more sophisticated `RegEx`'s offer more selectivity. Make sure `test`
 
 Minification
 ------------
-Coming soon!
+The plugin can be configured to use [clean-css](https://github.com/jakubpawlowicz/clean-css) to minify the inlined CSS.
+
+Note that clean-css is an optional dependency so to use it you must explicitly install it:
+```shell
+$ npm install clean-css
+```
+If you forget this you will recieve error:
+`Cannot find module 'clean-css'`
+
+Clean-css is enabled by passing the StyleExtHtmlWebpackPlugin constructor a hash with a single property:
+- `minify`: `true` or, to customise css-clean behaviour, another hash with properties defined in the [clean-css
+docs](https://github.com/jakubpawlowicz/clean-css#how-to-use-clean-css-api).
+
+Example: default minification
+```javascript
+plugins: [
+  new HtmlWebpackPlugin(),
+  new StyleExtHtmlWebpackPlugin({
+    minify: true
+  })
+]
+``` 
+Example: customised minification
+```javascript
+plugins: [
+  new HtmlWebpackPlugin(),
+  new StyleExtHtmlWebpackPlugin({
+    minify: {
+      keepSpecialComments: *,
+      roundingPrecision: -1
+    }
+  })
+]
+```
 
 Alternative
 -----------
 Note that an alternative mechanism to inline CSS is possible, using the
-[extract-text-plugin](https://github.com/webpack/extract-text-webpack-plugin) and templates - see
-the [html-webpack-plugin
-example](https://github.com/ampedandwired/html-webpack-plugin/tree/master/examples/inline).
+[ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin) and templates - see the [HtmlWebpackPlugin example](https://github.com/ampedandwired/html-webpack-plugin/tree/master/examples/inline).
