@@ -1,6 +1,6 @@
 {
   "name": "style-ext-html-webpack-plugin",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Enhances html-webpack-plugin functionality by enabling inline styles.",
   "main": "index.js",
   "files": [
