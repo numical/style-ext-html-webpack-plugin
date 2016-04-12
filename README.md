@@ -67,13 +67,12 @@ Example: to have stylesheet 1 inlined and stylesheets 2-9 loaded via javascript:
 module: {
   loaders: [
     { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
-    { test: /stylesheet[2-9].css/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') }
+    { test: /stylesheet[2-9].css/, loader: 'style!css' }
   ]
 },
 plugins: [
   new HtmlWebpackPlugin(),
-  new StyleExtHtmlWebpackPlugin(),
-  new ExtractTextPlugin('styles.css')
+  new StyleExtHtmlWebpackPlugin()
 ]
 ```
 
@@ -81,8 +80,8 @@ Example: to have stylesheet 1 inlined and stylesheets 2-9 combined and `<link>`'
 ```javascript
 module: {
   loaders: [
-    { test: /stylesheet1.css/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') },
-    { test: /stylesheet[2-9].css/, loader: StyleExtHtmlWebpackPlugin.inline() }
+    { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
+    { test: /stylesheet[2-9].css/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') }
   ]
 },
 plugins: [
