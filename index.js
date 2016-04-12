@@ -25,7 +25,7 @@ class StyleExtHtmlWebpackPlugin {
         this.insertStylesInHead(styles, htmlPluginData, callback);
       }
     } else {
-      callback();
+      callback(null, htmlPluginData);
     }
   }
 
@@ -60,7 +60,7 @@ class StyleExtHtmlWebpackPlugin {
     htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, (match) => {
       return styles + match;
     });
-    callback();
+    callback(null, htmlPluginData);
   }
 
   /**

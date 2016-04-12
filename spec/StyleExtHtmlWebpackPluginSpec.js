@@ -19,6 +19,7 @@ const rm_rf = require('rimraf');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -300,6 +301,37 @@ describe('StyleExtHtmlWebpackPlugin', () => {
         ]
       },
       [/<style>body{background:snow}<\/style>/],
+      done);
+  });
+
+  it('plays happily with other plugins using same html plugin event', (done) => {
+    testPlugin(
+      { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'index_bundle.js'
+        },
+        module: {
+          loaders: [
+            {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+          ]
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new StyleExtHtmlWebpackPlugin({
+            minify: {
+              keepBreaks: true // note: this is not chaning css-clean behaviour - to investigate
+            }
+          }),
+          new ScriptExtHtmlWebpackPlugin({
+            defaultAttribute: 'async'
+          })
+        ]
+      },
+      [
+        /<style>body{background:snow}<\/style>/,
+        /<script src="index_bundle.js" async><\/script>/
+      ],
       done);
   });
 });
