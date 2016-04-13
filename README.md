@@ -12,6 +12,11 @@ This is an extension plugin for the [Webpack](http://webpack.github.io) plugin [
 
 The raw [HtmlWebpackPlugin](https://github.com/ampedandwired/html-webpack-plugin) can bundle CSS assets as `<link>` elements if used in conjunction with [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin).  This extension plugin offers an alternative - inline `<style>` elements instead of `<link>` elements.
 
+Note: this is for inlining `<style>`'s only - if you wish to inline `<scripts>`'s please take a look at:
+- the [HtmlWebpackPlugin inline example](https://github.com/ampedandwired/html-webpack-plugin/tree/master/examples/inline) based on jade templates;
+- the experimental inlining feature of sister plugin
+[script-ext-html-webpack-plugin](https://github.com/numical/script-ext-html-webpack-plugin).
+
 Installation
 ------------
 You must be running webpack on node v4.x or v5.x.
