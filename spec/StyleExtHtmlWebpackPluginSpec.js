@@ -334,4 +334,31 @@ describe('StyleExtHtmlWebpackPlugin', () => {
       ],
       done);
   });
+
+  it('works with template styles', (done) => {
+    testPlugin(
+      { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'index_bundle.js'
+        },
+        module: {
+          loaders: [
+            {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+          ]
+        },
+        plugins: [
+          new HtmlWebpackPlugin({
+            template: path.join(__dirname, 'fixtures/html.template')
+          }),
+          new StyleExtHtmlWebpackPlugin()
+        ]
+      },
+      [
+        /<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
+        /<style>div { background: blue }<\/style>/,
+        /<div id='template_content'>/
+      ],
+      done);
+  });
 });

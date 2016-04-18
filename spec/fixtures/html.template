@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+   <head>
+     <meta charset='UTF-8'>
+     <style>div { background: blue }</style>
+   </head>
+   <body>
+     <div id='template_content'>
+   </body>
+</html>
