@@ -15,7 +15,7 @@ if (typeof v8debug === 'object') {
 const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
-const rm_rf = require('rimraf');
+const rimraf = require('rimraf');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -72,7 +72,7 @@ function testContent (content, expectedContents) {
 
 describe('StyleExtHtmlWebpackPlugin', () => {
   beforeEach((done) => {
-    rm_rf(OUTPUT_DIR, done);
+    rimraf(OUTPUT_DIR, done);
   });
 
   it('inlines a single stylesheet', (done) => {
