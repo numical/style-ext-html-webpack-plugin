@@ -1,6 +1,8 @@
 'use strict';
 
 const INLINE_CSS = require('./constant.js');
+const debug = require('debug')('StyleExtHtmlWebpackPlugin:plugin');
+const detailDebug = require('debug')('StyleExtHtmlWebpackPlugin:detail');
 
 class StyleExtHtmlWebpackPlugin {
 
@@ -11,12 +13,14 @@ class StyleExtHtmlWebpackPlugin {
   apply (compiler) {
     compiler.plugin('compilation', (compilation) => {
       compilation.plugin('html-webpack-plugin-after-html-processing', (htmlPluginData, callback) => {
+        debug('html-webpack-plugin-after-html-processing event');
         this.addInlineCss(compilation, htmlPluginData, callback);
       });
     });
   }
 
   addInlineCss (compilation, htmlPluginData, callback) {
+    debug('addInlineCss');
     if (compilation[INLINE_CSS]) {
       if (this.options.minify) {
         this.minify(compilation, htmlPluginData, callback);
@@ -25,15 +29,18 @@ class StyleExtHtmlWebpackPlugin {
         this.insertStylesInHead(styles, htmlPluginData, callback);
       }
     } else {
+      debug('no compilation[INLINE_CSS]');
       callback(null, htmlPluginData);
     }
   }
 
   combineInlineCss (compilation) {
+    debug('combineInlineCss');
     return compilation[INLINE_CSS].join('\n');
   }
 
   minify (compilation, htmlPluginData, callback) {
+    debug('minify');
     const CleanCSS = require('clean-css');
     if (typeof this.options.minify !== 'object') {
       this.options.minify = {};
@@ -56,10 +63,13 @@ class StyleExtHtmlWebpackPlugin {
   }
 
   insertStylesInHead (styles, htmlPluginData, callback) {
+    debug('insertStylesInHead');
     styles = '<style>' + styles + '</style>';
+    detailDebug('insertStylesInHead: styles: ' + styles);
     htmlPluginData.html = htmlPluginData.html.replace(/(<\/head>)/i, (match) => {
       return styles + match;
     });
+    detailDebug('insertStylesInHead: htmlPluginData.html: ' + htmlPluginData.html);
     callback(null, htmlPluginData);
   }
 
@@ -67,6 +77,7 @@ class StyleExtHtmlWebpackPlugin {
    * Inject loader for in-line styles
    */
   static inline (loaders) {
+    debug('add inlineLoader');
     const inlineLoader = require.resolve('./loader.js');
     return [ inlineLoader ].concat(loaders || []).join('!');
   }
