@@ -134,6 +134,28 @@ plugins: [
 ]
 ```
 
+Debugging
+---------
+If you have problems and want to sort them out yourself(!), this plugin has built-in debugging that
+may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  Available debug names:
+* `StyleExtHtmlWebpackPlugin:plugin` for the plugin;
+* `StyleExtHtmlWebpackPlugin:loader` for the loader;
+* `StyleExtHtmlWebpackPlugin:detail` for core values (note __verbose__!);
+* or, for all of them: `StyleExtHtmlWebpackPlugin:*`
+
+
+
+Change History
+--------------
+
+* v1.0.4 - added debug options
+* v1.0.3 - documentation update
+* v1.0.2 - documentation update
+* v1.0.1 - now plays happily with plugins on same event
+* v1.0.0 - initial release
+
+
+
 Alternative
 -----------
 Note that an alternative mechanism to inline CSS is possible, using the
