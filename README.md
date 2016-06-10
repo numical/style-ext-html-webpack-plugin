@@ -148,7 +148,9 @@ may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  A
 Change History
 --------------
 
-* v1.0.5 - updated code to match changes [semistandard](https://github.com/Flet/semistandard)
+* v1.0.6 - updated tests to match changes in
+[script-ext-html-webpack-plugin](https://github.com/numical/script-ext-html-webpack-plugin)
+* v1.0.5 - updated code to match changes in [semistandard](https://github.com/Flet/semistandard)
 * v1.0.4 - added debug options
 * v1.0.3 - documentation update
 * v1.0.2 - documentation update

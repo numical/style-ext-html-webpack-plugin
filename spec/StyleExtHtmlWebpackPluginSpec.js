@@ -330,7 +330,7 @@ describe('StyleExtHtmlWebpackPlugin', () => {
       },
       [
         /<style>body{background:snow}<\/style>/,
-        /<script src="index_bundle.js" async><\/script>/
+        /<script src="index_bundle.js" type="text\/javascript" async><\/script>/
       ],
       done);
   });
