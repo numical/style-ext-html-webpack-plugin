@@ -19,7 +19,9 @@ Note: this is for inlining `<style>`'s only - if you wish to inline `<scripts>`'
 
 Installation
 ------------
-You must be running webpack on node v4.x or v5.x.
+You must be running webpack v1.x on node v4.x or v5.x.
+
+This plugin is __not compatible with Webpack 2__ (yet). A one-off compilation is fine but hot reloading will fail.
 
 Install the plugin with npm:
 ```shell
@@ -148,6 +150,7 @@ may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  A
 Change History
 --------------
 
+* v1.0.7 - added warning that not compatible with webpack 2
 * v1.0.6 - updated tests to match changes in
 [script-ext-html-webpack-plugin](https://github.com/numical/script-ext-html-webpack-plugin)
 * v1.0.5 - updated code to match changes in [semistandard](https://github.com/Flet/semistandard)
