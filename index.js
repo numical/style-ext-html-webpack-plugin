@@ -1,6 +1,6 @@
 'use strict';
 
-const INLINE_CSS = require('./constant.js');
+const CSS_STORE = require('./store.js');
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:plugin');
 const detailDebug = require('debug')('StyleExtHtmlWebpackPlugin:detail');
 
@@ -21,7 +21,7 @@ class StyleExtHtmlWebpackPlugin {
 
   addInlineCss (compilation, htmlPluginData, callback) {
     debug('addInlineCss');
-    if (compilation[INLINE_CSS]) {
+    if (CSS_STORE.has(compilation)) {
       if (this.options.minify) {
         this.minify(compilation, htmlPluginData, callback);
       } else {
@@ -29,14 +29,14 @@ class StyleExtHtmlWebpackPlugin {
         this.insertStylesInHead(styles, htmlPluginData, callback);
       }
     } else {
-      debug('no compilation[INLINE_CSS]');
+      debug('no stored css');
       callback(null, htmlPluginData);
     }
   }
 
   combineInlineCss (compilation) {
     debug('combineInlineCss');
-    return compilation[INLINE_CSS].join('\n');
+    return CSS_STORE.get(compilation).join('\n');
   }
 
   minify (compilation, htmlPluginData, callback) {

@@ -1,6 +1,6 @@
 'use strict';
 
-const INLINE_CSS = require('./constant.js');
+const CSS_STORE = require('./store.js');
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:loader');
 const detailDebug = require('debug')('StyleExtHtmlWebpackPlugin:detail');
 
@@ -9,13 +9,15 @@ module.exports = function (content) {
   // Using a context that is undeclared in the function API seems wrong,
   // but no other way to tie the CSS to a particular compilation.
   const compilation = this._compilation;
-  if (!compilation[INLINE_CSS]) {
-    debug('no compilation[INLINE_CSS]');
-    compilation[INLINE_CSS] = [content];
+  let css = CSS_STORE.get(compilation);
+  if (!css) {
+    debug('no stored css for compilation');
+    css = [content];
   } else {
-    debug('existing compilation[INLINE_CSS]');
-    compilation[INLINE_CSS] = compilation[INLINE_CSS].concat(content);
+    debug('stored css for compilation');
+    css = css.concat(content);
   }
-  detailDebug('loader result: compilation[INLINE_CSS]: ' + compilation[INLINE_CSS]);
+  CSS_STORE.set(compilation, css);
+  detailDebug('loader result: compilation css ' + css);
   return '/* removed by style-ext-html-webpack-plugin */';
 };
