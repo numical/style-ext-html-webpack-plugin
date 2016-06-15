@@ -19,7 +19,9 @@ Note: this is for inlining `<style>`'s only - if you wish to inline `<scripts>`'
 
 Installation
 ------------
-You must be running webpack v1.x or v2.x on node v4.x or v5.x.
+You must be running webpack v1.x on node v4.x or v5.x.
+
+__Note: hot module reloads do not work with this plugin on webpack 2 __ (yet).  
 
 Install the plugin with npm:
 ```shell
@@ -148,8 +150,9 @@ may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  A
 Change History
 --------------
 
+* v1.1.1 - hot module reload not working with webpack 2
 * v1.1.0 - now Webpack 2.x compatible
-* v1.0.7 - added warning that not compatible with webpack 2
+* v1.0.7 - added warning that not compatible with Webpack 2
 * v1.0.6 - updated tests to match changes in
 [script-ext-html-webpack-plugin](https://github.com/numical/script-ext-html-webpack-plugin)
 * v1.0.5 - updated code to match changes in [semistandard](https://github.com/Flet/semistandard)
