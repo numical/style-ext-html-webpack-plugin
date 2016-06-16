@@ -4,7 +4,7 @@ const contentWrapper = require('./wrapper.js');
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:plugin');
 const detailDebug = require('debug')('StyleExtHtmlWebpackPlugin:detail');
 const ReplaceSource = require('webpack-sources').ReplaceSource;
-
+const replaceText = '/* removed by style-ext-html-webpack-plugin */';
 const extractedCss = new WeakMap();
 
 class StyleExtHtmlWebpackPlugin {
@@ -36,16 +36,16 @@ class StyleExtHtmlWebpackPlugin {
     detailDebug('searching file \'' + file + '\'');
     // this will be very slow - how filter to focus only on assets that matter?
     const source = compilation.assets[file].source();
-    if (contentWrapper.hasWrappedContent(source)) {
-      debug('file \'' + file + '\' contains css (use StyleExtHtmlWebpackPlugin:detail option to see it)');
-      const wrappedContent = contentWrapper.extractWrappedContent(source);
-      detailDebug(wrappedContent);
-      extractedCss.set(compilation, [wrappedContent.content].concat(extractedCss.get(compilation) || []));
+    const wrappedCss = contentWrapper.extractWrappedContent(source);
+    if (wrappedCss.length > 0) {
+      debug('file \'' + file + '\' contains css (use StyleExtHtmlWebpackPlugin:detail option to view)');
       const replacement = new ReplaceSource(compilation.assets[file], 'style-ext-html-webpack-plugin');
-      replacement.replace(
-          wrappedContent.startIndex,
-          wrappedContent.endIndex,
-          '/* removed by style-ext-html-webpack-plugin */');
+      const css = wrappedCss.map((wrapped) => {
+        detailDebug(wrapped.content);
+        replacement.replace(wrapped.startIndex, wrapped.endIndex, replaceText);
+        return wrapped.content;
+      });
+      extractedCss.set(compilation, css.concat(extractedCss.get(compilation) || []));
       compilation.assets[file] = replacement;
     }
   }

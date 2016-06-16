@@ -1,4 +1,4 @@
 'use strict';
 
-require('./stylesheet_with_comments.css');
+require('./stylesheet2.css');
 require('./index.js');

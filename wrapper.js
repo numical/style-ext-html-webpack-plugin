@@ -22,17 +22,22 @@ const unescapeComments = (s) => {
 
 exports.wrapContent = (content) => START_TAG + escapeComments(content) + END_TAG;
 
-exports.hasWrappedContent = (s) => s.indexOf(START_TAG) > -1;
-
 exports.extractWrappedContent = (s) => {
-  const startIndex = s.indexOf(START_TAG);
-  if (startIndex === -1) return;
-  const endIndex = s.indexOf(END_TAG, startIndex);
-  if (endIndex === -1) return;
-  return {
-    startIndex: startIndex,
-    endIndex: endIndex + END_TAG.length,
-    content: unescapeComments(s.substring(startIndex + START_TAG.length, endIndex))
-  };
+  const results = [];
+  let startIndex = 0;
+  while (startIndex > -1) {
+    startIndex = s.indexOf(START_TAG, startIndex);
+    if (startIndex > -1) {
+      const endIndex = s.indexOf(END_TAG, startIndex);
+      const content = unescapeComments(s.substring(startIndex + START_TAG.length, endIndex));
+      results.push({
+        startIndex: startIndex,
+        endIndex: endIndex,
+        content: content
+      });
+      startIndex = endIndex;
+    }
+  }
+  return results;
 };
 

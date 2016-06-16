@@ -18,8 +18,8 @@ const webpack = require('webpack');
 const rimraf = require('rimraf');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
-// const ExtractTextPlugin = require('extract-text-webpack-plugin');
-// const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -119,8 +119,7 @@ describe('StyleExtHtmlWebpackPlugin', () => {
       done);
   });
 
-/*
-  it('inlines multiple stylesheets', (done) => {
+  it('inlines multiple stylesheets from a single source', (done) => {
     testPlugin(
       { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
         output: {
@@ -142,7 +141,30 @@ describe('StyleExtHtmlWebpackPlugin', () => {
       [/(removed by style-ext-html-webpack-plugin){1}/],
       done);
   });
-/*
+
+  it('inlines multiple stylesheets from multiple sources', (done) => {
+    testPlugin(
+      { entry: path.join(__dirname, 'fixtures/nested_stylesheets.js'),
+        output: {
+          path: OUTPUT_DIR,
+          filename: 'index_bundle.js'
+        },
+        module: {
+          loaders: [
+            {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+          ]
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new StyleExtHtmlWebpackPlugin()
+        ]
+      },
+      // note British spelling
+      [/<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/],
+      [/(removed by style-ext-html-webpack-plugin){1}/],
+      done);
+  });
+
   it('inlining works with postcss-loader', (done) => {
     testPlugin(
       { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
@@ -191,7 +213,7 @@ describe('StyleExtHtmlWebpackPlugin', () => {
         /<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
         /^(?!.colour: grey)/
       ],
-      // js contains secons stylesheet content
+      // js contains second stylesheet content
       [
         /(removed by style-ext-html-webpack-plugin){1}/,
         /(colour: grey){1}/
@@ -384,5 +406,4 @@ describe('StyleExtHtmlWebpackPlugin', () => {
       ],
       done);
   });
-*/
 });
