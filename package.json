@@ -6,13 +6,13 @@
   "files": [
     "index.js",
     "loader.js",
-    "store.js"
+    "wrapper.js"
   ],
   "scripts": {
     "pretest": "semistandard",
     "test": "jasmine",
     "debug": "DEBUG=StyleExtHtmlWebpackPlugin:* jasmine",
-    "node-debug": "node-debug jasmine"
+    "node-debug": "DEBUG=StyleExtHtmlWebpackPlugin:* node-debug jasmine"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "css-loader": "^0.23.1",
     "debug": "^2.2.0",
     "extract-text-webpack-plugin": "^1.0.1",
-    "html-webpack-plugin": "^2.20.0",
+    "html-webpack-plugin": "^2.21.0",
     "jasmine": "^2.4.1",
     "postcss-loader": "^0.9.1",
     "postcss-spiffing": "0.1.0",
@@ -47,6 +47,6 @@
     "webpack": "^1.13.1"
   },
   "optionalDependencies": {
-    "clean-css": "^3.4.17"
+    "clean-css": "^3.4.18"
   }
 }

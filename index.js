@@ -1,8 +1,11 @@
 'use strict';
 
-const CSS_STORE = require('./store.js');
+const contentWrapper = require('./wrapper.js');
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:plugin');
 const detailDebug = require('debug')('StyleExtHtmlWebpackPlugin:detail');
+const ReplaceSource = require('webpack-sources').ReplaceSource;
+
+const extractedCss = new WeakMap();
 
 class StyleExtHtmlWebpackPlugin {
 
@@ -11,17 +14,45 @@ class StyleExtHtmlWebpackPlugin {
   }
 
   apply (compiler) {
+    const extractCss = this.extractCss.bind(this);
     compiler.plugin('compilation', (compilation) => {
+      compilation.plugin('optimize-chunk-assets', function (chunks, callback) {
+        debug('optimize-chunk-assets');
+        chunks.forEach(function (chunk) {
+          chunk.files.forEach(function (file) {
+            extractCss(compilation, file);
+          });
+        });
+        callback();
+      });
       compilation.plugin('html-webpack-plugin-after-html-processing', (htmlPluginData, callback) => {
-        debug('html-webpack-plugin-after-html-processing event');
+        debug('html-webpack-plugin-after-html-processing');
         this.addInlineCss(compilation, htmlPluginData, callback);
       });
     });
   }
 
+  extractCss (compilation, file) {
+    detailDebug('searching file \'' + file + '\'');
+    // this will be very slow - how filter to focus only on assets that matter?
+    const source = compilation.assets[file].source();
+    if (contentWrapper.hasWrappedContent(source)) {
+      debug('file \'' + file + '\' contains css (use StyleExtHtmlWebpackPlugin:detail option to see it)');
+      const wrappedContent = contentWrapper.extractWrappedContent(source);
+      detailDebug(wrappedContent);
+      extractedCss.set(compilation, [wrappedContent.content].concat(extractedCss.get(compilation) || []));
+      const replacement = new ReplaceSource(compilation.assets[file], 'style-ext-html-webpack-plugin');
+      replacement.replace(
+          wrappedContent.startIndex,
+          wrappedContent.endIndex,
+          '/* removed by style-ext-html-webpack-plugin */');
+      compilation.assets[file] = replacement;
+    }
+  }
+
   addInlineCss (compilation, htmlPluginData, callback) {
     debug('addInlineCss');
-    if (CSS_STORE.has(compilation)) {
+    if (extractedCss.has(compilation)) {
       if (this.options.minify) {
         this.minify(compilation, htmlPluginData, callback);
       } else {
@@ -29,14 +60,14 @@ class StyleExtHtmlWebpackPlugin {
         this.insertStylesInHead(styles, htmlPluginData, callback);
       }
     } else {
-      debug('no stored css');
+      debug('warning: no extracted css');
       callback(null, htmlPluginData);
     }
   }
 
   combineInlineCss (compilation) {
     debug('combineInlineCss');
-    return CSS_STORE.get(compilation).join('\n');
+    return extractedCss.get(compilation).join('\n');
   }
 
   minify (compilation, htmlPluginData, callback) {
