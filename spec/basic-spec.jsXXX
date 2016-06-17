@@ -74,7 +74,7 @@ function appendVersion (s, version) {
   return s + ' (wepback v' + version + ')';
 }
 
-describe('StyleExtHtmlWebpackPlugin', () => {
+describe('Basic functionality', () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
   });
