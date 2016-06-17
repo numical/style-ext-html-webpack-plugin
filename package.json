@@ -9,7 +9,7 @@
     "wrapper.js"
   ],
   "scripts": {
-    "pretest": "semistandard",
+    "pretest": "semistandard & multidep spec/multidep.json",
     "test": "jasmine",
     "debug": "DEBUG=StyleExtHtmlWebpackPlugin:* jasmine",
     "node-debug": "DEBUG=StyleExtHtmlWebpackPlugin:* node-debug jasmine"
