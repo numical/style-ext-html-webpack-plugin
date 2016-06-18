@@ -10,8 +10,10 @@ if (!global.Promise) {
 // for debugging
 if (typeof v8debug === 'object') {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
+  Error.stackTraceLimit = 100;
 }
 
+const debug = require('debug')('StyleExtHtmlWebpackPlugin:hot-reload-spec');
 const path = require('path');
 const fs = require('fs');
 const multidepRequire = require('multidep')('spec/multidep.json');
@@ -19,18 +21,29 @@ const rimraf = require('rimraf');
 const temp = require('fs-temp/promise');
 const makePromise = require('denodeify');
 const copyFiles = makePromise(require('ncp'));
+const writeToFile = makePromise(fs.writeFile);
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 
-const OUTPUT_DIR = path.join(__dirname, '../dist');
+const fixedFilePaths = {
+  fixturesDir: path.join(__dirname, 'fixtures/hot-reload'),
+  outputDir: path.join(__dirname, '../dist'),
+  outputHtml: path.join(__dirname, '../dist', 'index.html'),
+  outputJs: 'index_bundle.js'
+};
+
+const createTestFilePaths = (testDir) => ({
+  testDir: testDir,
+  entryFile: path.join(testDir, 'entry.js')
+});
 
 const appendVersion = (s, version) => s + ' (wepback v' + version + ')';
 
-const createConfig = (baseDir) => ({
-  entry: path.join(baseDir, 'one_stylesheet.js'),
+const createWebpackConfig = (testFilePaths) => ({
+  entry: testFilePaths.entryFile,
   output: {
-    path: OUTPUT_DIR,
-    filename: 'index_bundle.js'
+    path: fixedFilePaths.outputDir,
+    filename: fixedFilePaths.outputJs
   },
   module: {
     loaders: [
@@ -38,17 +51,46 @@ const createConfig = (baseDir) => ({
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({cache: false}),
     new StyleExtHtmlWebpackPlugin()
   ]
 });
 
-const startWatching = (compiler) => {
+const createWatching = () => ({
+  eventCount: 0,
+  checkCompilation: false
+});
+
+const createWatchConfig = () => ({
+  aggregateTimeout: 300
+});
+
+const startWatching = (compiler, expectedHtmlContent, done) => {
   return new Promise((resolve, reject) => {
     try {
-      compiler.watch({}, (err, stats) => {
+      debug('starting watching');
+      const watching = createWatching();
+      const watcher = compiler.watch(createWatchConfig(), (err, stats) => {
+        debug('watch event ' + watching.eventCount++);
         if (err) return reject(err);
-        resolve(stats);
+        if (watching.checkCompilation) {
+          debug('checking compilation for watch event ' + watching.eventCount);
+          checkCompilationResult(stats);
+          fs.readFile(fixedFilePaths.outputHtml, (err, data) => {
+            try {
+              if (err) return reject(err);
+              checkFileContents(data.toString(), expectedHtmlContent.shift());
+              resolve();
+            } finally {
+              if (expectedHtmlContent.length === 0) {
+                debug('closing watcher');
+                watcher.close(done);
+              }
+            }
+          });
+        } else {
+          resolve(watching);
+        }
       });
     } catch (err) {
       reject(err);
@@ -56,26 +98,14 @@ const startWatching = (compiler) => {
   });
 };
 
-const checkCompilationResult = (stats, expectedHtml) => {
-  return new Promise((resolve, reject) => {
-    try {
-      const compilationErrors = (stats.compilation.errors || []).join('\n');
-      expect(compilationErrors).toBe('');
-      const compilationWarnings = (stats.compilation.warnings || []).join('\n');
-      expect(compilationWarnings).toBe('');
-      const htmlFile = path.join(OUTPUT_DIR, 'index.html');
-      fs.readFile(htmlFile, (err, data) => {
-        if (err) return reject(err);
-        testFileContents(data.toString(), expectedHtml);
-        resolve();
-      });
-    } catch (err) {
-      reject(err);
-    }
-  });
+const checkCompilationResult = (stats) => {
+  const compilationErrors = (stats.compilation.errors || []).join('\n');
+  expect(compilationErrors).toBe('');
+  const compilationWarnings = (stats.compilation.warnings || []).join('\n');
+  expect(compilationWarnings).toBe('');
 };
 
-const testFileContents = (content, expectedContents) => {
+const checkFileContents = (content, expectedContents) => {
   expectedContents.forEach((expectedContent) => {
     if (expectedContent instanceof RegExp) {
       expect(content).toMatch(expectedContent);
@@ -87,31 +117,42 @@ const testFileContents = (content, expectedContents) => {
 
 describe('Hot reload functionality', () => {
   beforeEach((done) => {
-    rimraf(OUTPUT_DIR, done);
+    rimraf(fixedFilePaths.outputDir, done);
   });
 
   multidepRequire.forEachVersion('webpack', function (version, webpack) {
     it(appendVersion('test', version), (done) => {
-      let testDir = null;
+      const expectedHtmlContent = [
+        [/<style>[\s\S]*background: black;[\s\S]*<\/style>/]
+        // [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/]
+      ];
+      let testFilePaths;
       temp.mkdir()
-      .then((dir) => {
-        testDir = dir;
-        const fixturesDir = path.join(__dirname, 'fixtures');
-        return copyFiles(fixturesDir, testDir);
+      .then((testDir) => {
+        testFilePaths = createTestFilePaths(testDir);
+        return copyFiles(fixedFilePaths.fixturesDir, testFilePaths.testDir);
       })
       .then(() => {
-        const compiler = webpack(createConfig(testDir));
-        return startWatching(compiler);
+        const compiler = webpack(createWebpackConfig(testFilePaths));
+        return startWatching(compiler, expectedHtmlContent, done);
       })
-      .then((stats) => {
-        return checkCompilationResult(
-            stats,
-            [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/]
+      .then((watching) => {
+        debug('About to change file \'' + testFilePaths.entryFile + '\'');
+        watching.checkCompilation = true;
+        return writeToFile(
+          testFilePaths.entryFile,
+          '\'use strict\';require(\'./stylesheet2.css\');require(\'./index.js\');'
         );
       })
+      /*
       .then(() => {
-        done();
+        debug('About to change file \'' + testFilePaths.entryFile + '\'');
+        return writeToFile(
+          testFilePaths.entryFile,
+          '\'use strict\';require(\'./stylesheet1.css\');require(\'./index.js\');'
+        );
       })
+      */
       .catch((err) => {
         done.fail(err);
       });
