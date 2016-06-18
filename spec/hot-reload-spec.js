@@ -20,30 +20,27 @@ const multidepRequire = require('multidep')('spec/multidep.json');
 const rimraf = require('rimraf');
 const temp = require('fs-temp/promise');
 const makePromise = require('denodeify');
-const copyFiles = makePromise(require('ncp'));
-const writeToFile = makePromise(fs.writeFile);
+const copyDir = require('ncp');
+const readFile = makePromise(fs.readFile);
+const writeFile = makePromise(fs.writeFile);
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 
-const fixedFilePaths = {
-  fixturesDir: path.join(__dirname, 'fixtures/hot-reload'),
-  outputDir: path.join(__dirname, '../dist'),
-  outputHtml: path.join(__dirname, '../dist', 'index.html'),
-  outputJs: 'index_bundle.js'
+const OUTPUT_DIR = path.join(__dirname, '../dist');
+const OUTPUT_HTML = path.join(OUTPUT_DIR, 'index.html');
+const FIXTURES_DIR = path.join(__dirname, 'fixtures/hot-reload');
+
+const EXPECTED_COMPILATION_FUDGE = {
+  htmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/]
 };
 
-const createTestFilePaths = (testDir) => ({
-  testDir: testDir,
-  entryFile: path.join(testDir, 'entry.js')
-});
+const appendWebpackVersion = (s, version) => s + ' (wepback v' + version + ')';
 
-const appendVersion = (s, version) => s + ' (wepback v' + version + ')';
-
-const createWebpackConfig = (testFilePaths) => ({
-  entry: testFilePaths.entryFile,
+const createWebpackConfig = (testDir) => ({
+  entry: path.join(testDir, 'entry.js'),
   output: {
-    path: fixedFilePaths.outputDir,
-    filename: fixedFilePaths.outputJs
+    path: OUTPUT_DIR,
+    filename: 'index_bundle.js'
   },
   module: {
     loaders: [
@@ -56,45 +53,11 @@ const createWebpackConfig = (testFilePaths) => ({
   ]
 });
 
-const createWatching = () => ({
-  eventCount: 0,
-  checkCompilation: false
-});
-
-const createWatchConfig = () => ({
-  aggregateTimeout: 300
-});
-
-const startWatching = (compiler, expectedHtmlContent, done) => {
+const copyFiles = (fromDir, toDir) => {
   return new Promise((resolve, reject) => {
-    try {
-      debug('starting watching');
-      const watching = createWatching();
-      const watcher = compiler.watch(createWatchConfig(), (err, stats) => {
-        debug('watch event ' + watching.eventCount++);
-        if (err) return reject(err);
-        if (watching.checkCompilation) {
-          debug('checking compilation for watch event ' + watching.eventCount);
-          checkCompilationResult(stats);
-          fs.readFile(fixedFilePaths.outputHtml, (err, data) => {
-            try {
-              if (err) return reject(err);
-              checkFileContents(data.toString(), expectedHtmlContent.shift());
-              resolve();
-            } finally {
-              if (expectedHtmlContent.length === 0) {
-                debug('closing watcher');
-                watcher.close(done);
-              }
-            }
-          });
-        } else {
-          resolve(watching);
-        }
-      });
-    } catch (err) {
-      reject(err);
-    }
+    copyDir(fromDir, toDir, (err) => {
+      (err) ? reject(err) : resolve(toDir);
+    });
   });
 };
 
@@ -115,48 +78,83 @@ const checkFileContents = (content, expectedContents) => {
   });
 };
 
-describe('Hot reload functionality', () => {
-  beforeEach((done) => {
-    rimraf(fixedFilePaths.outputDir, done);
-  });
-
-  multidepRequire.forEachVersion('webpack', function (version, webpack) {
-    it(appendVersion('test', version), (done) => {
-      const expectedHtmlContent = [
-        [/<style>[\s\S]*background: black;[\s\S]*<\/style>/]
-        // [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/]
-      ];
-      let testFilePaths;
-      temp.mkdir()
-      .then((testDir) => {
-        testFilePaths = createTestFilePaths(testDir);
-        return copyFiles(fixedFilePaths.fixturesDir, testFilePaths.testDir);
-      })
-      .then(() => {
-        const compiler = webpack(createWebpackConfig(testFilePaths));
-        return startWatching(compiler, expectedHtmlContent, done);
-      })
-      .then((watching) => {
-        debug('About to change file \'' + testFilePaths.entryFile + '\'');
-        watching.checkCompilation = true;
-        return writeToFile(
-          testFilePaths.entryFile,
-          '\'use strict\';require(\'./stylesheet2.css\');require(\'./index.js\');'
-        );
-      })
-      /*
-      .then(() => {
-        debug('About to change file \'' + testFilePaths.entryFile + '\'');
-        return writeToFile(
-          testFilePaths.entryFile,
-          '\'use strict\';require(\'./stylesheet1.css\');require(\'./index.js\');'
-        );
-      })
-      */
+const runTest = (webpack, expectedCompilations, done) => {
+  // there are always two watch events on first compile
+  // so add a dupliacte test
+  expectedCompilations.unshift(EXPECTED_COMPILATION_FUDGE);
+  temp.mkdir()
+    .then((testDir) => {
+      return copyFiles(FIXTURES_DIR, testDir);
+    })
+  .then((testDir) => {
+    const compiler = webpack(createWebpackConfig(testDir));
+    let eventCount = 0;
+    const watcher = compiler.watch({}, (err, stats) => {
+      debug('watch event ' + eventCount++);
+      expect(err).toBeFalsy();
+      checkCompilationResult(stats);
+      readFile(OUTPUT_HTML)
+        .then((data) => {
+          const expectedCompilation = expectedCompilations.shift();
+          checkFileContents(data.toString(), expectedCompilation.htmlContent);
+          if (expectedCompilations.length === 0) {
+            debug('closing watcher');
+            watcher.close(done);
+          } else if (expectedCompilation.nextChangeFile) {
+            debug('About to write to file \'' + expectedCompilation.nextChangeFile + '\'');
+            return writeFile(
+                path.join(testDir, expectedCompilation.nextChangeFile),
+                expectedCompilation.nextChangeFileContents);
+          }
+        })
       .catch((err) => {
         done.fail(err);
       });
     });
+  })
+  .catch((err) => {
+    done.fail(err);
+  });
+};
+
+describe('Hot reload functionality', () => {
+  beforeEach((done) => {
+    rimraf(OUTPUT_DIR, done);
+  });
+
+  multidepRequire.forEachVersion('webpack', function (version, webpack) {
+    it(appendWebpackVersion('change stylesheet in entry file', version), (done) => {
+      const expectedCompilations = [
+        {
+          htmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
+          nextChangeFile: 'entry.js',
+          nextChangeFileContents: '\'use strict\';require(\'./stylesheet2.css\');require(\'./index.js\');'
+        },
+        {
+          htmlContent: [/<style>[\s\S]*background: black;[\s\S]*<\/style>/]
+        }
+      ];
+      runTest(webpack, expectedCompilations, done);
+    });
+/*
+    it(appendWebpackVersion('change stylesheet in entry file and then back again', version), (done) => {
+      const expectedCompilations = [
+        {
+          htmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
+          nextChangeFile: 'entry.js',
+          nextChangeFileContents: '\'use strict\';require(\'./stylesheet2.css\');require(\'./index.js\');'
+        },
+        {
+          htmlContent: [/<style>[\s\S]*background: black;[\s\S]*<\/style>/],
+          nextChangeFile: 'entry.js',
+          nextChangeFileContents: '\'use strict\';require(\'./stylesheet1.css\');require(\'./index.js\');'
+        },
+        {
+          htmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/]
+        }
+      ];
+      runTest(webpack, expectedCompilations, done);
+    });
+*/
   });
 });
-
