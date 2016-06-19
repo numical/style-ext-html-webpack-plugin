@@ -19,9 +19,7 @@ Note: this is for inlining `<style>`'s only - if you wish to inline `<scripts>`'
 
 Installation
 ------------
-You must be running webpack v1.x on node v4.x or v5.x.
-
-__Note: hot module reloads do not work with this plugin on webpack 2 __ (yet).  
+You must be running webpack v1.x or 2.x on node v4.x or v5.x.
 
 Install the plugin with npm:
 ```shell
@@ -30,8 +28,7 @@ $ npm install --save-dev style-ext-html-webpack-plugin
 
 Basic Usage
 -----------
-The plugin must be added to the webpack config as both a plugin *and* as the final loader for the CSS assets you wish to be
-inlined:
+The plugin must be added to the webpack config as both a plugin *and* as the loader for the CSS assets you wish to be inlined:
 
 ```javascript
 module: {
@@ -40,7 +37,10 @@ module: {
   ]           
 },
 plugins: [
-  new HtmlWebpackPlugin(),
+  new HtmlWebpackPlugin(
+    ...
+    cache: false
+  ),
   new StyleExtHtmlWebpackPlugin()
 ]  
 ```
@@ -57,10 +57,25 @@ postcss: [
   require('autoprefixer')
 ],
 plugins: [
-  new HtmlWebpackPlugin(),
+  new HtmlWebpackPlugin({
+    ...
+    cache: false
+  }),
   new StyleExtHtmlWebpackPlugin()
 ]  
 ```
+
+If you wish to allow for hot module replacements either directly via webpack [`watch`](http://webpack.github.io/docs/tutorials/getting-started/#watch-mode) options or indirectly using [`webpack-dev-server`](http://webpack.github.io/docs/tutorials/getting-started/#development-server) then the `HtmlWebpackPlugin` must have its cache switched off:
+```javascript
+plugins: [
+  new HtmlWebpackPlugin({
+    ...
+    cache: false
+  }),
+  new StyleExtHtmlWebpackPlugin()
+]
+```
+
 
 Using with Non-Inlined CSS
 --------------------------
@@ -136,6 +151,16 @@ plugins: [
 ]
 ```
 
+Performance
+-----------
+v2.x of this plugin brought Webpack 2.x compatibility but at the price of potentially slower performance.
+Moreover, for hot module replacement, this plugin also requires that `HtmlWebpackPlugin`'s cache is
+switched off.
+If you consider performance unacceptable please [raise an
+issue](https://github.com/numical/style-ext-html-webpack-plugin/issues) giving your configuration.
+
+
+
 Debugging
 ---------
 If you have problems and want to sort them out yourself(!), this plugin has built-in debugging that
@@ -143,13 +168,14 @@ may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  A
 * `StyleExtHtmlWebpackPlugin:plugin` for the plugin;
 * `StyleExtHtmlWebpackPlugin:loader` for the loader;
 * `StyleExtHtmlWebpackPlugin:detail` for core values (note __verbose__!);
+* `StyleExtHtmlWebpackPlugin:hot-reload-spec` for instrumenting the hot reload tests;
 * or, for all of them: `StyleExtHtmlWebpackPlugin:*`
-
 
 
 Change History
 --------------
 
+* v2.0.0-beta - hot module reload working (with `HtmlWepbackPlugin` cache switched off)
 * v1.1.1 - hot module reload not working with webpack 2
 * v1.1.0 - now Webpack 2.x compatible
 * v1.0.7 - added warning that not compatible with Webpack 2
