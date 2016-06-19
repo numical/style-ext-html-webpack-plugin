@@ -1,10 +1,17 @@
 'use strict';
 
 const contentWrapper = require('./wrapper.js');
-const ReplaceSource = require('webpack-sources').ReplaceSource;
 const extractedCss = new WeakMap();
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:plugin');
 const detailDebug = require('debug')('StyleExtHtmlWebpackPlugin:detail');
+
+function createReplaceSource (asset) {
+  let lib = require('webpack-sources');
+  if (!lib) {
+    lib = require('webpack-core');
+  }
+  return new lib.ReplaceSource(asset, 'style-ext-html-webpack-plugin');
+}
 
 class StyleExtHtmlWebpackPlugin {
 
@@ -38,7 +45,7 @@ class StyleExtHtmlWebpackPlugin {
     const wrappedCss = contentWrapper.extractWrappedContent(source);
     if (wrappedCss.length > 0) {
       debug('file \'' + file + '\' contains css (use StyleExtHtmlWebpackPlugin:detail option to view)');
-      const replacement = new ReplaceSource(compilation.assets[file], 'style-ext-html-webpack-plugin');
+      const replacement = createReplaceSource(compilation.assets[file]);
       const css = wrappedCss.map((wrapped) => {
         detailDebug(wrapped.content);
         replacement.replace(

@@ -8,7 +8,7 @@ if (!global.Promise) {
 }
 
 // bump up timeout as tests with multiple compilations are slow
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
 // for debugging
 if (typeof v8debug === 'object') {
