@@ -1,5 +1,5 @@
-/* eslint-env jasmine */
 'use strict';
+/* eslint-env jasmine */
 
 // Workaround for css-loader issue
 // https://github.com/webpack/css-loader/issues/144
@@ -8,7 +8,7 @@ if (!global.Promise) {
 }
 
 // bump up timeout as tests with multiple compilations are slow
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
 
 // for debugging
 if (typeof v8debug === 'object') {
@@ -59,7 +59,7 @@ const run = (setupResults) => {
     try {
       const compiler = setupResults[1];
       const testCallback = setupResults[2];
-      compiler.watch({}, testCallback);
+      testCallback.watcher = compiler.watch({}, testCallback);
       resolve();
     } catch (err) {
       reject(err);
@@ -111,7 +111,7 @@ const createWebpackConfig = (testDir) => ({
 const createTestCallback = (testDir, testIterations, done) => {
   addStartupIterations(testIterations);
   let eventCount = 0;
-  return Promise.resolve((err, stats) => {
+  const callbackFn = (err, stats) => {
     debug('watch event ' + eventCount++);
     expect(err).toBeFalsy();
     checkCompilationResult(stats);
@@ -121,7 +121,7 @@ const createTestCallback = (testDir, testIterations, done) => {
         checkFileContents(data.toString(), testIteration.expectedHtmlContent);
         if (testIterations.length === 0) {
           debug('closing watcher after ' + eventCount + ' iterations');
-          done();
+          callbackFn.watcher.close(done);
         } else if (testIteration.nextFileToChange) {
           debug('About to write to file \'' + testIteration.nextFileToChange + '\'');
           return writeFile(
@@ -132,7 +132,8 @@ const createTestCallback = (testDir, testIterations, done) => {
       .catch((err) => {
         done.fail(err);
       });
-  });
+  };
+  return Promise.resolve(callbackFn);
 };
 
 const addStartupIterations = (testIterations) => {
