@@ -2,15 +2,17 @@
 
 const contentWrapper = require('./wrapper.js');
 const extractedCss = new WeakMap();
+const runtimeComment = require('./constants.js').RUNTIME_COMMENT;
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:plugin');
 const detailDebug = require('debug')('StyleExtHtmlWebpackPlugin:detail');
 
-function createReplaceSource (asset) {
-  let lib = require('webpack-sources');
-  if (!lib) {
-    lib = require('webpack-core');
-  }
-  return new lib.ReplaceSource(asset, 'style-ext-html-webpack-plugin');
+let ReplaceSource;
+try {
+  // assume webpack 2.x
+  ReplaceSource = require('webpack-sourcesXXX').ReplaceSource;
+} catch (err) {
+  // must be webpack 1.x
+  ReplaceSource = require('webpack-sources').ReplaceSource;
 }
 
 class StyleExtHtmlWebpackPlugin {
@@ -45,13 +47,10 @@ class StyleExtHtmlWebpackPlugin {
     const wrappedCss = contentWrapper.extractWrappedContent(source);
     if (wrappedCss.length > 0) {
       debug('file \'' + file + '\' contains css (use StyleExtHtmlWebpackPlugin:detail option to view)');
-      const replacement = createReplaceSource(compilation.assets[file]);
+      const replacement = new ReplaceSource(compilation.assets[file]);
       const css = wrappedCss.map((wrapped) => {
         detailDebug(wrapped.content);
-        replacement.replace(
-          wrapped.startIndex,
-          wrapped.endIndex,
-          '/* removed by style-ext-html-webpack-plugin */');
+        replacement.replace(wrapped.startIndex, wrapped.endIndex, runtimeComment);
         return wrapped.content;
       });
       extractedCss.set(compilation, css.concat(extractedCss.get(compilation) || []));

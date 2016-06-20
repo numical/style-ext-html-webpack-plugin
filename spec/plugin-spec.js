@@ -74,7 +74,7 @@ function appendVersion (s, version) {
   return s + ' (wepback v' + version + ')';
 }
 
-describe('Basic functionality', () => {
+describe('Plugin functionality: ', () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
   });

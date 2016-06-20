@@ -175,6 +175,7 @@ may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  A
 Change History
 --------------
 
+* v2.0.0-beta.1 - node 4.x fix and fixed handling of multiple scripts
 * v2.0.0-beta.0 - hot module reload working (with `HtmlWepbackPlugin` cache switched off)
 * v1.1.1 - hot module reload not working with webpack 2
 * v1.1.0 - now Webpack 2.x compatible
