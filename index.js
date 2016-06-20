@@ -1,19 +1,11 @@
 'use strict';
 
 const contentWrapper = require('./wrapper.js');
-const extractedCss = new WeakMap();
 const runtimeComment = require('./constants.js').RUNTIME_COMMENT;
+const extractedCss = new WeakMap();
+const ReplaceSource = require('webpack-sources').ReplaceSource;
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:plugin');
 const detailDebug = require('debug')('StyleExtHtmlWebpackPlugin:detail');
-
-let ReplaceSource;
-try {
-  // assume webpack 2.x
-  ReplaceSource = require('webpack-sources').ReplaceSource;
-} catch (err) {
-  // must be webpack 1.x
-  ReplaceSource = require('webpack-core').ReplaceSource;
-}
 
 class StyleExtHtmlWebpackPlugin {
 

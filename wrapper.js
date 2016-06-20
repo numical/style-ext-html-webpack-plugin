@@ -3,16 +3,22 @@
 const C = require('./constants.js');
 const ESCAPED_COMMENT_START = new RegExp(C.ESCAPED_COMMENT_START, 'g');
 const ESCAPED_COMMENT_END = new RegExp(C.ESCAPED_COMMENT_END, 'g');
+const ESCAPED_NEW_LINES = /\\n/g;
+const ESCAPED_SPEECH_MARKS = /\\"/g;
 
 const escapeComments = (s) => {
   return s.indexOf(C.COMMENT_START) > -1
-    ? s.replace(C.COMMENT_START_REGEXP, C.ESCAPED_COMMENT_START).replace(C.COMMENT_END_REGEXP, C.ESCAPED_COMMENT_END)
+    ? s.replace(C.COMMENT_START_REGEXP, C.ESCAPED_COMMENT_START)
+       .replace(C.COMMENT_END_REGEXP, C.ESCAPED_COMMENT_END)
     : s;
 };
 
 const unescapeComments = (s) => {
   return s.indexOf(C.ESCAPED_COMMENT_START) > -1
-    ? s.replace(ESCAPED_COMMENT_START, C.COMMENT_START).replace(ESCAPED_COMMENT_END, C.COMMENT_END)
+    ? s.replace(ESCAPED_COMMENT_START, C.COMMENT_START)
+       .replace(ESCAPED_COMMENT_END, C.COMMENT_END)
+       .replace(ESCAPED_NEW_LINES, '\n')
+       .replace(ESCAPED_SPEECH_MARKS, '"')
     : s;
 };
 

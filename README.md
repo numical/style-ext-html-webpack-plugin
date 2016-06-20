@@ -19,7 +19,12 @@ Note: this is for inlining `<style>`'s only - if you wish to inline `<scripts>`'
 
 Installation
 ------------
-You must be running webpack v1.x or 2.x on node v4.x or v5.x.
+__Please note that unless you fancy being a beta tester please use [version
+1.1.1](https://github.com/numical/style-ext-html-webpack-plugin/tree/v1.1.1) for now.__
+
+Version 2.x is under beta test and will bring full webpack 2 compatibility.
+
+Currently you must be running webpack v1.x on node v4.x or v5.x.
 
 Install the plugin with npm:
 ```shell
@@ -175,6 +180,7 @@ may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  A
 Change History
 --------------
 
+* v2.0.0.beta.3 - warnings about beta testing (!), debug enhancements, and better unescaping
 * v2.0.0.beta.2 - Travis timeout and tag spacing fixes
 * v2.0.0-beta.1 - node 4.x fix and fixed handling of multiple scripts
 * v2.0.0-beta.0 - hot module reload working (with `HtmlWepbackPlugin` cache switched off)
