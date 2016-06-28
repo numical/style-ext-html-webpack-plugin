@@ -159,6 +159,15 @@ const checkFileContents = (content, expectedContents) => {
   });
 };
 
+// TODO - this is necessary to prevent Jasmine async timeouts, but why?
+const pauseThen = (version, callback) => {
+  if (version.startsWith('1.')) {
+    setTimeout(callback, 10);
+  } else {
+    callback();
+  }
+};
+
 describe('Hot reload functionality: ', () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
@@ -180,7 +189,7 @@ describe('Hot reload functionality: ', () => {
       test(webpack, testIterations, done);
     });
 
-    it(appendWebpackVersion('edit stylesheet in entry file', version), (done) => {
+    it(appendWebpackVersion('edit stylesheet referenced by entry file', version), (done) => {
       const testIterations = [
         {
           expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
@@ -191,12 +200,13 @@ describe('Hot reload functionality: ', () => {
           expectedHtmlContent: [/<style>[\s\S]*background: yellow;[\s\S]*<\/style>/]
         }
       ];
-      debug(appendWebpackVersion('edit stylesheet in entry file', version));
-      test(webpack, testIterations, done);
+      pauseThen(version, () => {
+        debug(appendWebpackVersion('edit stylesheet referenced by entry file', version));
+        test(webpack, testIterations, done);
+      });
     });
 
-    /* TODO - why does this occasionally timeout?
-    it(appendWebpackVersion('change stylesheet in entry file and then back again', version), (done) => {
+    it(appendWebpackVersion('change stylesheet referenced by entry file and then back again', version), (done) => {
       const testIterations = [
         {
           expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
@@ -212,9 +222,10 @@ describe('Hot reload functionality: ', () => {
           expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/]
         }
       ];
-      debug(appendWebpackVersion('change stylesheet in entry file and then back again', version));
-      test(webpack, testIterations, done);
+      pauseThen(version, () => {
+        debug(appendWebpackVersion('change stylesheet referenced by entry file and then back again', version));
+        test(webpack, testIterations, done);
+      });
     });
-    */
   });
 });

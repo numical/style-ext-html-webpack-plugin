@@ -103,10 +103,10 @@ describe('Plugin functionality: ', () => {
         done);
     });
 
-    it(appendVersion('inlines a single stylesheet with comments', version), (done) => {
+    it(appendVersion('inlines a single tricky stylesheet', version), (done) => {
       testPlugin(
         webpack,
-        { entry: path.join(__dirname, 'fixtures/one_stylesheet_with_comments.js'),
+        { entry: path.join(__dirname, 'fixtures/one_tricky_stylesheet.js'),
           output: {
             path: OUTPUT_DIR,
             filename: 'index_bundle.js'
@@ -121,7 +121,11 @@ describe('Plugin functionality: ', () => {
             new StyleExtHtmlWebpackPlugin()
           ]
         },
-        [/<style>[\s\S]*\/\u002a deliberate British spelling to be corrected by postcss processing \u002a\/[\s\S]*colour: grey;[\s\S]*<\/style>/],
+        [
+          /<style>[\s\S]*\/\u002a import statements[\s\S]*\u0040import url\("https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower"[\s\S]*<\/style>/,
+          /<style>[\s\S]*\/\u002a deliberate British spelling to be corrected by postcss processing \u002a\/[\s\S]*colour: grey;[\s\S]*<\/style>/,
+          /<style>[\s\S]*\[contenteditable='true'\][\s\S]*<\/style>/
+        ],
         [/(removed by style-ext-html-webpack-plugin){1}/],
         done);
     });
@@ -306,7 +310,7 @@ describe('Plugin functionality: ', () => {
           },
           plugins: [
             new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin({minify: true})
+            new StyleExtHtmlWebpackPlugin({minify: {processImport: false}})
           ]
         },
         [/<style>body{background:snow}<\/style>/],
@@ -331,11 +335,11 @@ describe('Plugin functionality: ', () => {
           ],
           plugins: [
             new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin({minify: true})
+            new StyleExtHtmlWebpackPlugin({minify: {processImport: false}})
           ]
         },
         // note US spelling
-        [/<style>body{background:snow;color:gray}<\/style>/],
+        [/<style>body{background:snow;color:gray}[\s\S]*Indie\+Flower[\s\S]*\[contenteditable=true\]:active,\[contenteditable=true\]:focus{border:none}<\/style>/],
         done);
     });
 
@@ -356,7 +360,7 @@ describe('Plugin functionality: ', () => {
             new HtmlWebpackPlugin(),
             new StyleExtHtmlWebpackPlugin({
               minify: {
-                keepBreaks: true // note: this is not chaning css-clean behaviour - to investigate
+                keepBreaks: true // note: this is not chaining css-clean behaviour - to investigate
               }
             })
           ]

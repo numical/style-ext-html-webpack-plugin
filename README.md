@@ -24,7 +24,7 @@ __Please note that unless you fancy being a beta tester please use [version
 
 Version 2.x is under beta test and will bring full webpack 2 compatibility.
 
-Currently you must be running webpack v1.x on node v4.x or v5.x.
+Currently you must be running webpack v1.x on node v4+.
 
 Install the plugin with npm:
 ```shell

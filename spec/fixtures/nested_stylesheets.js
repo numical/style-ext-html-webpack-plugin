@@ -1,5 +1,5 @@
 'use strict';
 
 require('./stylesheet1.css');
-require('./one_stylesheet_with_comments.js');
+require('./one_tricky_stylesheet.js');
 require('./index.js');
