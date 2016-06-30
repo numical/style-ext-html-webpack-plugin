@@ -35,9 +35,9 @@ const FIXTURES_DIR = path.join(__dirname, 'fixtures/hot-reload');
 
 const appendWebpackVersion = (s, version) => s + ' (wepback v' + version + ')';
 
-const test = (webpack, testIterations, done) => {
+const test = (version, webpack, testIterations, done) => {
   createTestDirectory()
-    .then(setup.bind(null, webpack, testIterations, done))
+    .then(setup.bind(null, version, webpack, testIterations, done))
     .then(run)
     .catch((err) => {
       done.fail(err);
@@ -46,11 +46,11 @@ const test = (webpack, testIterations, done) => {
 
 const createTestDirectory = temp.mkdir;
 
-const setup = (webpack, testIterations, done, testDir) => {
+const setup = (version, webpack, testIterations, done, testDir) => {
   return Promise.all([
     createTestFiles(testDir),
     createCompiler(testDir, webpack),
-    createTestCallback(testDir, testIterations, done)
+    createTest(version, testDir, testIterations, done)
   ]);
 };
 
@@ -58,8 +58,8 @@ const run = (setupResults) => {
   return new Promise((resolve, reject) => {
     try {
       const compiler = setupResults[1];
-      const testCallback = setupResults[2];
-      testCallback.watcher = compiler.watch({}, testCallback);
+      const testMetaData = setupResults[2];
+      testMetaData.watcher = compiler.watch({}, testMetaData.callbackFn);
       resolve();
     } catch (err) {
       reject(err);
@@ -108,32 +108,50 @@ const createWebpackConfig = (testDir) => ({
 // this callback is the core functionality of this test suite
 // it uses the 'testIterations' to check the compiled HTML
 // and to fire off the next file change and resultant recompilation
-const createTestCallback = (testDir, testIterations, done) => {
-  addStartupIterations(testIterations);
-  let eventCount = 0;
+const createTest = (version, testDir, testIterations, done) => {
+  const meta = {
+    iterationCount: 0,
+    callbackFn: null,
+    watcher: null,
+    v1StartupHack: null
+  };
   const callbackFn = (err, stats) => {
-    debug('watch event ' + eventCount++ + ', remaining iterations = ' + testIterations.length);
+    if (meta.v1StartupHack) {
+      clearTimeout(meta.v1StartupHack);
+      meta.v1StartupHack = null;
+      debug('v1 startup hack cleared');
+    }
+    debug('watch iteration ' + meta.iterationCount + ', remaining iterations = ' + testIterations.length);
     expect(err).toBeFalsy();
-    checkCompilationResult(stats);
+    if (stats) checkCompilationResult(stats);
     readFile(OUTPUT_HTML)
       .then((data) => {
+        meta.iterationCount++;
         const testIteration = testIterations.shift();
         checkFileContents(data.toString(), testIteration.expectedHtmlContent);
         if (testIterations.length === 0) {
-          debug('closing watcher after ' + eventCount + ' iterations');
-          callbackFn.watcher.close(done);
+          debug('closing watcher after ' + meta.iterationCount + ' iterations');
+          meta.watcher.close(done);
         } else if (testIteration.nextFileToChange) {
           debug('About to write to file \'' + testIteration.nextFileToChange + '\'');
           return writeFile(
               path.join(testDir, testIteration.nextFileToChange),
               testIteration.nextFileToChangeContents);
+        } else {
+          debug('no file to write but test iterations left');
+          if (version.startsWith('1') && meta.iterationCount === 1) {
+            debug('adding v1 startup hack');
+            meta.v1StartupHack = addv1StartupHack(meta);
+          }
         }
       })
       .catch((err) => {
         done.fail(err);
       });
   };
-  return Promise.resolve(callbackFn);
+  meta.callbackFn = callbackFn;
+  addStartupIterations(testIterations);
+  return Promise.resolve(meta);
 };
 
 const addStartupIterations = (testIterations) => {
@@ -159,13 +177,25 @@ const checkFileContents = (content, expectedContents) => {
   });
 };
 
-// TODO - this is necessary to prevent Jasmine async timeouts, but why?
-const pauseThen = (version, callback) => {
-  if (version.startsWith('1.')) {
-    setTimeout(callback, 10);
-  } else {
-    callback();
-  }
+/* WTF!?
+ * What/why 'addv1StartupHack'?
+ * Webpack v.2 always calls the 'watch' function's callback TWICE on startup.
+ * This is the point of the 'addStartupIterations' function in this Spec.
+ * Webpack v.1 sometimes also does this, but unfortunately can also only call
+ * the callback ONCE on startup. (This non-determinism is sort-of hinted at in
+ * https://github.com/webpack/docs/wiki/node.js-api).
+ * This hack gives Webpack v1 the chance to call the callback a second time, but
+ * if it does not, the hack simulates that second call.
+ * Note that, to prevent too many calls, this setTimeout must be cleared in the
+ * callback function itself.
+ * Yuk, yuk, yuk.
+ */
+const addv1StartupHack = (testMetaData) => {
+  const callback = () => {
+    debug('v1 startup hack forcing test callback...');
+    testMetaData.callbackFn();
+  };
+  return setTimeout(callback, jasmine.DEFAULT_TIMEOUT_INTERVAL / 2);
 };
 
 describe('Hot reload functionality: ', () => {
@@ -186,7 +216,7 @@ describe('Hot reload functionality: ', () => {
         }
       ];
       debug(appendWebpackVersion('change referenced stylesheet in entry file', version));
-      test(webpack, testIterations, done);
+      test(version, webpack, testIterations, done);
     });
 
     it(appendWebpackVersion('edit stylesheet referenced by entry file', version), (done) => {
@@ -200,10 +230,8 @@ describe('Hot reload functionality: ', () => {
           expectedHtmlContent: [/<style>[\s\S]*background: yellow;[\s\S]*<\/style>/]
         }
       ];
-      pauseThen(version, () => {
-        debug(appendWebpackVersion('edit stylesheet referenced by entry file', version));
-        test(webpack, testIterations, done);
-      });
+      debug(appendWebpackVersion('edit stylesheet referenced by entry file', version));
+      test(version, webpack, testIterations, done);
     });
 
     it(appendWebpackVersion('change stylesheet referenced by entry file and then back again', version), (done) => {
@@ -222,10 +250,8 @@ describe('Hot reload functionality: ', () => {
           expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/]
         }
       ];
-      pauseThen(version, () => {
-        debug(appendWebpackVersion('change stylesheet referenced by entry file and then back again', version));
-        test(webpack, testIterations, done);
-      });
+      debug(appendWebpackVersion('change stylesheet referenced by entry file and then back again', version));
+      test(version, webpack, testIterations, done);
     });
   });
 });

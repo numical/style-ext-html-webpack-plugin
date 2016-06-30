@@ -1,7 +1,7 @@
 'use strict';
 
 const contentWrapper = require('./wrapper.js');
-const runtimeComment = require('./constants.js').RUNTIME_COMMENT;
+const runtimeComment = require('./constants.js').STRINGS.RUNTIME_COMMENT;
 const extractedCss = new WeakMap();
 const ReplaceSource = require('webpack-sources').ReplaceSource;
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:plugin');

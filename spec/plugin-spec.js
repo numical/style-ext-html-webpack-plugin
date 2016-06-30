@@ -21,6 +21,7 @@ const StyleExtHtmlWebpackPlugin = require('../index.js');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 
+const RUNTIME_COMMENT = require('../constants.js').REGEXPS.RUNTIME_COMMENT;
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
 function testPlugin (webpack, webpackConfig, expectedHtmlContent, expectedJsContent, done) {
@@ -99,7 +100,7 @@ describe('Plugin functionality: ', () => {
           ]
         },
         [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
-        [/(removed by style-ext-html-webpack-plugin){1}/],
+        [RUNTIME_COMMENT],
         done);
     });
 
@@ -126,7 +127,7 @@ describe('Plugin functionality: ', () => {
           /<style>[\s\S]*\/\u002a deliberate British spelling to be corrected by postcss processing \u002a\/[\s\S]*colour: grey;[\s\S]*<\/style>/,
           /<style>[\s\S]*\[contenteditable='true'\][\s\S]*<\/style>/
         ],
-        [/(removed by style-ext-html-webpack-plugin){1}/],
+        [RUNTIME_COMMENT],
         done);
     });
 
@@ -150,7 +151,7 @@ describe('Plugin functionality: ', () => {
         },
         // note British spelling
         [/<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/],
-        [/(removed by style-ext-html-webpack-plugin){1}/],
+        [RUNTIME_COMMENT],
         done);
     });
 
@@ -174,7 +175,7 @@ describe('Plugin functionality: ', () => {
         },
         // note British spelling
         [/<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/],
-        [/(removed by style-ext-html-webpack-plugin){1}/],
+        [RUNTIME_COMMENT],
         done);
     });
 
@@ -230,7 +231,7 @@ describe('Plugin functionality: ', () => {
         ],
         // js contains second stylesheet content
         [
-          /(removed by style-ext-html-webpack-plugin){1}/,
+          RUNTIME_COMMENT,
           /(colour: grey){1}/
         ],
         done);
@@ -258,7 +259,7 @@ describe('Plugin functionality: ', () => {
         },
         [/<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
         [
-          /(removed by style-ext-html-webpack-plugin){1}/,
+          RUNTIME_COMMENT,
           /(removed by extract-text-webpack-plugin){1}/
         ],
         done);
@@ -289,7 +290,7 @@ describe('Plugin functionality: ', () => {
           /^(?!colour: grey)/
         ],
         [
-          /(removed by style-ext-html-webpack-plugin){1}/,
+          RUNTIME_COMMENT,
           /(removed by extract-text-webpack-plugin){1}/
         ],
         done);
