@@ -1,4 +1,3 @@
-Style Extension for HTML Webpack Plugin
 ========================================
 [![npm version](https://badge.fury.io/js/style-ext-html-webpack-plugin.svg)](http://badge.fury.io/js/style-ext-html-webpack-plugin) [![Dependency Status](https://david-dm.org/numical/style-ext-html-webpack-plugin.svg)](https://david-dm.org/numical/style-ext-html-webpack-plugin) [![Build status](https://travis-ci.org/numical/style-ext-html-webpack-plugin.svg)](https://travis-ci.org/numical/style-ext-html-webpack-plugin) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
 
@@ -19,12 +18,7 @@ Note: this is for inlining `<style>`'s only - if you wish to inline `<scripts>`'
 
 Installation
 ------------
-__Please note that unless you fancy being a beta tester please use [version
-1.1.1](https://github.com/numical/style-ext-html-webpack-plugin/tree/v1.1.1) for now.__
-
-Version 2.x is under beta test and will bring full webpack 2 compatibility.
-
-Currently you must be running webpack v1.x on node v4+.
+You must be running webpack v1.x or v2.x on node v4,5,6+.
 
 Install the plugin with npm:
 ```shell
@@ -159,8 +153,7 @@ plugins: [
 Performance
 -----------
 v2.x of this plugin brought Webpack 2.x compatibility but at the price of potentially slower performance.
-Moreover, for hot module replacement, this plugin also requires that `HtmlWebpackPlugin`'s cache is
-switched off.
+Moreover, for hot module replacement, this plugin also requires that `HtmlWebpackPlugin`'s cache is switched off.
 If you consider performance unacceptable please [raise an
 issue](https://github.com/numical/style-ext-html-webpack-plugin/issues) giving your configuration.
 
@@ -180,6 +173,7 @@ may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  A
 Change History
 --------------
 
+* v2.0.0 - webpack 1.x and 2.x compatible, including hot reloading
 * v2.0.0.beta.3 - warnings about beta testing (!), debug enhancements, and better unescaping
 * v2.0.0.beta.2 - Travis timeout and tag spacing fixes
 * v2.0.0-beta.1 - node 4.x fix and fixed handling of multiple scripts
