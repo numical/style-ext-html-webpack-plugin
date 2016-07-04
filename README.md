@@ -64,7 +64,12 @@ plugins: [
 ]  
 ```
 
-If you wish to allow for hot module replacements either directly via webpack [`watch`](http://webpack.github.io/docs/tutorials/getting-started/#watch-mode) options or indirectly using [`webpack-dev-server`](http://webpack.github.io/docs/tutorials/getting-started/#development-server) then the `HtmlWebpackPlugin` must have its cache switched off:
+
+Hot Module Replacement
+----------------------
+If you wish to allow for hot module replacements either directly via webpack [`watch`](http://webpack.github.io/docs/tutorials/getting-started/#watch-mode) options or indirectly using [`webpack-dev-server`](http://webpack.github.io/docs/tutorials/getting-started/#development-server) then there are two further configuration constraints:
+1. `HtmlWebpackPlugin` must have its cache switched off;
+2. any Webpack [`devtool`](https://webpack.github.io/docs/configuration.html#devtool) settings must not include any `eval` option:
 ```javascript
 plugins: [
   new HtmlWebpackPlugin({
@@ -72,7 +77,8 @@ plugins: [
     cache: false
   }),
   new StyleExtHtmlWebpackPlugin()
-]
+],
+devtool: 'cheap-source-map' // fine but 'eval-source-map' would not be
 ```
 
 
@@ -173,6 +179,7 @@ may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  A
 Change History
 --------------
 
+* v2.0.1 - added explicit guard against use of `devtool eval` option
 * v2.0.0 - webpack 1.x and 2.x compatible, including hot reloading
 * v2.0.0.beta.3 - warnings about beta testing (!), debug enhancements, and better unescaping
 * v2.0.0.beta.2 - Travis timeout and tag spacing fixes

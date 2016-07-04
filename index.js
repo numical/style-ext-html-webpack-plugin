@@ -15,6 +15,15 @@ class StyleExtHtmlWebpackPlugin {
 
   apply (compiler) {
     const extractCss = this.extractCss.bind(this);
+
+    compiler.plugin('watch-run', (watching, callback) => {
+      let err;
+      if (compiler.options.devtool && compiler.options.devtool.indexOf('eval' > -1)) {
+        err = new Error('StyleExtHtmlWebpack plugin incompatible with \'eval\' devtool option');
+      }
+      callback(err);
+    });
+
     compiler.plugin('compilation', (compilation) => {
       compilation.plugin('optimize-chunk-assets', function (chunks, callback) {
         debug('optimize-chunk-assets');
@@ -25,6 +34,7 @@ class StyleExtHtmlWebpackPlugin {
         });
         callback();
       });
+
       compilation.plugin('html-webpack-plugin-after-html-processing', (htmlPluginData, callback) => {
         debug('html-webpack-plugin-after-html-processing');
         this.addInlineCss(compilation, htmlPluginData, callback);
