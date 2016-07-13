@@ -18,7 +18,7 @@ class StyleExtHtmlWebpackPlugin {
 
     compiler.plugin('watch-run', (watching, callback) => {
       let err;
-      if (compiler.options.devtool && compiler.options.devtool.indexOf('eval' > -1)) {
+      if (compiler.options.devtool && compiler.options.devtool.indexOf('eval') > -1) {
         err = new Error('StyleExtHtmlWebpack plugin incompatible with \'eval\' devtool option');
       }
       callback(err);
