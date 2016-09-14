@@ -179,6 +179,7 @@ may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  A
 Change History
 --------------
 
+* v2.0.3 - updated dependency versions, reclassified some dependencies
 * v2.0.2 - merged pull request by 7pass fixing 2.0.1 - thanks!
 * v2.0.1 - added explicit guard against use of `devtool eval` option
 * v2.0.0 - webpack 1.x and 2.x compatible, including hot reloading
