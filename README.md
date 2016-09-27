@@ -179,6 +179,7 @@ may help.  It uses the [debug](https://github.com/visionmedia/debug) utility.  A
 Change History
 --------------
 
+* v2.0.5 - modified test to use dynavers with webpack 1.13.2 and 2.1.0-beta.16
 * v2.0.4 - fixed jasmine dependency to explicit version v2.4.1 due to [bug](https://github.com/jasmine/jasmine-npm/issues/90) in v2.5
 * v2.0.3 - updated dependency versions, reclassified some dependencies
 * v2.0.2 - merged pull request by 7pass fixing 2.0.1 - thanks!

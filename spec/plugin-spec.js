@@ -1,26 +1,26 @@
 /* eslint-env jasmine */
 'use strict';
 
-// Workaround for css-loader issue
-// https://github.com/webpack/css-loader/issues/144
-if (!global.Promise) {
-  require('es6-promise').polyfill();
-}
-
 // for debugging
 if (typeof v8debug === 'object') {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 }
 
+const SpecReporter = require('jasmine-spec-reporter');
+jasmine.getEnv().addReporter(new SpecReporter());
+
 const path = require('path');
 const fs = require('fs');
-const multidepRequire = require('multidep')('spec/multidep.json');
+const VersionContext = require('./VersionContext.js');
 const rimraf = require('rimraf');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 
+const VERSION_CONTEXTS = [
+  new VersionContext('1.13.2', '1.0.1', ['style-loader', 'css-loader']),
+  new VersionContext('2.1.0-beta.16', '2.0.0-beta.4', [{fallbackLoader: 'style-loader', loader: 'css-loader'}])
+];
 const RUNTIME_COMMENT = require('../constants.js').REGEXPS.RUNTIME_COMMENT;
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -71,363 +71,365 @@ function testContent (content, expectedContents) {
   });
 }
 
-function appendVersion (s, version) {
-  return s + ' (wepback v' + version + ')';
-}
-
 describe('Plugin functionality: ', () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  multidepRequire.forEachVersion('webpack', function (version, webpack) {
-    it(appendVersion('inlines a single stylesheet', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
-            ]
-          },
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin()
-          ]
-        },
-        [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
-        [RUNTIME_COMMENT],
-        done);
-    });
+  VERSION_CONTEXTS.forEach(versionContext => {
+    versionContext.set();
+    var webpack = require('webpack');
+    var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-    it(appendVersion('inlines a single tricky stylesheet', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/one_tricky_stylesheet.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+    describe('Webpack v' + versionContext.webpackVersion + ':', () => {
+      it('inlines a single stylesheet', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin()
             ]
           },
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin()
-          ]
-        },
-        [
-          /<style>[\s\S]*\/\u002a import statements[\s\S]*\u0040import url\("https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower"[\s\S]*<\/style>/,
-          /<style>[\s\S]*\/\u002a deliberate British spelling to be corrected by postcss processing \u002a\/[\s\S]*colour: grey;[\s\S]*<\/style>/,
-          /<style>[\s\S]*\[contenteditable='true'\][\s\S]*<\/style>/
-        ],
-        [RUNTIME_COMMENT],
-        done);
-    });
+          [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
+          [RUNTIME_COMMENT],
+          done);
+      });
 
-    it(appendVersion('inlines multiple stylesheets from a single source', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+      it('inlines a single tricky stylesheet', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/one_tricky_stylesheet.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin()
             ]
           },
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin()
-          ]
-        },
-        // note British spelling
-        [/<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/],
-        [RUNTIME_COMMENT],
-        done);
-    });
-
-    it(appendVersion('inlines multiple stylesheets from multiple sources', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/nested_stylesheets.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
-            ]
-          },
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin()
-          ]
-        },
-        // note British spelling
-        [/<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/],
-        [RUNTIME_COMMENT],
-        done);
-    });
-
-    it(appendVersion('inlining works with postcss-loader', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline('postcss-loader')}
-            ]
-          },
-          postcss: [
-            require('postcss-spiffing')
+          [
+            /<style>[\s\S]*\/\u002a import statements[\s\S]*\u0040import url\("https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower"[\s\S]*<\/style>/,
+            /<style>[\s\S]*\/\u002a deliberate British spelling to be corrected by postcss processing \u002a\/[\s\S]*colour: grey;[\s\S]*<\/style>/,
+            /<style>[\s\S]*\[contenteditable='true'\][\s\S]*<\/style>/
           ],
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin()
-          ]
-        },
-        // note British spelling converted to US spelling
-        [/<style>[\s\S]*background: snow;[\s\S]*color: gray;[\s\S]*<\/style>/],
-        done);
-    });
+          [RUNTIME_COMMENT],
+          done);
+      });
 
-    it(appendVersion('inlining works alongside webpack css loaders', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
-              { test: /stylesheet2.css/, loader: 'style-loader!css-loader' }
+      it('inlines multiple stylesheets from a single source', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin()
             ]
           },
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin()
-          ]
-        },
-        // html contains first stylesheet content but none of the second
-        [
-          /<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
-          /^(?!.colour: grey)/
-        ],
-        // js contains second stylesheet content
-        [
-          RUNTIME_COMMENT,
-          /(colour: grey){1}/
-        ],
-        done);
-    });
+          // note British spelling
+          [/<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/],
+          [RUNTIME_COMMENT],
+          done);
+      });
 
-    it(appendVersion('inlining works alongside linked stylesheets', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
-              { test: /stylesheet2.css/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') }
+      it('inlines multiple stylesheets from multiple sources', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/nested_stylesheets.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin()
             ]
           },
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin(),
-            new ExtractTextPlugin('styles.css')
-          ]
-        },
-        [/<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
-        [
-          RUNTIME_COMMENT,
-          /(removed by extract-text-webpack-plugin){1}/
-        ],
-        done);
-    });
+          // note British spelling
+          [/<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/],
+          [RUNTIME_COMMENT],
+          done);
+      });
 
-    it(appendVersion('inlining works alongside linked stylesheets - more general RegEx', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              { test: /stylesheet1\.css$/, loader: StyleExtHtmlWebpackPlugin.inline() },
-              { test: /stylesheet[2-9]\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader') }
+      it('inlining works with postcss-loader', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline('postcss-loader')}
+              ]
+            },
+            postcss: [
+              require('postcss-spiffing')
+            ],
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin()
             ]
           },
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin(),
-            new ExtractTextPlugin('styles.css')
-          ]
-        },
-        [
-          /<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
-          /^(?!colour: grey)/
-        ],
-        [
-          RUNTIME_COMMENT,
-          /(removed by extract-text-webpack-plugin){1}/
-        ],
-        done);
-    });
+          // note British spelling converted to US spelling
+          [/<style>[\s\S]*background: snow;[\s\S]*color: gray;[\s\S]*<\/style>/],
+          done);
+      });
 
-    it(appendVersion('can minify a single stylesheet', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+      it('inlining works alongside webpack css loaders', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
+                { test: /stylesheet2.css/, loader: 'style-loader!css-loader' }
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin()
             ]
           },
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin({minify: {processImport: false}})
-          ]
-        },
-        [/<style>body{background:snow}<\/style>/],
-        done);
-    });
-
-    it(appendVersion('can minify multiple stylesheets after post-css processing', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline('postcss-loader')}
-            ]
-          },
-          postcss: [
-            require('postcss-spiffing')
+          // html contains first stylesheet content but none of the second
+          [
+            /<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
+            /^(?!.colour: grey)/
           ],
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin({minify: {processImport: false}})
-          ]
-        },
-        // note US spelling
-        [/<style>body{background:snow;color:gray}[\s\S]*Indie\+Flower[\s\S]*\[contenteditable=true\]:active,\[contenteditable=true\]:focus{border:none}<\/style>/],
-        done);
-    });
+          // js contains second stylesheet content
+          [
+            RUNTIME_COMMENT,
+            /(colour: grey){1}/
+          ],
+          done);
+      });
 
-    it(appendVersion('can pass minification options', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+      it('inlining works alongside linked stylesheets', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
+                { test: /stylesheet2.css/, loader: versionContext.extractTextLoader(ExtractTextPlugin) }
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin(),
+              new ExtractTextPlugin('styles.css')
             ]
           },
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin({
-              minify: {
-                keepBreaks: true // note: this is not chaining css-clean behaviour - to investigate
-              }
-            })
-          ]
-        },
-        [/<style>body{background:snow}<\/style>/],
-        done);
-    });
+          [/<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
+          [
+            RUNTIME_COMMENT,
+            /(removed by extract-text-webpack-plugin){1}/
+          ],
+          done);
+      });
 
-    it(appendVersion('plays happily with other plugins using same html plugin event', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+      it('inlining works alongside linked stylesheets - more general RegEx', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                { test: /stylesheet1\.css$/, loader: StyleExtHtmlWebpackPlugin.inline() },
+                { test: /stylesheet[2-9]\.css$/, loader: versionContext.extractTextLoader(ExtractTextPlugin) }
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin(),
+              new ExtractTextPlugin('styles.css')
             ]
           },
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin({
-              minify: {
-                keepBreaks: true // note: this is not chaning css-clean behaviour - to investigate
-              }
-            }),
-            new ScriptExtHtmlWebpackPlugin({
-              defaultAttribute: 'async'
-            })
-          ]
-        },
-        [
-          /<style>body{background:snow}<\/style>/,
-          /<script src="index_bundle.js" type="text\/javascript" async><\/script>/
-        ],
-        done);
-    });
+          [
+            /<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
+            /^(?!colour: grey)/
+          ],
+          [
+            RUNTIME_COMMENT,
+            /(removed by extract-text-webpack-plugin){1}/
+          ],
+          done);
+      });
 
-    it(appendVersion('works with template styles', version), (done) => {
-      testPlugin(
-        webpack,
-        { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
-          output: {
-            path: OUTPUT_DIR,
-            filename: 'index_bundle.js'
-          },
-          module: {
-            loaders: [
-              {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+      it('can minify a single stylesheet', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin({minify: {processImport: false}})
             ]
           },
-          plugins: [
-            new HtmlWebpackPlugin({
-              template: path.join(__dirname, 'fixtures/html.template')
-            }),
-            new StyleExtHtmlWebpackPlugin()
-          ]
-        },
-        [
-          /<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
-          /<style>div { background: blue }<\/style>/,
-          /<div id='template_content'>/
-        ],
-        done);
+          [/<style>body{background:snow}<\/style>/],
+          done);
+      });
+
+      it('can minify multiple stylesheets after post-css processing', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline('postcss-loader')}
+              ]
+            },
+            postcss: [
+              require('postcss-spiffing')
+            ],
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin({minify: {processImport: false}})
+            ]
+          },
+          // note US spelling
+          [/<style>body{background:snow;color:gray}[\s\S]*Indie\+Flower[\s\S]*\[contenteditable=true\]:active,\[contenteditable=true\]:focus{border:none}<\/style>/],
+          done);
+      });
+
+      it('can pass minification options', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin({
+                minify: {
+                  keepBreaks: true // note: this is not chaining css-clean behaviour - to investigate
+                }
+              })
+            ]
+          },
+          [/<style>body{background:snow}<\/style>/],
+          done);
+      });
+
+      it('plays happily with other plugins using same html plugin event', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin(),
+              new StyleExtHtmlWebpackPlugin({
+                minify: {
+                  keepBreaks: true // note: this is not chaning css-clean behaviour - to investigate
+                }
+              }),
+              new ScriptExtHtmlWebpackPlugin({
+                defaultAttribute: 'async'
+              })
+            ]
+          },
+          [
+            /<style>body{background:snow}<\/style>/,
+            /<script src="index_bundle.js" type="text\/javascript" async><\/script>/
+          ],
+          done);
+      });
+
+      it('works with template styles', (done) => {
+        testPlugin(
+          webpack,
+          { entry: path.join(__dirname, 'fixtures/one_stylesheet.js'),
+            output: {
+              path: OUTPUT_DIR,
+              filename: 'index_bundle.js'
+            },
+            module: {
+              loaders: [
+                {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+              ]
+            },
+            plugins: [
+              new HtmlWebpackPlugin({
+                template: path.join(__dirname, 'fixtures/html.template')
+              }),
+              new StyleExtHtmlWebpackPlugin()
+            ]
+          },
+          [
+            /<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
+            /<style>div { background: blue }<\/style>/,
+            /<div id='template_content'>/
+          ],
+          done);
+      });
     });
   });
 });

@@ -18,7 +18,7 @@ if (typeof v8debug === 'object') {
 
 const path = require('path');
 const fs = require('fs');
-const multidepRequire = require('multidep')('spec/multidep.json');
+const VersionContext = require('./VersionContext.js');
 const rimraf = require('rimraf');
 const temp = require('fs-temp/promise');
 const copyDir = require('ncp');
@@ -29,11 +29,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:hot-reload-spec');
 
+const VERSION_CONTEXTS = [
+  new VersionContext('1.13.2', '1.0.1', ['style-loader', 'css-loader']),
+  new VersionContext('2.1.0-beta.16', '2.0.0-beta.4', [{fallbackLoader: 'style-loader', loader: 'css-loader'}])
+];
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 const OUTPUT_HTML = path.join(OUTPUT_DIR, 'index.html');
 const FIXTURES_DIR = path.join(__dirname, 'fixtures/hot-reload');
-
-const appendWebpackVersion = (s, version) => s + ' (wepback v' + version + ')';
 
 const test = (version, webpack, testIterations, done) => {
   createTestDirectory()
@@ -203,55 +205,61 @@ describe('Hot reload functionality: ', () => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  multidepRequire.forEachVersion('webpack', function (version, webpack) {
-    it(appendWebpackVersion('change referenced stylesheet in entry file', version), (done) => {
-      const testIterations = [
-        {
-          expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
-          nextFileToChange: 'entry.js',
-          nextFileToChangeContents: '\'use strict\';require(\'./stylesheet2.css\');require(\'./index.js\');'
-        },
-        {
-          expectedHtmlContent: [/<style>[\s\S]*background: black;[\s\S]*<\/style>/]
-        }
-      ];
-      debug(appendWebpackVersion('change referenced stylesheet in entry file', version));
-      test(version, webpack, testIterations, done);
-    });
+  VERSION_CONTEXTS.forEach(versionContext => {
+    versionContext.set();
+    var webpack = require('webpack');
+    var version = versionContext.webpackVersion;
 
-    it(appendWebpackVersion('edit stylesheet referenced by entry file', version), (done) => {
-      const testIterations = [
-        {
-          expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
-          nextFileToChange: 'stylesheet1.css',
-          nextFileToChangeContents: 'body { background: yellow; }'
-        },
-        {
-          expectedHtmlContent: [/<style>[\s\S]*background: yellow;[\s\S]*<\/style>/]
-        }
-      ];
-      debug(appendWebpackVersion('edit stylesheet referenced by entry file', version));
-      test(version, webpack, testIterations, done);
-    });
+    describe('Webpack v' + versionContext.webpackVersion + ':', () => {
+      it('change referenced stylesheet in entry file', (done) => {
+        const testIterations = [
+          {
+            expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
+            nextFileToChange: 'entry.js',
+            nextFileToChangeContents: '\'use strict\';require(\'./stylesheet2.css\');require(\'./index.js\');'
+          },
+          {
+            expectedHtmlContent: [/<style>[\s\S]*background: black;[\s\S]*<\/style>/]
+          }
+        ];
+        debug('change referenced stylesheet in entry file');
+        test(version, webpack, testIterations, done);
+      });
 
-    it(appendWebpackVersion('change stylesheet referenced by entry file and then back again', version), (done) => {
-      const testIterations = [
-        {
-          expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
-          nextFileToChange: 'entry.js',
-          nextFileToChangeContents: '\'use strict\';require(\'./stylesheet2.css\');require(\'./index.js\');'
-        },
-        {
-          expectedHtmlContent: [/<style>[\s\S]*background: black;[\s\S]*<\/style>/],
-          nextFileToChange: 'entry.js',
-          nextFileToChangeContents: '\'use strict\';require(\'./stylesheet1.css\');require(\'./index.js\');'
-        },
-        {
-          expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/]
-        }
-      ];
-      debug(appendWebpackVersion('change stylesheet referenced by entry file and then back again', version));
-      test(version, webpack, testIterations, done);
+      it('edit stylesheet referenced by entry file', (done) => {
+        const testIterations = [
+          {
+            expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
+            nextFileToChange: 'stylesheet1.css',
+            nextFileToChangeContents: 'body { background: yellow; }'
+          },
+          {
+            expectedHtmlContent: [/<style>[\s\S]*background: yellow;[\s\S]*<\/style>/]
+          }
+        ];
+        debug('edit stylesheet referenced by entry file');
+        test(version, webpack, testIterations, done);
+      });
+
+      it('change stylesheet referenced by entry file and then back again', (done) => {
+        const testIterations = [
+          {
+            expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
+            nextFileToChange: 'entry.js',
+            nextFileToChangeContents: '\'use strict\';require(\'./stylesheet2.css\');require(\'./index.js\');'
+          },
+          {
+            expectedHtmlContent: [/<style>[\s\S]*background: black;[\s\S]*<\/style>/],
+            nextFileToChange: 'entry.js',
+            nextFileToChangeContents: '\'use strict\';require(\'./stylesheet1.css\');require(\'./index.js\');'
+          },
+          {
+            expectedHtmlContent: [/<style>[\s\S]*background: snow;[\s\S]*<\/style>/]
+          }
+        ];
+        debug('change stylesheet referenced by entry file and then back again');
+        test(version, webpack, testIterations, done);
+      });
     });
   });
 });

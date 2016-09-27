@@ -1,4 +1,5 @@
 /node_modules/
+/dynavers_modules/
 /dist/
 /spec/multidep
 npm-debug.log
