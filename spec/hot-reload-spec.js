@@ -31,7 +31,7 @@ const debug = require('debug')('StyleExtHtmlWebpackPlugin:hot-reload-spec');
 
 const VERSION_CONTEXTS = [
   new VersionContext('1.13.2', '1.0.1', ['style-loader', 'css-loader']),
-  new VersionContext('2.1.0-beta.16', '2.0.0-beta.4', [{fallbackLoader: 'style-loader', loader: 'css-loader'}])
+  new VersionContext('2.1.0-beta.20', '2.0.0-beta.4', [{fallbackLoader: 'style-loader', loader: 'css-loader'}])
 ];
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 const OUTPUT_HTML = path.join(OUTPUT_DIR, 'index.html');
