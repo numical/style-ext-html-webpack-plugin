@@ -12,10 +12,10 @@
   "scripts": {
     "pretest": "semistandard & install-module-versions dynavers.json",
     "test": "jasmine",
-    "testplugin": "jasmine ./spec/plugin-spec.js",
+    "test-core": "jasmine ./spec/core-spec.js",
     "debug": "DEBUG=StyleExtHtmlWebpackPlugin:* jasmine",
     "node-debug": "DEBUG=StyleExtHtmlWebpackPlugin:* node-debug jasmine",
-    "node-debug-plugin": "node-debug jasmine ./spec/plugin-spec.js"
+    "node-debug-core": "node-debug jasmine ./spec/core-spec.js"
   },
   "repository": {
     "type": "git",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "css-loader": "^0.25.0",
     "denodeify": "^1.2.1",
-    "dynavers": "0.0.2",
+    "dynavers": "^0.2.0",
     "fs-temp": "^1.1.0",
     "html-webpack-plugin": "^2.21.0",
     "jasmine": "2.5.2",

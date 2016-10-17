@@ -1,12 +1,6 @@
 'use strict';
 /* eslint-env jasmine */
 
-// Workaround for css-loader issue
-// https://github.com/webpack/css-loader/issues/144
-if (!global.Promise) {
-  require('es6-promise').polyfill();
-}
-
 // bump up timeout as tests with multiple compilations are slow
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
@@ -18,28 +12,24 @@ if (typeof v8debug === 'object') {
 
 const path = require('path');
 const fs = require('fs');
-const VersionContext = require('./VersionContext.js');
+const setModuleVersion = require('dynavers')('dynavers.json');
 const rimraf = require('rimraf');
 const temp = require('fs-temp/promise');
 const copyDir = require('ncp');
 const makePromise = require('denodeify');
 const readFile = makePromise(fs.readFile);
 const writeFile = makePromise(fs.writeFile);
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:hot-reload-spec');
 
-const VERSION_CONTEXTS = [
-  new VersionContext('1.13.2', '1.0.1', ['style-loader', 'css-loader']),
-  new VersionContext('2.1.0-beta.20', '2.0.0-beta.4', [{fallbackLoader: 'style-loader', loader: 'css-loader'}])
-];
+const WEBPACK_VERSIONS = require('./helpers/webpackVersions.js');
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 const OUTPUT_HTML = path.join(OUTPUT_DIR, 'index.html');
 const FIXTURES_DIR = path.join(__dirname, 'fixtures/hot-reload');
 
-const test = (version, webpack, testIterations, done) => {
+const test = (version, testIterations, done) => {
   createTestDirectory()
-    .then(setup.bind(null, version, webpack, testIterations, done))
+    .then(setup.bind(null, version, testIterations, done))
     .then(run)
     .catch((err) => {
       done.fail(err);
@@ -48,10 +38,10 @@ const test = (version, webpack, testIterations, done) => {
 
 const createTestDirectory = temp.mkdir;
 
-const setup = (version, webpack, testIterations, done, testDir) => {
+const setup = (version, testIterations, done, testDir) => {
   return Promise.all([
     createTestFiles(testDir),
-    createCompiler(testDir, webpack),
+    createCompiler(testDir),
     createTest(version, testDir, testIterations, done)
   ]);
 };
@@ -77,7 +67,8 @@ const createTestFiles = (testDir) => {
   });
 };
 
-const createCompiler = (testDir, webpack) => {
+const createCompiler = (testDir) => {
+  const webpack = require('webpack');
   return new Promise((resolve, reject) => {
     try {
       const compiler = webpack(createWebpackConfig(testDir));
@@ -88,23 +79,26 @@ const createCompiler = (testDir, webpack) => {
   });
 };
 
-const createWebpackConfig = (testDir) => ({
-  entry: path.join(testDir, 'entry.js'),
-  output: {
-    path: OUTPUT_DIR,
-    filename: 'index_bundle.js'
-  },
-  module: {
-    loaders: [
-    {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+const createWebpackConfig = (testDir) => {
+  const HtmlWebpackPlugin = require('html-webpack-plugin');
+  return {
+    entry: path.join(testDir, 'entry.js'),
+    output: {
+      path: OUTPUT_DIR,
+      filename: 'index_bundle.js'
+    },
+    module: {
+      loaders: [
+      {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline()}
+      ]
+    },
+    plugins: [
+      // note: cacheing must be OFF
+      new HtmlWebpackPlugin({cache: false}),
+      new StyleExtHtmlWebpackPlugin()
     ]
-  },
-  plugins: [
-    // note: cacheing must be OFF
-    new HtmlWebpackPlugin({cache: false}),
-    new StyleExtHtmlWebpackPlugin()
-  ]
-});
+  };
+};
 
 // creates the callback function called every time webpack recompiles
 // this callback is the core functionality of this test suite
@@ -205,12 +199,10 @@ describe('Hot reload functionality: ', () => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  VERSION_CONTEXTS.forEach(versionContext => {
-    versionContext.set();
-    var webpack = require('webpack');
-    var version = versionContext.webpackVersion;
+  WEBPACK_VERSIONS.forEach(webpackVersion => {
+    setModuleVersion('webpack', webpackVersion, true);
 
-    describe('Webpack v' + versionContext.webpackVersion + ':', () => {
+    describe('Webpack v' + webpackVersion + ':', () => {
       it('change referenced stylesheet in entry file', (done) => {
         const testIterations = [
           {
@@ -223,7 +215,7 @@ describe('Hot reload functionality: ', () => {
           }
         ];
         debug('change referenced stylesheet in entry file');
-        test(version, webpack, testIterations, done);
+        test(webpackVersion, testIterations, done);
       });
 
       it('edit stylesheet referenced by entry file', (done) => {
@@ -238,7 +230,7 @@ describe('Hot reload functionality: ', () => {
           }
         ];
         debug('edit stylesheet referenced by entry file');
-        test(version, webpack, testIterations, done);
+        test(webpackVersion, testIterations, done);
       });
 
       it('change stylesheet referenced by entry file and then back again', (done) => {
@@ -258,7 +250,7 @@ describe('Hot reload functionality: ', () => {
           }
         ];
         debug('change stylesheet referenced by entry file and then back again');
-        test(version, webpack, testIterations, done);
+        test(webpackVersion, testIterations, done);
       });
     });
   });

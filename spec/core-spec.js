@@ -1,88 +1,28 @@
 /* eslint-env jasmine */
-/* global since:false */
 'use strict';
 
-// for debugging
-if (typeof v8debug === 'object') {
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
-}
-
-require('jasmine2-custom-message');
-const SpecReporter = require('jasmine-spec-reporter');
-jasmine.getEnv().addReporter(new SpecReporter());
-
 const path = require('path');
-const fs = require('fs');
-const VersionContext = require('./VersionContext.js');
+const setModuleVersion = require('dynavers')('dynavers.json');
 const rimraf = require('rimraf');
-// const HtmlWebpackPlugin = require('html-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
+const testPlugin = require('./helpers/testPlugin.js');
 
-const VERSION_CONTEXTS = [
-  new VersionContext('1.13.2', '1.0.1', ['style-loader', 'css-loader']),
-  new VersionContext('2.1.0-beta.20', '2.0.0-beta.4', [{fallbackLoader: 'style-loader', loader: 'css-loader'}])
-];
+const WEBPACK_VERSIONS = require('./helpers/webpackVersions');
 const RUNTIME_COMMENT = require('../constants.js').REGEXPS.RUNTIME_COMMENT;
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
-function testPlugin (webpack, webpackConfig, expectedHtmlContent, expectedJsContent, done) {
-  if (typeof expectedJsContent === 'function') {
-    done = expectedJsContent;
-    expectedJsContent = [];
-  }
-  webpack(webpackConfig, function (err, stats) {
-    expect(err).toBeFalsy();
-    const compilationErrors = (stats.compilation.errors || []).join('\n');
-    expect(compilationErrors).toBe('');
-    const compilationWarnings = (stats.compilation.warnings || []).join('\n');
-    expect(compilationWarnings).toBe('');
-
-    testFileContent(expectedHtmlContent, 'index.html', done);
-    testFileContent(expectedJsContent, 'index_bundle.js', done);
-
-    done();
-  });
-}
-
-function testFileContent (expectedContent, file, done) {
-  if (expectedContent.length > 0) {
-    const content = getFileContent(file);
-    if (content === null) {
-      return done();
-    }
-    testContent(content, expectedContent, 'expect ' + file + ' contents to match ' + expectedContent);
-  }
-}
-
-function getFileContent (file) {
-  const fileExists = fs.existsSync(path.join(OUTPUT_DIR, file));
-  expect(fileExists).toBe(true);
-  return fileExists ? fs.readFileSync(path.join(OUTPUT_DIR, file)).toString() : null;
-}
-
-function testContent (content, expectedContents, msg) {
-  expectedContents.forEach((expectedContent) => {
-    if (expectedContent instanceof RegExp) {
-      since(msg).expect(content).toMatch(expectedContent);
-    } else {
-      since(msg).expect(content).toContain(expectedContent);
-    }
-  });
-}
-
-describe('Plugin functionality: ', () => {
+describe('Core functionality: ', () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  VERSION_CONTEXTS.forEach(versionContext => {
-    versionContext.set();
+  WEBPACK_VERSIONS.forEach(webpackVersion => {
+    setModuleVersion('webpack', webpackVersion, true);
     var webpack = require('webpack');
-    var ExtractTextPlugin = require('extract-text-webpack-plugin');
     var HtmlWebpackPlugin = require('html-webpack-plugin');
 
-    describe('Webpack v' + versionContext.webpackVersion + ':', () => {
+    describe('Webpack v' + webpackVersion + ':', () => {
       it('inlines a single stylesheet', (done) => {
         testPlugin(
           webpack,
@@ -235,65 +175,6 @@ describe('Plugin functionality: ', () => {
           [
             RUNTIME_COMMENT,
             /(colour: grey){1}/
-          ],
-          done);
-      });
-
-      xit('inlining works alongside linked stylesheets', (done) => {
-        testPlugin(
-          webpack,
-          { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
-            output: {
-              path: OUTPUT_DIR,
-              filename: 'index_bundle.js'
-            },
-            module: {
-              loaders: [
-                { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
-                { test: /stylesheet2.css/, loader: versionContext.extractTextLoader(ExtractTextPlugin) }
-              ]
-            },
-            plugins: [
-              new HtmlWebpackPlugin(),
-              new StyleExtHtmlWebpackPlugin(),
-              new ExtractTextPlugin('styles.css')
-            ]
-          },
-          [/<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
-          [
-            RUNTIME_COMMENT,
-            /(removed by extract-text-webpack-plugin){1}/
-          ],
-          done);
-      });
-
-      xit('inlining works alongside linked stylesheets - more general RegEx', (done) => {
-        testPlugin(
-          webpack,
-          { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
-            output: {
-              path: OUTPUT_DIR,
-              filename: 'index_bundle.js'
-            },
-            module: {
-              loaders: [
-                { test: /stylesheet1\.css$/, loader: StyleExtHtmlWebpackPlugin.inline() },
-                { test: /stylesheet[2-9]\.css$/, loader: versionContext.extractTextLoader(ExtractTextPlugin) }
-              ]
-            },
-            plugins: [
-              new HtmlWebpackPlugin(),
-              new StyleExtHtmlWebpackPlugin(),
-              new ExtractTextPlugin('styles.css')
-            ]
-          },
-          [
-            /<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
-            /^(?!colour: grey)/
-          ],
-          [
-            RUNTIME_COMMENT,
-            /(removed by extract-text-webpack-plugin){1}/
           ],
           done);
       });
