@@ -22,7 +22,7 @@ const writeFile = makePromise(fs.writeFile);
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const debug = require('debug')('StyleExtHtmlWebpackPlugin:hot-reload-spec');
 
-const WEBPACK_VERSIONS = require('./helpers/webpackVersions.js');
+const VERSIONS = require('./helpers/versions.js');
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 const OUTPUT_HTML = path.join(OUTPUT_DIR, 'index.html');
 const FIXTURES_DIR = path.join(__dirname, 'fixtures/hot-reload');
@@ -199,10 +199,10 @@ describe('Hot reload functionality: ', () => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  WEBPACK_VERSIONS.forEach(webpackVersion => {
-    setModuleVersion('webpack', webpackVersion, true);
+  VERSIONS.forEach(version => {
+    setModuleVersion('webpack', version.webpack, true);
 
-    describe('Webpack v' + webpackVersion + ':', () => {
+    describe('Webpack v' + version.webpack + ':', () => {
       it('change referenced stylesheet in entry file', (done) => {
         const testIterations = [
           {
@@ -215,7 +215,7 @@ describe('Hot reload functionality: ', () => {
           }
         ];
         debug('change referenced stylesheet in entry file');
-        test(webpackVersion, testIterations, done);
+        test(version.webpack, testIterations, done);
       });
 
       it('edit stylesheet referenced by entry file', (done) => {
@@ -230,7 +230,7 @@ describe('Hot reload functionality: ', () => {
           }
         ];
         debug('edit stylesheet referenced by entry file');
-        test(webpackVersion, testIterations, done);
+        test(version.webpack, testIterations, done);
       });
 
       it('change stylesheet referenced by entry file and then back again', (done) => {
@@ -250,7 +250,7 @@ describe('Hot reload functionality: ', () => {
           }
         ];
         debug('change stylesheet referenced by entry file and then back again');
-        test(webpackVersion, testIterations, done);
+        test(version.webpack, testIterations, done);
       });
     });
   });

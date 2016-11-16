@@ -8,7 +8,7 @@ const StyleExtHtmlWebpackPlugin = require('../index.js');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const testPlugin = require('./helpers/testPlugin.js');
 
-const WEBPACK_VERSIONS = require('./helpers/webpackVersions');
+const VERSIONS = require('./helpers/versions');
 const RUNTIME_COMMENT = require('../constants.js').REGEXPS.RUNTIME_COMMENT;
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -17,12 +17,12 @@ describe('Core functionality: ', () => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  WEBPACK_VERSIONS.forEach(webpackVersion => {
-    setModuleVersion('webpack', webpackVersion, true);
+  VERSIONS.forEach(version => {
+    setModuleVersion('webpack', version.webpack, true);
     var webpack = require('webpack');
     var HtmlWebpackPlugin = require('html-webpack-plugin');
 
-    describe('Webpack v' + webpackVersion + ':', () => {
+    describe('Webpack v' + version.webpack + ':', () => {
       it('inlines a single stylesheet', (done) => {
         testPlugin(
           webpack,
