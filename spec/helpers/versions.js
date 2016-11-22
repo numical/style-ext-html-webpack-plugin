@@ -1,7 +1,7 @@
 'use strict';
 
 const webpack1 = {
-  webpack: '1.13.2',
+  webpack: '1.13.3',
   extractText: '1.0.1',
   extractTextLoader: ['style-loader', 'css-loader']
 };
