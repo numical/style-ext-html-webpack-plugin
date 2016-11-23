@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const OUTPUT_DIR = path.join(__dirname, '../../dist');
 
-function testPlugin (webpack, webpackConfig, expectedHtmlContent, expectedJsContent, done) {
+function testPlugin (webpack, webpackConfig, expectedHtmlContent, expectedJsContent, expectedFiles, done) {
   if (typeof expectedJsContent === 'function') {
     done = expectedJsContent;
     expectedJsContent = [];
@@ -18,11 +18,26 @@ function testPlugin (webpack, webpackConfig, expectedHtmlContent, expectedJsCont
     const compilationWarnings = (stats.compilation.warnings || []).join('\n');
     expect(compilationWarnings).toBe('');
 
+    testFilesExist(expectedFiles);
     testFileContent(expectedHtmlContent, 'index.html', done);
     testFileContent(expectedJsContent, 'index_bundle.js', done);
 
     done();
   });
+}
+
+function testFilesExist (expectedFiles) {
+  if (expectedFiles.length > 0) {
+    expectedFiles.forEach((file) => {
+      testFileExists(file);
+    });
+  }
+}
+
+function testFileExists (file) {
+  const fileExists = fs.existsSync(path.join(OUTPUT_DIR, file));
+  since('file ' + file + ' should exist').expect(fileExists).toBe(true);
+  return fileExists;
 }
 
 function testFileContent (expectedContent, file, done) {
@@ -36,8 +51,7 @@ function testFileContent (expectedContent, file, done) {
 }
 
 function getFileContent (file) {
-  const fileExists = fs.existsSync(path.join(OUTPUT_DIR, file));
-  since('file ' + file + ' should exist').expect(fileExists).toBe(true);
+  const fileExists = testFileExists(file);
   return fileExists ? fs.readFileSync(path.join(OUTPUT_DIR, file)).toString() : null;
 }
 

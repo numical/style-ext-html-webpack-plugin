@@ -20,3 +20,5 @@ const webpack2 = {
 };
 
 module.exports = [webpack1, webpack2];
+module.exports.webpack1 = webpack1;
+module.exports.webpack2 = webpack2;

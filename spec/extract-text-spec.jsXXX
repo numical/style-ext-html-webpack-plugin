@@ -67,6 +67,7 @@ describe('Functionality alongside ExtractTextPlugin: ', () => {
             RUNTIME_COMMENT,
             /(removed by extract-text-webpack-plugin){1}/
           ],
+          [],
           done);
       });
 
@@ -89,6 +90,7 @@ describe('Functionality alongside ExtractTextPlugin: ', () => {
             RUNTIME_COMMENT,
             /(removed by extract-text-webpack-plugin){1}/
           ],
+          [],
           done);
       });
     });
