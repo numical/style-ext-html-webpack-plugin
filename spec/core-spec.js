@@ -9,7 +9,7 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const testPlugin = require('./helpers/testPlugin.js');
 
 const VERSIONS = require('./helpers/versions');
-const RUNTIME_COMMENT = require('../constants.js').REGEXPS.RUNTIME_COMMENT;
+const RUNTIME_COMMENT = require('../lib/constants.js').REGEXPS.RUNTIME_COMMENT;
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
 const baseConfig = (stylesheet) => {

@@ -5,9 +5,7 @@
   "main": "index.js",
   "files": [
     "index.js",
-    "loader.js",
-    "wrapper.js",
-    "constants.js"
+    "./lib"
   ],
   "scripts": {
     "pretest": "semistandard & install-module-versions dynavers.json",

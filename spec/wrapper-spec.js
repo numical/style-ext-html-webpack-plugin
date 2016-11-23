@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
 'use strict';
 
-const C = require('../constants.js');
+const C = require('../lib/constants.js');
 
 const SHORT_CONTENT = 'abcd/*efg*/hijklmn/*opq*/rstuvwxyz';
 const WRAPPED_SHORT_CONTENT = ' /* style-ext-html-webpack-plugin:start: ' + JSON.stringify('abcdstyle-ext-html-webpack-plugin:commentstart:efg:style-ext-html-webpack-plugin:commentendhijklmnstyle-ext-html-webpack-plugin:commentstart:opq:style-ext-html-webpack-plugin:commentendrstuvwxyz') + ' :style-ext-html-webpack-plugin:end */ ';
@@ -9,7 +9,7 @@ const WRAPPED_SHORT_CONTENT = ' /* style-ext-html-webpack-plugin:start: ' + JSON
 const CONTENT = 'Lorem ipsum dolor sit amet, /*consectetur adipiscing elit*/, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut /*aliquip*/ ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu /*fugiat nulla pariatur.*/ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum';
 const WRAPPED_CONTENT = ' /* style-ext-html-webpack-plugin:start: ' + JSON.stringify('Lorem ipsum dolor sit amet, style-ext-html-webpack-plugin:commentstart:consectetur adipiscing elit:style-ext-html-webpack-plugin:commentend, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut style-ext-html-webpack-plugin:commentstart:aliquip:style-ext-html-webpack-plugin:commentend ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu style-ext-html-webpack-plugin:commentstart:fugiat nulla pariatur.:style-ext-html-webpack-plugin:commentend Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum') + ' :style-ext-html-webpack-plugin:end */ ';
 
-const wrapper = require('../wrapper.js');
+const wrapper = require('../lib/wrapper.js');
 
 describe('Wrapper functionality: ', () => {
   it('wraps short content', () => {
