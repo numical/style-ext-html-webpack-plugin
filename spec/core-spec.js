@@ -30,8 +30,8 @@ const baseConfig = (stylesheet) => {
   };
 };
 
-const buildConfig = (...configs) => {
-  return Object.assign({}, ...configs);
+const buildConfig = function () {
+  return Object.assign.apply({}, arguments);
 };
 
 describe('Core functionality: ', () => {
@@ -117,10 +117,7 @@ describe('Core functionality: ', () => {
                 loaders: [
                   {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline('postcss-loader')}
                 ]
-              },
-              postcss: [
-                require('postcss-spiffing')
-              ]
+              }
             }
           ),
           // note British spelling converted to US spelling
@@ -183,9 +180,6 @@ describe('Core functionality: ', () => {
                   {test: /\.css$/, loader: StyleExtHtmlWebpackPlugin.inline('postcss-loader')}
                 ]
               },
-              postcss: [
-                require('postcss-spiffing')
-              ],
               plugins: [
                 new HtmlWebpackPlugin(),
                 new StyleExtHtmlWebpackPlugin({minify: {processImport: false}})

@@ -12,10 +12,11 @@
   "scripts": {
     "pretest": "semistandard & install-module-versions dynavers.json",
     "test": "jasmine",
-    "test-core": "jasmine ./spec/core-spec.js",
+    "test:core": "jasmine ./spec/core-spec.js",
+    "test:extract": "jasmine ./spec/extract-text-spec.js",
     "debug": "DEBUG=StyleExtHtmlWebpackPlugin:* jasmine",
-    "node-debug": "DEBUG=StyleExtHtmlWebpackPlugin:* node-debug jasmine",
-    "node-debug-core": "node-debug jasmine ./spec/core-spec.js"
+    "node:debug": "DEBUG=StyleExtHtmlWebpackPlugin:* node-debug jasmine",
+    "node:debug:core": "node-debug jasmine ./spec/core-spec.js"
   },
   "repository": {
     "type": "git",

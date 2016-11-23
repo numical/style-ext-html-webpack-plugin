@@ -7,16 +7,29 @@ const rimraf = require('rimraf');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const testPlugin = require('./helpers/testPlugin.js');
 
-/*
-const VERSION_CONTEXTS = [
-  new VersionContext('1.13.2', '1.0.1', ['style-loader', 'css-loader']),
-  new VersionContext('2.1.0-beta.20', '2.0.0-beta.4', [{fallbackLoader: 'style-loader', loader: 'css-loader'}])
-];
-*/
-
 const VERSIONS = require('./helpers/versions');
 const RUNTIME_COMMENT = require('../constants.js').REGEXPS.RUNTIME_COMMENT;
 const OUTPUT_DIR = path.join(__dirname, '../dist');
+
+const baseConfig = (extractTextLoader) => {
+  return {
+    entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
+    output: {
+      path: path.join(__dirname, '../dist'),
+      filename: 'index_bundle.js'
+    },
+    module: {
+      loaders: [
+        { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
+        extractTextLoader
+      ]
+    }
+  };
+};
+
+const buildConfig = (...configs) => {
+  return Object.assign({}, ...configs);
+};
 
 describe('Functionality alongside ExtractTextPlugin: ', () => {
   beforeEach((done) => {
@@ -26,31 +39,29 @@ describe('Functionality alongside ExtractTextPlugin: ', () => {
   VERSIONS.forEach(version => {
     setModuleVersion('webpack', version.webpack, false);
     setModuleVersion('extract-text-webpack-plugin', version.extractText, true);
-    var webpack = require('webpack');
-    var ExtractTextPlugin = require('extract-text-webpack-plugin');
-    var HtmlWebpackPlugin = require('html-webpack-plugin');
+    const webpack = require('webpack');
+    const ExtractTextPlugin = require('extract-text-webpack-plugin');
+    const HtmlWebpackPlugin = require('html-webpack-plugin');
+    const basePlugins = () => ({
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new StyleExtHtmlWebpackPlugin(),
+        new ExtractTextPlugin('styles.css')
+      ]
+    });
 
     describe('Webpack v' + version.webpack + ':', () => {
       it('inlining works alongside linked stylesheets', (done) => {
+        const extractTextLoader = {
+          test: /stylesheet2.css/,
+          loader: version.extractTextLoader(ExtractTextPlugin)
+        };
         testPlugin(
           webpack,
-          { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
-            output: {
-              path: OUTPUT_DIR,
-              filename: 'index_bundle.js'
-            },
-            module: {
-              loaders: [
-                { test: /stylesheet1.css/, loader: StyleExtHtmlWebpackPlugin.inline() },
-                { test: /stylesheet2.css/, loader: version.extractTextLoader }
-              ]
-            },
-            plugins: [
-              new HtmlWebpackPlugin(),
-              new StyleExtHtmlWebpackPlugin(),
-              new ExtractTextPlugin('styles.css')
-            ]
-          },
+          buildConfig(
+            baseConfig(extractTextLoader),
+            basePlugins()
+          ),
           [/<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/],
           [
             RUNTIME_COMMENT,
@@ -60,25 +71,16 @@ describe('Functionality alongside ExtractTextPlugin: ', () => {
       });
 
       it('inlining works alongside linked stylesheets - more general RegEx', (done) => {
+        const extractTextLoader = {
+          test: /stylesheet[2-9]\.css/,
+          loader: version.extractTextLoader(ExtractTextPlugin)
+        };
         testPlugin(
           webpack,
-          { entry: path.join(__dirname, 'fixtures/two_stylesheets.js'),
-            output: {
-              path: OUTPUT_DIR,
-              filename: 'index_bundle.js'
-            },
-            module: {
-              loaders: [
-                { test: /stylesheet1\.css$/, loader: StyleExtHtmlWebpackPlugin.inline() },
-                { test: /stylesheet[2-9]\.css$/, loader: version.extractTextLoader }
-              ]
-            },
-            plugins: [
-              new HtmlWebpackPlugin(),
-              new StyleExtHtmlWebpackPlugin(),
-              new ExtractTextPlugin('styles.css')
-            ]
-          },
+          buildConfig(
+            baseConfig(extractTextLoader),
+            basePlugins()
+          ),
           [
             /<link href="styles.css" rel="stylesheet">[\s\S]*<style>[\s\S]*background: snow;[\s\S]*<\/style>/,
             /^(?!colour: grey)/
