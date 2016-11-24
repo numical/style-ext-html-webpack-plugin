@@ -36,7 +36,7 @@ describe('Web font functionality: ', () => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  it('works with ExtractText', (done) => {
+  fit('works with ExtractText', (done) => {
     testPlugin(
       webpack,
       buildConfig(

@@ -15,7 +15,8 @@
     "test:webfont": "jasmine ./spec/web-font-spec.js",
     "debug": "DEBUG=StyleExtHtmlWebpackPlugin:* jasmine",
     "node:debug": "DEBUG=StyleExtHtmlWebpackPlugin:* node-debug jasmine",
-    "node:debug:core": "node-debug jasmine ./spec/core-spec.js"
+    "node:debug:core": "DEBUG=core node-debug jasmine ./spec/core-spec.js",
+    "node:debug:webfont": "DEBUG=webfont node-debug jasmine ./spec/web-font-spec.js"
   },
   "repository": {
     "type": "git",

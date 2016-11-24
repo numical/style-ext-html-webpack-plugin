@@ -1,7 +1,7 @@
 /* fonts  */
 @font-face {
   font-family: 'Indie-Flower';
-  src: url('./Indie-Flower.woff2');
+  src: url(./Indie-Flower.woff2);
 }
 
 body {
