@@ -14,21 +14,39 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 
-const RUNTIME_COMMENT = require('../lib/constants.js').REGEXPS.RUNTIME_COMMENT;
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
-const baseConfig = (stylesheet) => {
+const baseConfig = () => {
   return {
-    entry: path.join(__dirname, 'fixtures/' + stylesheet),
+    entry: path.join(__dirname, 'fixtures/one_stylesheet_with_web_font.js'),
     output: {
       path: OUTPUT_DIR,
       filename: 'index_bundle.js'
+    },
+    plugins: [
+      new HtmlWebpackPlugin(),
+      new ExtractTextWebpackPlugin('styles.css')
+    ],
+    module: {
+      loaders: [
+        {
+          test: /\.css$/,
+          loader: ExtractTextWebpackPlugin.extract({
+            fallbackLoader: 'style-loader',
+            loader: 'css-loader'
+          })
+        },
+        {
+          test: /\.woff2$/,
+          loader: 'url-loader',
+          options: {
+            limit: 10000,
+            name: '[name].[ext]'
+          }
+        }
+      ]
     }
   };
-};
-
-const buildConfig = function () {
-  return Object.assign.apply({}, arguments);
 };
 
 describe('Web font functionality: ', () => {
@@ -36,37 +54,11 @@ describe('Web font functionality: ', () => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  fit('works with ExtractText', (done) => {
+  it('works with ExtractText', (done) => {
+    const config = baseConfig();
     testPlugin(
       webpack,
-      buildConfig(
-        baseConfig('one_stylesheet_with_web_font.js'),
-        {
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new ExtractTextWebpackPlugin('styles.css')
-          ],
-          module: {
-            loaders: [
-              {
-                test: /\.css$/,
-                loader: ExtractTextWebpackPlugin.extract({
-                  fallbackLoader: 'style-loader',
-                  loader: 'css-loader'
-                })
-              },
-              {
-                test: /\.woff2$/,
-                loader: 'url-loader',
-                options: {
-                  limit: 10000,
-                  name: '[name].[ext]'
-                }
-              }
-            ]
-          }
-        }
-      ),
+      config,
       [],
       [
         /(removed by extract-text-webpack-plugin){1}/
@@ -78,38 +70,18 @@ describe('Web font functionality: ', () => {
     done);
   });
 
-  it('works with StyleExt', (done) => {
+  fit('works with StyleExt', (done) => {
+    const config = baseConfig();
+    config.plugins.push(new StyleExtHtmlWebpackPlugin('styles.css'));
     testPlugin(
       webpack,
-      buildConfig(
-        baseConfig('one_stylesheet_with_web_font.js'),
-        {
-          plugins: [
-            new HtmlWebpackPlugin(),
-            new StyleExtHtmlWebpackPlugin()
-          ],
-          module: {
-            loaders: [
-              {
-                test: /\.css$/,
-                loader: StyleExtHtmlWebpackPlugin.inline()
-              },
-              {
-                test: /\.woff2$/,
-                loader: 'url-loader',
-                options: {
-                  limit: 10000,
-                  name: '[name].[ext]'
-                }
-              }
-            ]
-          }
-        }
-      ),
+      config,
       [
         /<style>[\s\S]*font-face[\s\S]*Indie-Flower[\s\S]*<\/style>/
       ],
-      [RUNTIME_COMMENT],
+      [
+        /(removed by extract-text-webpack-plugin){1}/
+      ],
       [
         'Indie-Flower.woff2'
       ],
