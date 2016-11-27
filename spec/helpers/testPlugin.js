@@ -6,63 +6,81 @@ const path = require('path');
 const fs = require('fs');
 const OUTPUT_DIR = path.join(__dirname, '../../dist');
 
-function testPlugin (webpack, webpackConfig, expectedHtmlContent, expectedJsContent, expectedFiles, done) {
-  if (typeof expectedJsContent === 'function') {
-    done = expectedJsContent;
-    expectedJsContent = [];
-  }
-  webpack(webpackConfig, function (err, stats) {
-    expect(err).toBeFalsy();
-    const compilationErrors = (stats.compilation.errors || []).join('\n');
-    expect(compilationErrors).toBe('');
-    const compilationWarnings = (stats.compilation.warnings || []).join('\n');
-    expect(compilationWarnings).toBe('');
-
-    testFilesExist(expectedFiles);
-    testFileContent(expectedHtmlContent, 'index.html', done);
-    testFileContent(expectedJsContent, 'index_bundle.js', done);
-
+function testPlugin (webpack, webpackConfig, expected, done) {
+  const tests = function (err, stats) {
+    testError(err);
+    testCompilation(stats.compilation.errors);
+    testCompilation(stats.compilation.warnings);
+    testFilesExistence(expected.files, true);
+    testFilesExistence(expected.not.files, false);
+    testFileContent('index.html', expected.html, true);
+    testFileContent('index.html', expected.not.html, false);
+    testFileContent('index_bundle.js', expected.js, true);
+    testFileContent('index_bundle.js', expected.not.js, false);
     done();
+  };
+  webpack(webpackConfig, tests);
+}
+
+function testError (err) {
+  expect(err).toBeFalsy();
+}
+
+function testCompilation (msgs) {
+  msgs = (msgs || []).join('\n');
+  expect(msgs).toBe('');
+}
+
+function testFilesExistence (expectedFiles, expectedToExist) {
+  expectedFiles.forEach((filename) => {
+    testFileExistence(filename, expectedToExist);
   });
 }
 
-function testFilesExist (expectedFiles) {
-  if (expectedFiles.length > 0) {
-    expectedFiles.forEach((file) => {
-      testFileExists(file);
+function testFileExistence (filename, expectedToExist) {
+  const fileExists = fs.existsSync(path.join(OUTPUT_DIR, filename));
+  const msg = expectedToExist
+    ? `file ${filename} should exist`
+    : `file ${filename} should not exist`;
+  since(msg).expect(fileExists).toBe(expectedToExist);
+  return fileExists;
+}
+
+function testFileContent (filename, expectedContents, expectedToExist) {
+  if (expectedContents.length > 0) {
+    const content = getFileContent(filename);
+    since(`file ${filename} should have content`).expect(content).not.toBeNull();
+    expectedContents.forEach((expectedContent) => {
+      if (expectedToExist) {
+        const msg = `file ${filename} should include ${expectedContent}`;
+        testContentExists(content, expectedContent, msg);
+      } else {
+        const msg = `file ${filename} should not include ${expectedContent}`;
+        testContentDoesNotExist(content, expectedContent, msg);
+      }
     });
   }
 }
 
-function testFileExists (file) {
-  const fileExists = fs.existsSync(path.join(OUTPUT_DIR, file));
-  since('file ' + file + ' should exist').expect(fileExists).toBe(true);
-  return fileExists;
+function getFileContent (filename) {
+  const fileExists = testFileExistence(filename, true);
+  return fileExists ? fs.readFileSync(path.join(OUTPUT_DIR, filename)).toString() : null;
 }
 
-function testFileContent (expectedContent, file, done) {
-  if (expectedContent.length > 0) {
-    const content = getFileContent(file);
-    if (content === null) {
-      return done();
-    }
-    testContent(content, expectedContent, 'expect ' + file + ' contents to match ' + expectedContent);
+function testContentExists (content, expectedContent, msg) {
+  if (expectedContent instanceof RegExp) {
+    since(msg).expect(content).toMatch(expectedContent);
+  } else {
+    since(msg).expect(content).toContain(expectedContent);
   }
 }
 
-function getFileContent (file) {
-  const fileExists = testFileExists(file);
-  return fileExists ? fs.readFileSync(path.join(OUTPUT_DIR, file)).toString() : null;
-}
-
-function testContent (content, expectedContents, msg) {
-  expectedContents.forEach((expectedContent) => {
-    if (expectedContent instanceof RegExp) {
-      since(msg).expect(content).toMatch(expectedContent);
-    } else {
-      since(msg).expect(content).toContain(expectedContent);
-    }
-  });
+function testContentDoesNotExist (content, expectedContent, msg) {
+  if (expectedContent instanceof RegExp) {
+    since(msg).expect(content).not.toMatch(expectedContent);
+  } else {
+    since(msg).expect(content).not.toContain(expectedContent);
+  }
 }
 
 module.exports = testPlugin;

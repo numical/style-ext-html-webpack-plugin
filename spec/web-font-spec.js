@@ -49,6 +49,19 @@ const baseConfig = () => {
   };
 };
 
+const baseExpectations = () => {
+  return {
+    html: [],
+    js: [],
+    files: [],
+    not: {
+      html: [],
+      js: [],
+      files: []
+    }
+  };
+};
+
 describe('Web font functionality: ', () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
@@ -56,35 +69,36 @@ describe('Web font functionality: ', () => {
 
   it('works with ExtractText', (done) => {
     const config = baseConfig();
-    testPlugin(
-      webpack,
-      config,
-      [],
-      [
-        /(removed by extract-text-webpack-plugin){1}/
-      ],
-      [
-        'styles.css',
-        'Indie-Flower.woff2'
-      ],
-    done);
+    const expected = baseExpectations();
+    expected.not.html = [
+      /<style>[\s\S]*font-face[\s\S]*Indie-Flower[\s\S]*<\/style>/
+    ];
+    expected.js = [
+      /(removed by extract-text-webpack-plugin){1}/
+    ];
+    expected.files = [
+      'styles.css',
+      'Indie-Flower.woff2'
+    ];
+    testPlugin(webpack, config, expected, done);
   });
 
-  fit('works with StyleExt', (done) => {
+  it('works with StyleExt', (done) => {
     const config = baseConfig();
     config.plugins.push(new StyleExtHtmlWebpackPlugin('styles.css'));
-    testPlugin(
-      webpack,
-      config,
-      [
-        /<style>[\s\S]*font-face[\s\S]*Indie-Flower[\s\S]*<\/style>/
-      ],
-      [
-        /(removed by extract-text-webpack-plugin){1}/
-      ],
-      [
-        'Indie-Flower.woff2'
-      ],
-    done);
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>[\s\S]*font-face[\s\S]*Indie-Flower[\s\S]*<\/style>/
+    ];
+    expected.js = [
+      /(removed by extract-text-webpack-plugin){1}/
+    ];
+    expected.files = [
+      'Indie-Flower.woff2'
+    ];
+    expected.not.files = [
+      'styles.css'
+    ];
+    testPlugin(webpack, config, expected, done);
   });
 });
