@@ -9,14 +9,10 @@
   ],
   "scripts": {
     "pretest": "semistandard & install-module-versions dynavers.json",
-    "test": "jasmine",
-    "test:core": "jasmine ./spec/core-spec.js",
-    "test:extract": "jasmine ./spec/extract-text-spec.js",
-    "test:webfont": "jasmine ./spec/web-font-spec.js",
-    "debug": "DEBUG=StyleExtHtmlWebpackPlugin:* jasmine",
-    "node:debug": "DEBUG=StyleExtHtmlWebpackPlugin:* node-debug jasmine",
-    "node:debug:core": "DEBUG=core node-debug jasmine ./spec/core-spec.js",
-    "node:debug:webfont": "DEBUG=webfont node-debug jasmine ./spec/web-font-spec.js"
+    "test": "VERSION=webpack1 jasmine && VERSION=webpack2 jasmine",
+    "test:webpack1": "VERSION=webpack1 jasmine",
+    "test:webpack2": "VERSION=webpack2 jasmine",
+    "debug": "VERSION=webpack1 node-debug jasmine"
   },
   "repository": {
     "type": "git",

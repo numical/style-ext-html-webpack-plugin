@@ -2,14 +2,11 @@
 'use strict';
 
 const path = require('path');
-const setModuleVersion = require('dynavers')('dynavers.json');
 const rimraf = require('rimraf');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const testPlugin = require('./helpers/testPlugin.js');
 
-const version = require('./helpers/versions').webpack2;
-setModuleVersion('webpack', version.webpack, true);
-setModuleVersion('extract-text-webpack-plugin', version.extractText, true);
+const version = require('./helpers/versions');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
@@ -31,18 +28,11 @@ const baseConfig = () => {
       loaders: [
         {
           test: /\.css$/,
-          loader: ExtractTextWebpackPlugin.extract({
-            fallbackLoader: 'style-loader',
-            loader: 'css-loader'
-          })
+          loader: version.extractTextLoader(ExtractTextWebpackPlugin)
         },
         {
           test: /\.woff2$/,
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            name: '[name].[ext]'
-          }
+          loader: 'file-loader?name=[name].[ext]'
         }
       ]
     }
@@ -62,12 +52,12 @@ const baseExpectations = () => {
   };
 };
 
-describe('Web font functionality: ', () => {
+describe(`Core functionality (webpack ${version.webpack})`, () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  it('works with ExtractText', (done) => {
+  it('vanilla ExtractText works', (done) => {
     const config = baseConfig();
     const expected = baseExpectations();
     expected.not.html = [
@@ -83,7 +73,7 @@ describe('Web font functionality: ', () => {
     testPlugin(webpack, config, expected, done);
   });
 
-  it('works with StyleExt', (done) => {
+  it('works with web fonts', (done) => {
     const config = baseConfig();
     config.plugins.push(new StyleExtHtmlWebpackPlugin('styles.css'));
     const expected = baseExpectations();
