@@ -1,6 +1,6 @@
 {
   "name": "style-ext-html-webpack-plugin",
-  "version": "2.0.6",
+  "version": "3.0.0-beta.1",
   "description": "Enhances html-webpack-plugin functionality by enabling inline styles.",
   "main": "index.js",
   "files": [
@@ -12,7 +12,7 @@
     "test": "VERSION=webpack1 jasmine && VERSION=webpack2 jasmine",
     "test:webpack1": "VERSION=webpack1 jasmine",
     "test:webpack2": "VERSION=webpack2 jasmine",
-    "debug": "VERSION=webpack2 DEBUG=StyleExt node-debug jasmine"
+    "debug": "DEBUG=StyleExt:* VERSION=webpack2 node-debug jasmine"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,8 @@
     "html",
     "html-webpack-plugin",
     "inline",
-    "inline-html-webpack-plugin"
+    "style",
+    "extract-text-html-webpack-plugin"
   ],
   "author": "Mike Evans <mike.evans@numical.com> (https://github.com/numical)",
   "license": "MIT",

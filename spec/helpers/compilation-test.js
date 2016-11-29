@@ -6,21 +6,18 @@ const path = require('path');
 const fs = require('fs');
 const OUTPUT_DIR = path.join(__dirname, '../../dist');
 
-function testPlugin (webpack, webpackConfig, expected, done) {
-  const tests = function (err, stats) {
-    testError(err);
-    testCompilation(stats.compilation.errors);
-    testCompilation(stats.compilation.warnings);
-    testFilesExistence(expected.files, true);
-    testFilesExistence(expected.not.files, false);
-    testFileContent('index.html', expected.html, true);
-    testFileContent('index.html', expected.not.html, false);
-    testFileContent('index_bundle.js', expected.js, true);
-    testFileContent('index_bundle.js', expected.not.js, false);
-    done();
-  };
-  webpack(webpackConfig, tests);
-}
+module.exports = (err, stats, expected, done) => {
+  testError(err);
+  testCompilation(stats.compilation.errors);
+  testCompilation(stats.compilation.warnings);
+  testFilesExistence(expected.files, true);
+  testFilesExistence(expected.not.files, false);
+  testFileContent('index.html', expected.html, true);
+  testFileContent('index.html', expected.not.html, false);
+  testFileContent('index_bundle.js', expected.js, true);
+  testFileContent('index_bundle.js', expected.not.js, false);
+  done();
+};
 
 function testError (err) {
   expect(err).toBeFalsy();
@@ -82,5 +79,3 @@ function testContentDoesNotExist (content, expectedContent, msg) {
     since(msg).expect(content).not.toContain(expectedContent);
   }
 }
-
-module.exports = testPlugin;
