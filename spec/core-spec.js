@@ -9,7 +9,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
-const testPlugin = require('./helpers/testPlugin.js');
+const testPlugin = require('./helpers/core-test.js');
 
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -62,7 +62,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     expected.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
   it('inlines a single stylesheet with quoted attributes and an import url', done => {
@@ -73,7 +73,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       /<style>[\s\S]*colour: grey;[\s\S]*<\/style>/,
       /<style>[\s\S]*\[contenteditable='true'\][\s\S]*<\/style>/
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
   it('inlines multiple stylesheets from a single source', done => {
@@ -83,7 +83,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       // note British spelling
       /<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
   it('inlines multiple stylesheets from multiple sources', done => {
@@ -93,7 +93,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       // note British spelling
       /<style>[\s\S]*background: snow;[\s\S]*colour: grey;[\s\S]*<\/style>/
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
   it('inlining works with postcss-loader', done => {
@@ -103,7 +103,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       // note British speeling cnverted to American spelling
       /<style>[\s\S]*background: snow;[\s\S]*color: gray;[\s\S]*<\/style>/
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
   it('inlining works alongside webpack css loaders', done => {
@@ -130,7 +130,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     expected.js = [
       /(colour: grey){1}/
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
   it('vanilla ExtractText works with local web font', (done) => {
@@ -151,7 +151,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       'Indie-Flower.woff2'
     ];
     expected.not.files = [];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
   it('works with web fonts', (done) => {
@@ -169,7 +169,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     expected.files = [
       'Indie-Flower.woff2'
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
   it('plays happily with other plugins using same html plugin event', done => {
@@ -182,7 +182,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       /<script src="index_bundle.js" type="text\/javascript" async><\/script>/,
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
   it('works with html webpack plugin template styles', done => {
@@ -197,7 +197,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       /<style>div { background: blue }<\/style>/,
       /<div id='template_content'>/
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
   if (version.isWebpack1) {
@@ -209,7 +209,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       expected.html = [
         /<style>[\s\S]*body{background:snow}body{colour:grey}[\s\S]*<\/style>/
       ];
-      testPlugin(webpack, config, expected, done);
+      testPlugin(config, expected, done);
     });
   }
 
@@ -222,7 +222,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       expected.html = [
         /<style>[\s\S]*body{background:snow}body{colour:grey}[\s\S]*<\/style>/
       ];
-      testPlugin(webpack, config, expected, done);
+      testPlugin(config, expected, done);
     });
   }
 
@@ -237,10 +237,10 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     expected.files = [
       'main0.css'
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
-  // Note: why on earth test this? For people who simply add StyleExt to an existing 
+  // Note: why on earth test this? For people who simply add StyleExt to an existing
   // configuration with ExtractTextWebpackPlugin already in it
   it('handles [name] and [id] in css filename', done => {
     const config = baseConfig('one_stylesheet', '[name][id].css');
@@ -251,10 +251,10 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     expected.not.files = [
       'main0.css'
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
-  // Note: why on earth test this? For people who simply add StyleExt to an existing 
+  // Note: why on earth test this? For people who simply add StyleExt to an existing
   // configuration with ExtractTextWebpackPlugin already in it
   it('handles [contenthash] in css filename', done => {
     const config = baseConfig('one_stylesheet', '[contenthash].css');
@@ -262,10 +262,10 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     expected.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
   });
 
-  // Note: why on earth test this? For people who simply add StyleExt to an existing 
+  // Note: why on earth test this? For people who simply add StyleExt to an existing
   // configuration with ExtractTextWebpackPlugin already in it
   it('handles nested css filename', done => {
     const config = baseConfig('one_stylesheet', '/css/styles.css');
@@ -277,6 +277,81 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       'styles.css',
       'css/styles.css'
     ];
-    testPlugin(webpack, config, expected, done);
+    testPlugin(config, expected, done);
+  });
+
+  it('can be targeted at one of multiple ExtractText outputs', done => {
+    const toBeExtracted = new ExtractTextPlugin('toBeExtracted.css');
+    const toBeIgnored = new ExtractTextPlugin('toBeIgnored.css');
+    const config = baseConfig('two_stylesheets');
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      toBeExtracted,
+      toBeIgnored,
+      new StyleExtHtmlWebpackPlugin('toBeExtracted.css')
+    ];
+    config.module = {
+      loaders: [
+        {
+          test: /stylesheet1.css$/,
+          loader: version.extractTextLoader(toBeExtracted, ['css-loader'])
+        },
+        {
+          test: /stylesheet2.css$/,
+          loader: version.extractTextLoader(toBeIgnored, ['css-loader'])
+        }
+      ]
+    };
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+    ];
+    expected.not.html = [
+      /<style>[\s\S]*colour: gray;[\s\S]*<\/style>/
+    ];
+    expected.files = [
+      'toBeIgnored.css'
+    ];
+    expected.not.files = [
+      'toBeExtracted.css'
+    ];
+    testPlugin(config, expected, done);
+  });
+
+  it('is happy when switched off for debug mode', done => {
+    const config = baseConfig('one_stylesheet');
+    config.module.loaders = [
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      }
+    ];
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin(false)
+    ];
+    const expected = baseExpectations();
+    expected.js = [
+      /background: snow/
+    ];
+    expected.not.html = [
+      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
+
+  it('is happy if \'true\' is passed as the filename', done => {
+    const config = baseConfig('one_stylesheet');
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin(true)
+    ];
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
   });
 });
