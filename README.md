@@ -25,7 +25,7 @@ $ npm install --save-dev style-ext-html-webpack-plugin
 ```
 
 Note: you may see the following warning:
-```shell```
+```shell
 npm WARN html-webpack-plugin@XXX requires a peer of webpack@* but none was installed.
 ```
 This is fine - for testing, we dynamically download multiple version of webpack (via the [dynavers](https://github.com/numical/dynavers) module).
@@ -137,6 +137,7 @@ return {
 Change History
 --------------
 
+* v3.0.1 - minor REAME and error handling improvements
 * v3.0.0 - complete rewrite to piggback off ExtractTextPlugin
 * v2.0.5 - modified test to use dynavers with webpack 1.13.2 and 2.1.0-beta.16
 * v2.0.4 - fixed jasmine dependency to explicit version v2.4.1 due to [bug](https://github.com/jasmine/jasmine-npm/issues/90) in v2.5
