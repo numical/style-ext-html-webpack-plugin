@@ -39,7 +39,7 @@ Version 3.x is a complete rewrite of the plugin with a completely new configurat
 
 The plugin now piggy-backs on [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin)'s functionality so works in any use case that [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin) works.  This has the convenient effect of fixing all raised issues with v2.x.  i
 
-However  [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin) does **not** support HMR (Hot Module Replacement).  See the [Hot Module Replacment](#Use Case: Hot Module Replacement) discussion below for more.
+However  [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin) does **not** support HMR (Hot Module Replacement).  See the 'Use Case: Hot Module Replacement' below for more.
 
 
 ## Basic Usage
@@ -110,8 +110,10 @@ As discussed earlier, ExtractTextPlugin does not support HMR.  If you really nee
 1. revert to/stick with [v2.x](https://github.com/numical/style-ext-html-webpack-plugin/tree/v2.0.6) of the plugin;
 2. only internalize the CSS on production builds.
 
-The former option is viable if v2.x supports your requirements but that version is no longer maintained hence the second approach is recommended. Use a conditional in your webpack.config to:
-* choose whether to select between ExtractTextPlugin or a loader that supports HMR such as the [style-loader](https://github.com/webpack/style-loader);
+The former option is viable if v2.x supports your requirements but that version is no longer maintained hence the second approach is recommended. 
+
+For this, use a conditional in your webpack.config to:
+* to select between ExtractTextPlugin or a loader that supports HMR such as the [style-loader](https://github.com/webpack/style-loader);
 * either remove the StyleExtPlugin or disable it by passing `false` to its constructor:
 ```javascript
 const DEBUG = (process.env.NODE_ENV !== 'production');
@@ -137,6 +139,7 @@ return {
 Change History
 --------------
 
+* v3.0.2 - include `lib` folder in deployment (thanks, @Aweary)
 * v3.0.1 - minor REAME and error handling improvements
 * v3.0.0 - complete rewrite to piggback off ExtractTextPlugin
 * v2.0.5 - modified test to use dynavers with webpack 1.13.2 and 2.1.0-beta.16
