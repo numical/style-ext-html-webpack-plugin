@@ -268,7 +268,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
   // Note: why on earth test this? For people who simply add StyleExt to an existing
   // configuration with ExtractTextWebpackPlugin already in it
   it('handles nested css filename', done => {
-    const config = baseConfig('one_stylesheet', '/css/styles.css');
+    const config = baseConfig('one_stylesheet', 'css/styles.css');
     const expected = baseExpectations();
     expected.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/

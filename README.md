@@ -37,7 +37,7 @@ This is fine - for testing, we dynamically download multiple version of webpack 
 
 Version 3.x is a complete rewrite of the plugin with a completely new configuration and using a completely new mechanism.
 
-The plugin now piggy-backs on [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin)'s functionality so works in any use case that [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin) works.  This has the convenient effect of fixing all raised issues with v2.x.  i
+The plugin now piggy-backs on [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin)'s functionality so works in any use case that [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin) works.  This has the convenient effect of fixing all raised issues with v2.x.
 
 However  [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin) does **not** support HMR (Hot Module Replacement).  See the 'Use Case: Hot Module Replacement' below for more.
 
@@ -55,7 +55,7 @@ module: {
 plugins: [
   new HtmlWepbackPlugin({...}),
   new ExtractTextWebpackPlugin('styles.css'),
-  new StyleExtHtmlWebpackPlugin()  // << add
+  new StyleExtHtmlWebpackPlugin()  << add the plugin
 ]
 ```
 That's it.
@@ -113,7 +113,7 @@ As discussed earlier, ExtractTextPlugin does not support HMR.  If you really nee
 The former option is viable if v2.x supports your requirements but that version is no longer maintained hence the second approach is recommended. 
 
 For this, use a conditional in your webpack.config to:
-* to select between ExtractTextPlugin or a loader that supports HMR such as the [style-loader](https://github.com/webpack/style-loader);
+* select between ExtractTextPlugin or a loader that supports HMR such as the [style-loader](https://github.com/webpack/style-loader);
 * either remove the StyleExtPlugin or disable it by passing `false` to its constructor:
 ```javascript
 const DEBUG = (process.env.NODE_ENV !== 'production');
@@ -139,6 +139,7 @@ return {
 Change History
 --------------
 
+* v3.0.3 - instrument code with [debug](https://github.com/visionmedia/debug)
 * v3.0.2 - include `lib` folder in deployment (thanks, @Aweary)
 * v3.0.1 - minor REAME and error handling improvements
 * v3.0.0 - complete rewrite to piggback off ExtractTextPlugin
