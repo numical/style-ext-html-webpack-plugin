@@ -354,4 +354,29 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     ];
     testPlugin(config, expected, done);
   });
+
+  it('copes with a public path', done => {
+    const config = baseConfig('one_stylesheet');
+    config.output.publicPath = '/wibble/';
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
+
+  it('copes with a public path with specified css file', done => {
+    const config = baseConfig('one_stylesheet');
+    config.output.publicPath = '/wibble/';
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin('styles.css')
+    ];
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
 });
