@@ -45,7 +45,9 @@ However  [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plu
 ## Basic Usage
 
 ### Use Case: Internalize all your CSS
-Just add the plugin to your webpack config:
+Just add the plugin to your webpack config.
+
+Note that order is important - the plugin must come **after** HtmlWebpackPlugin and ExtractTextWebpackPlugin: 
 ```javascript
 module: {
   loaders: [
@@ -156,6 +158,7 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* v3.0.5 - updated README after [issue 10](https://github.com/numical/style-ext-html-webpack-plugin/issues/10) (thanks, @Birowsky)
 * v3.0.4 - support `output.publicPath` configuration and better debugging support
 * v3.0.3 - instrument code with [debug](https://github.com/visionmedia/debug)
 * v3.0.2 - include `lib` folder in deployment (thanks, @Aweary)
