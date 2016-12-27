@@ -6,7 +6,7 @@ const VERSIONS = {
   webpack1: {
     isWebpack1: true,
     isWebpack2: false,
-    webpack: '1.13.3',
+    webpack: '1.14.0',
     extractText: '1.0.1',
     extractTextLoader: (extractTextPlugin, cssLoaders) => {
       return extractTextPlugin.extract('style-loader', cssLoaders);

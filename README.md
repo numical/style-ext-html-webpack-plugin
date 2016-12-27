@@ -158,6 +158,7 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* v3.0.6 - tests moved to webpack 1.14.0
 * v3.0.5 - updated README after [issue 10](https://github.com/numical/style-ext-html-webpack-plugin/issues/10) (thanks, @Birowsky)
 * v3.0.4 - support `output.publicPath` configuration and better debugging support
 * v3.0.3 - instrument code with [debug](https://github.com/visionmedia/debug)
