@@ -15,7 +15,7 @@ const VERSIONS = {
   webpack2: {
     isWebpack1: false,
     isWebpack2: true,
-    webpack: '2.1.0-beta.27',
+    webpack: '2.2.0-rc.2',
     extractText: '2.0.0-beta.4',
     extractTextLoader: (extractTextPlugin, cssLoaders) => {
       return extractTextPlugin.extract({
