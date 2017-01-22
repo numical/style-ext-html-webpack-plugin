@@ -55,7 +55,7 @@ module: {
   ]
 }
 plugins: [
-  new HtmlWepbackPlugin({...}),
+  new HtmlWebpackPlugin({...}),
   new ExtractTextWebpackPlugin('styles.css'),
   new StyleExtHtmlWebpackPlugin()  << add the plugin
 ]
@@ -73,7 +73,7 @@ module: {
   ]
 }
 plugins: [
-  new HtmlWepbackPlugin({...}),
+  new HtmlWebpackPlugin({...}),
   new ExtractTextWebpackPlugin('styles.css'),
   new StyleExtHtmlWebpackPlugin() 
 ]
@@ -93,7 +93,7 @@ return {
     ]
   }
   plugins: [
-    new HtmlWepbackPlugin({...}),
+    new HtmlWebpackPlugin({...}),
     internalCSS,
     externalCSS,
     new StyleExtHtmlWebpackPlugin('internal.css') << tell the plugin which to target 
@@ -128,7 +128,7 @@ return {
     ]
   },
   plugins: [
-    new HtmlWepbackPlugin({...}),
+    new HtmlWebpackPlugin({...}),
     new ExtractTextPlugin('styles.css'),
     new StyleExtHtmlWebpackPlugin(!DEBUG)
   ]
@@ -176,7 +176,7 @@ Change History
 * v2.0.0.beta.3 - warnings about beta testing (!), debug enhancements, and better unescaping
 * v2.0.0.beta.2 - Travis timeout and tag spacing fixes
 * v2.0.0-beta.1 - node 4.x fix and fixed handling of multiple scripts
-* v2.0.0-beta.0 - hot module reload working (with `HtmlWepbackPlugin` cache switched off)
+* v2.0.0-beta.0 - hot module reload working (with `HtmlWebpackPlugin` cache switched off)
 * v1.1.1 - hot module reload not working with webpack 2
 * v1.1.0 - now Webpack 2.x compatible
 * v1.0.7 - added warning that not compatible with Webpack 2
