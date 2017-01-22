@@ -71,7 +71,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     expected.html = [
       /<style>[\s\S]*\u0040import url\(https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower[\s\S]*<\/style>/,
       /<style>[\s\S]*colour: grey;[\s\S]*<\/style>/,
-      /<style>[\s\S]*\[contenteditable='true'\][\s\S]*<\/style>/
+      /<style>[\s\S]*\[contenteditable='true'][\s\S]*<\/style>/
     ];
     testPlugin(config, expected, done);
   });
@@ -179,7 +179,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     }));
     const expected = baseExpectations();
     expected.html = [
-      /<script src="index_bundle.js" type="text\/javascript" async><\/script>/,
+      /<script type="text\/javascript" src="index_bundle.js" async><\/script>/,
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
     testPlugin(config, expected, done);
@@ -378,5 +378,9 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
     testPlugin(config, expected, done);
+  });
+
+  it('supports multiple entry points', done => {
+    done();
   });
 });

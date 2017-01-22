@@ -158,6 +158,8 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* v3.0.9 - README typos fixed (thanks @eahlberg)
+         - updated all dependencies (including webpack 2.2.0)
 * v3.0.8 - webpck2 tests moved to webpack 2.2.0-rc3
 * v3.0.7 - webpack2 tests moved to webpack 2.2.0-rc.2 and minor fix to maintain compatability  
 * v3.0.6 - webpack1 tests moved to webpack 1.14.0
