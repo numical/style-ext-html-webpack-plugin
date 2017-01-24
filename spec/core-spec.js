@@ -389,27 +389,33 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
       const page2Loader = version.extractTextLoader(page2Extract, ['css-loader']);
       const config = baseConfig('');
       config.entry = {
-        page1: path.join(__dirname, `fixtures/one_stylesheet.js`),
-        page2: path.join(__dirname, `fixtures/one_tricky_stylesheet.js`)
+        page1: path.join(__dirname, 'fixtures/page1/script.js'),
+        page2: path.join(__dirname, 'fixtures/page2/script.js')
       };
       config.output.filename = '[name].js';
       config.module.loaders = [
         {
-          test: /stylesheet1.css/,
-          loader: page1Loader
+          test: /\.css$/,
+          loader: page1Loader,
+          include: [
+            path.resolve(__dirname, 'fixtures/page1')
+          ]
         },
         {
-          test: /stylesheet2.css/,
-          loader: page2Loader
+          test: /\.css$/,
+          loader: page2Loader,
+          include: [
+            path.resolve(__dirname, 'fixtures/page2')
+          ]
         }
       ];
       config.plugins = [
         new HtmlWebpackPlugin({
-          chunks: 'page1',
+          chunks: ['page1'],
           filename: 'page1.html'
         }),
         new HtmlWebpackPlugin({
-          chunks: 'page2',
+          chunks: ['page2'],
           filename: 'page2.html'
         }),
         page1Extract,
