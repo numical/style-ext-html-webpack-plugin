@@ -1,0 +1,13 @@
+/* import statements */
+@import url("https://fonts.googleapis.com/css?family=Indie+Flower");
+
+body {
+  /* deliberate British spelling to be corrected by postcss processing */
+  colour: grey;
+}
+
+/* quoted attributes with ' */
+[contenteditable='true']:active, [contenteditable='true']:focus {
+  border:none;
+}
+

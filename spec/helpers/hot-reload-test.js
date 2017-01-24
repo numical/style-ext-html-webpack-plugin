@@ -36,7 +36,8 @@ module.exports = (expectations, testIterations, done) => {
           const compiler = setupResults[1];
           const iterate = iterateFn.bind(null, testDir, testIterations, metaData, done);
           const test = (err, stats) => {
-            testCompilation(err, stats, expectations.shift(), iterate);
+            testCompilation(err, stats, 'index.html', 'index_bundle.js', expectations.shift());
+            iterate();
           };
           metaData.testFn = test;
           // see funcion's doc below
