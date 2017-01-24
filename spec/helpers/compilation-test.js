@@ -6,17 +6,16 @@ const path = require('path');
 const fs = require('fs');
 const OUTPUT_DIR = path.join(__dirname, '../../dist');
 
-module.exports = (err, stats, expected, done) => {
+module.exports = (err, stats, htmlFile, jsFile, expected) => {
   testError(err);
   testCompilation(stats.compilation.errors);
   testCompilation(stats.compilation.warnings);
   testFilesExistence(expected.files, true);
   testFilesExistence(expected.not.files, false);
-  testFileContent('index.html', expected.html, true);
-  testFileContent('index.html', expected.not.html, false);
-  testFileContent('index_bundle.js', expected.js, true);
-  testFileContent('index_bundle.js', expected.not.js, false);
-  done();
+  testFileContent(htmlFile, expected.html, true);
+  testFileContent(htmlFile, expected.not.html, false);
+  testFileContent(jsFile, expected.js, true);
+  testFileContent(jsFile, expected.not.js, false);
 };
 
 function testError (err) {
