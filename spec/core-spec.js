@@ -321,21 +321,14 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
 
   it('is happy when switched off for debug mode', done => {
     const config = baseConfig('one_stylesheet');
-    config.module.loaders = [
-      {
-        test: /\.css$/,
-        loader: 'style-loader!css-loader'
-      }
-    ];
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
       new StyleExtHtmlWebpackPlugin(false)
     ];
     const expected = baseExpectations();
-    expected.js = [
-      /background: snow/
-    ];
+    expected.files = ['styles.css'];
+    expected.not.files = [];
     expected.not.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
@@ -381,7 +374,52 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     testPlugin(config, expected, done);
   });
 
-  fit('supports multiple entry points', done => {
+  it('understands blank options object', done => {
+    const config = baseConfig('one_stylesheet');
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin({})
+    ];
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
+
+  it('understands disabled in options object', done => {
+    const config = baseConfig('one_stylesheet');
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin({enabled: false})
+    ];
+    const expected = baseExpectations();
+    expected.files = ['styles.css'];
+    expected.not.files = [];
+    expected.not.html = [
+      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
+
+  it('understands specified css file in options object', done => {
+    const config = baseConfig('one_stylesheet');
+    config.output.publicPath = '/wibble/';
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin({file: 'styles.css'})
+    ];
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
+
+  xit('supports multiple entry points', done => {
     const generateConfig = () => {
       const page1Extract = new ExtractTextPlugin('page1.css');
       const page2Extract = new ExtractTextPlugin('page2.css');
@@ -420,8 +458,12 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
         }),
         page1Extract,
         page2Extract,
-        new StyleExtHtmlWebpackPlugin('page1.css'),
-        new StyleExtHtmlWebpackPlugin('page2.css')
+        new StyleExtHtmlWebpackPlugin({
+          chunks: ['page1']
+        }),
+        new StyleExtHtmlWebpackPlugin({
+          chunks: ['page2']
+        })
       ];
       return config;
     };
