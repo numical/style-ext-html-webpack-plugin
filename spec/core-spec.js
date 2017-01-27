@@ -39,6 +39,54 @@ const baseConfig = (entry, cssFilename, cssLoaders) => {
   };
 };
 
+const multiEntryConfig = () => {
+  const page1Extract = new ExtractTextPlugin('page1.css');
+  const page2Extract = new ExtractTextPlugin('page2.css');
+  const page1Loader = version.extractTextLoader(page1Extract, ['css-loader']);
+  const page2Loader = version.extractTextLoader(page2Extract, ['css-loader']);
+  const config = baseConfig('');
+  config.entry = {
+    page1: path.join(__dirname, 'fixtures/page1/script.js'),
+    page2: path.join(__dirname, 'fixtures/page2/script.js')
+  };
+  config.output.filename = '[name].js';
+  config.module.loaders = [
+    {
+      test: /\.css$/,
+      loader: page1Loader,
+      include: [
+        path.resolve(__dirname, 'fixtures/page1')
+      ]
+    },
+    {
+      test: /\.css$/,
+      loader: page2Loader,
+      include: [
+        path.resolve(__dirname, 'fixtures/page2')
+      ]
+    }
+  ];
+  config.plugins = [
+    new HtmlWebpackPlugin({
+      chunks: ['page1'],
+      filename: 'page1.html'
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['page2'],
+      filename: 'page2.html'
+    }),
+    page1Extract,
+    page2Extract,
+    new StyleExtHtmlWebpackPlugin({
+      chunks: ['page1']
+    }),
+    new StyleExtHtmlWebpackPlugin({
+      chunks: ['page2']
+    })
+  ];
+  return config;
+};
+
 const baseExpectations = () => {
   return {
     html: [],
@@ -50,6 +98,38 @@ const baseExpectations = () => {
       files: ['styles.css']
     }
   };
+};
+
+const multiEntryExpectations = () => {
+  const expected1 = baseExpectations();
+  expected1.html = [
+    /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+  ];
+  expected1.not.html = [
+    /<style>[\s\S]*\u0040import url\(https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower[\s\S]*<\/style>/,
+    /<style>[\s\S]*colour: grey;[\s\S]*<\/style>/,
+    /<style>[\s\S]*\[contenteditable='true'][\s\S]*<\/style>/
+  ];
+  const expected2 = baseExpectations();
+  expected2.html = [
+    /<style>[\s\S]*\u0040import url\(https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower[\s\S]*<\/style>/,
+    /<style>[\s\S]*colour: grey;[\s\S]*<\/style>/,
+    /<style>[\s\S]*\[contenteditable='true'][\s\S]*<\/style>/
+  ];
+  expected2.not.html = [
+    /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+  ];
+  const entries = [
+    {
+      htmlFile: 'page1.html',
+      expected: expected1
+    },
+    {
+      htmlFile: 'page2.html',
+      expected: expected2
+    }
+  ];
+  return entries;
 };
 
 describe(`Core functionality (webpack ${version.webpack})`, () => {
@@ -142,7 +222,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
         test: /\.woff2$/,
         loader: 'file-loader?name=[name].[ext]'
       }
-    );
+        );
     const expected = baseExpectations();
     expected.not.html = [
       /<style>[\s\S]*font-face[\s\S]*Indie-Flower[\s\S]*<\/style>/
@@ -162,7 +242,7 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
         test: /\.woff2$/,
         loader: 'file-loader?name=[name].[ext]'
       }
-    );
+        );
     const expected = baseExpectations();
     expected.html = [
       /<style>[\s\S]*font-face[\s\S]*Indie-Flower[\s\S]*<\/style>/
@@ -419,85 +499,13 @@ describe(`Core functionality (webpack ${version.webpack})`, () => {
     testPlugin(config, expected, done);
   });
 
-  xit('supports multiple entry points', done => {
-    const generateConfig = () => {
-      const page1Extract = new ExtractTextPlugin('page1.css');
-      const page2Extract = new ExtractTextPlugin('page2.css');
-      const page1Loader = version.extractTextLoader(page1Extract, ['css-loader']);
-      const page2Loader = version.extractTextLoader(page2Extract, ['css-loader']);
-      const config = baseConfig('');
-      config.entry = {
-        page1: path.join(__dirname, 'fixtures/page1/script.js'),
-        page2: path.join(__dirname, 'fixtures/page2/script.js')
-      };
-      config.output.filename = '[name].js';
-      config.module.loaders = [
-        {
-          test: /\.css$/,
-          loader: page1Loader,
-          include: [
-            path.resolve(__dirname, 'fixtures/page1')
-          ]
-        },
-        {
-          test: /\.css$/,
-          loader: page2Loader,
-          include: [
-            path.resolve(__dirname, 'fixtures/page2')
-          ]
-        }
-      ];
-      config.plugins = [
-        new HtmlWebpackPlugin({
-          chunks: ['page1'],
-          filename: 'page1.html'
-        }),
-        new HtmlWebpackPlugin({
-          chunks: ['page2'],
-          filename: 'page2.html'
-        }),
-        page1Extract,
-        page2Extract,
-        new StyleExtHtmlWebpackPlugin({
-          chunks: ['page1']
-        }),
-        new StyleExtHtmlWebpackPlugin({
-          chunks: ['page2']
-        })
-      ];
-      return config;
-    };
-    const generateExpected = () => {
-      const expected1 = baseExpectations();
-      expected1.html = [
-        /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
-      ];
-      expected1.not.html = [
-        /<style>[\s\S]*\u0040import url\(https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower[\s\S]*<\/style>/,
-        /<style>[\s\S]*colour: grey;[\s\S]*<\/style>/,
-        /<style>[\s\S]*\[contenteditable='true'][\s\S]*<\/style>/
-      ];
-      const expected2 = baseExpectations();
-      expected2.html = [
-        /<style>[\s\S]*\u0040import url\(https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower[\s\S]*<\/style>/,
-        /<style>[\s\S]*colour: grey;[\s\S]*<\/style>/,
-        /<style>[\s\S]*\[contenteditable='true'][\s\S]*<\/style>/
-      ];
-      expected2.not.html = [
-        /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
-      ];
-      const entries = [
-        {
-          htmlFile: 'page1.html',
-          expected: expected1
-        },
-        {
-          htmlFile: 'page2.html',
-          expected: expected2
-        }
-      ];
-      return entries;
-    };
-    testMultiEntry(generateConfig(), generateExpected(), done);
+  it('supports multiple entry points', done => {
+    testMultiEntry(multiEntryConfig(), multiEntryExpectations(), done);
+  });
+
+  it('supports multiple entry points with public path', done => {
+    const config = multiEntryConfig();
+    config.output.publicPath = '/wibble/';
+    testMultiEntry(multiEntryConfig(), multiEntryExpectations(), done);
   });
 });

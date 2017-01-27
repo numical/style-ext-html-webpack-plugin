@@ -7,8 +7,7 @@ module.exports = (config, entries, done) => {
   const webpack = require('webpack');
   webpack(config, (err, stats) => {
     entries.forEach(entry => {
-      const { htmlFile, jsFile, expected } = entry;
-      compilationTest(err, stats, htmlFile, jsFile, expected);
+      compilationTest(err, stats, entry.htmlFile, entry.jsFile, entry.expected);
     });
     done();
   });
