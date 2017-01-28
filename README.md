@@ -4,7 +4,7 @@
 
 > **tl;dr:**
 >
-> If you use HtmlWebpackPlugin and ExtractTextPlugin in your Webpack builds to create HTML `<link>`s to external stylesheet files, add this plugin to convert the links to ` <style>` elements containing internal CSS. 
+> If you use HtmlWebpackPlugin and ExtractTextPlugin in your Webpack builds to create HTML `<link>`s to external stylesheet files, add this plugin to convert the links to ` <style>` elements containing internal (sometimes incorrectly called 'in-line') CSS. 
 
 This is an extension plugin for the [Webpack](http://webpack.github.io) plugin [HtmlWebpackPlugin](https://github.com/ampedandwired/html-webpack-plugin) - a plugin that simplifies the creation of HTML files to serve your webpack bundles.
 
@@ -105,6 +105,62 @@ return {
 All as per [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plugin).
 
 
+### Use Case: Multiple HTML files
+html-webpack-plugin can generate multiple html files if you [use multiple instances of the plugin](https://github.com/ampedandwired/html-webpack-plugin#generating-multiple-html-files).  If you want each html page to be based on different assets (e.g a set of pages) you do this by focussing each html-webpack-plugin instance on a particular entry point via its [`chunks` configuration option](https://github.com/ampedandwired/html-webpack-plugin#configuration).
+
+style-ext-html-webpack-plugin supports this approach by offering the same `chunks` option.  As you also need an instance of extract-text-webpack-plugin, the configuration is quite unwieldy:
+```javascript
+...
+const page1Extract = new ExtractTextPlugin('page1.css');
+const page2Extract = new ExtractTextPlugin('page2.css');
+const webpackConfig = {
+  ...
+  entry: {
+    entry1: 'page-1-path/script.js',
+    entry2: 'page-2-path/script.js'
+  },
+  output.filename = '[name].js',
+  module.loaders: [
+    {
+      test: /\.css$/,
+      loader: page1Extract.extract('style-loader', 'css-loader'),
+      include: [
+        'page-1-path'
+      ]
+    },
+    {
+      test: /\.css$/,
+      loader: page2Extract.extract('style-loader', 'css-loader'),
+      include: [
+        'page-2-path'
+      ]
+    }
+  ],
+  plugins: [
+    new HtmlWebpackPlugin({
+      chunks: ['entry1'],
+      filename: 'page1.html'
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['entry2'],
+      filename: 'page2.html'
+    }),
+    page1Extract,
+    page2Extract,
+    new StyleExtHtmlWebpackPlugin({
+      chunks: ['entry1']
+    }),
+    new StyleExtHtmlWebpackPlugin({
+      chunks: ['entry2']
+    })
+  ],
+  ...
+}
+return webpackConfig;
+```
+Phew!  A loop is recommended instead.
+
+
 ### Use Case: Hot Module Replacement
 As discussed earlier, ExtractTextPlugin does not support HMR.  If you really need this for your CSS you have two options:
 1. revert to/stick with [v2.x](https://github.com/numical/style-ext-html-webpack-plugin/tree/v2.0.6) of the plugin;
@@ -158,9 +214,7 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
-* v3.0.9 - README typos fixed (thanks @eahlberg)
-         - updated all dependencies (including webpack 2.2.0)
-         - support multiple entry points (thanks @hagmandan)
+* 3.1.0 - support multiple entry points (thanks @hagmandan); README typos fixed (thanks @eahlberg); updated all dependencies (including webpack 2.2.0)
 * v3.0.8 - webpck2 tests moved to webpack 2.2.0-rc3
 * v3.0.7 - webpack2 tests moved to webpack 2.2.0-rc.2 and minor fix to maintain compatability  
 * v3.0.6 - webpack1 tests moved to webpack 1.14.0
