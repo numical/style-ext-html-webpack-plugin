@@ -45,9 +45,9 @@ However  [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plu
 ## Basic Usage
 
 ### Use Case: Internalize all your CSS
-Just add the plugin to your webpack config.
+Add the plugin to your webpack config.
 
-Note that order is important - the plugin must come **after** HtmlWebpackPlugin and ExtractTextWebpackPlugin: 
+The order is important - the plugin must come **after** HtmlWebpackPlugin and ExtractTextWebpackPlugin: 
 ```javascript
 module: {
   loaders: [
@@ -60,8 +60,10 @@ plugins: [
   new StyleExtHtmlWebpackPlugin()  << add the plugin
 ]
 ```
-That's it.
 
+HtmlWebpackPlugin's [inject](https://github.com/jantimon/html-webpack-plugin#configuration) option must be not be `false`.
+
+That's it.
 
 ### Use Case: Internalize critical CSS only
 Add the plugin and use more than one loader for your CSS:
@@ -214,6 +216,7 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* 3.1.1 - updated README (sorry @rastasheep)
 * 3.1.0 - support multiple entry points (thanks @hagmandan); README typos fixed (thanks @eahlberg); updated all dependencies (including webpack 2.2.0)
 * v3.0.8 - webpck2 tests moved to webpack 2.2.0-rc3
 * v3.0.7 - webpack2 tests moved to webpack 2.2.0-rc.2 and minor fix to maintain compatability  
