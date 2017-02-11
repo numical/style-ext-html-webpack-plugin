@@ -7,7 +7,6 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../../index.js');
-const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const testPlugin = require('./core-test.js');
 const testMultiEntry = require('./multi-entry-test.js');
 
@@ -124,19 +123,6 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     ];
     expected.files = [
       'Indie-Flower.woff2'
-    ];
-    testPlugin(config, expected, done);
-  });
-
-  it('plays happily with other plugins using same html plugin event', done => {
-    const config = baseConfig('one_stylesheet');
-    config.plugins.push(new ScriptExtHtmlWebpackPlugin({
-      defaultAttribute: 'async'
-    }));
-    const expected = baseExpectations();
-    expected.html = [
-      /<script type="text\/javascript" src="index_bundle.js" async><\/script>/,
-      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
     testPlugin(config, expected, done);
   });
