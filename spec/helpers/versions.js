@@ -15,12 +15,12 @@ const VERSIONS = {
   webpack2: {
     isWebpack1: false,
     isWebpack2: true,
-    webpack: '2.2.0',
-    extractText: '2.0.0-rc.0',
+    webpack: '2.2.1',
+    extractText: '2.0.0-rc.3',
     extractTextLoader: (extractTextPlugin, cssLoaders) => {
       return extractTextPlugin.extract({
-        fallbackLoader: 'style-loader',
-        loader: cssLoaders
+        fallback: 'style-loader',
+        use: cssLoaders
       });
     }
   }
