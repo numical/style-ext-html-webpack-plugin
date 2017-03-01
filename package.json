@@ -54,7 +54,7 @@
     "url-loader": "^0.5.7"
   },
   "dependencies": {
-    "clean-css": "^4.0.6",
+    "clean-css": "^4.0.8",
     "debug": "^2.6.1",
     "webpack-sources": "^0.1.4"
   }

@@ -369,6 +369,62 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     config.output.publicPath = '/wibble/';
     testMultiEntry(multiEntryConfig(), multiEntryExpectations(), done);
   });
+
+  it('supports true minify option', done => {
+    const config = baseConfig('one_stylesheet');
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin({minify: true})
+    ];
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>body{background:snow}<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
+
+  it('supports empty object minify option', done => {
+    const config = baseConfig('one_stylesheet');
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin({minify: {}})
+    ];
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>body{background:snow}<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
+
+  it('minifies multiple stylesheets from multiple sources', done => {
+    const config = baseConfig('nested_stylesheets');
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin({minify: true})
+    ];
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>@import url\(https:\/\/fonts\.googleapis\.com\/css\?family=Indie\+Flower\);body{background:snow}body{colour:grey}\[contenteditable=true]:active,\[contenteditable=true]:focus{border:none}<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
+
+  it('passes on minify options', done => {
+    const config = baseConfig('nested_stylesheets');
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin({minify: {level: 2}})
+    ];
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>@import url\(https:\/\/fonts\.googleapis\.com\/css\?family=Indie\+Flower\);body{background:snow;colour:grey}\[contenteditable=true]:active,\[contenteditable=true]:focus{border:none}<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
 };
 
 module.exports = mainTests;
