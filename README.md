@@ -4,7 +4,7 @@
 
 > **tl;dr:**
 >
-> If you use HtmlWebpackPlugin and ExtractTextPlugin in your Webpack builds to create HTML `<link>`s to external stylesheet files, add this plugin to convert the links to ` <style>` elements containing internal (sometimes incorrectly called 'in-line') CSS. 
+> If you use HtmlWebpackPlugin and ExtractTextPlugin in your Webpack builds to create HTML `<link>`s to external stylesheet files, add this plugin to convert the links to ` <style>` elements containing internal (sometimes incorrectly called 'in-line') CSS.
 
 This is an extension plugin for the [Webpack](http://webpack.github.io) plugin [HtmlWebpackPlugin](https://github.com/ampedandwired/html-webpack-plugin) - a plugin that simplifies the creation of HTML files to serve your webpack bundles.
 
@@ -51,7 +51,7 @@ However  [ExtractTextPlugin](https://github.com/webpack/extract-text-webpack-plu
 ### Use Case: Internalize all your CSS
 Add the plugin to your webpack config.
 
-The order is important - the plugin must come **after** HtmlWebpackPlugin and ExtractTextWebpackPlugin: 
+The order is important - the plugin must come **after** HtmlWebpackPlugin and ExtractTextWebpackPlugin:
 ```javascript
 module: {
   loaders: [
@@ -81,7 +81,7 @@ module: {
 plugins: [
   new HtmlWebpackPlugin({...}),
   new ExtractTextWebpackPlugin('styles.css'),
-  new StyleExtHtmlWebpackPlugin() 
+  new StyleExtHtmlWebpackPlugin()
 ]
 ```
 
@@ -102,7 +102,7 @@ return {
     new HtmlWebpackPlugin({...}),
     internalCSS,
     externalCSS,
-    new StyleExtHtmlWebpackPlugin('internal.css') << tell the plugin which to target 
+    new StyleExtHtmlWebpackPlugin('internal.css') << tell the plugin which to target
   ]
 }
 ```
@@ -115,6 +115,7 @@ For more control, you can use an extended, hash version of the configuration. Th
 - `chunks`: which chunks the plugin scans for the css file - see the next Use Case: Multiple HTML files for usage (default: `undefined` - scans all chunks);
 - `position`: [`head-top`|`head-bottom`|`body-top`|`body-bottom`|`plugin`] - all (hopefully) self-explanatory except `plugin`, which means defer to html-webpack-plugin's `inject` option (default: `plugin`);
 - `minify`: see next section
+- `cssRegExp`:  A regular expression that indicates the css filename (default: /\.css$/);
 
 So to put the CSS at the bottom of the `<head>` element:
 ```javascript
@@ -154,7 +155,7 @@ Custom minification:
 plugins: [
   ...
   new StyleExtHtmlWebpackPlugin({
-    minify: { 
+    minify: {
       level: {
         1: {
           all: false,
@@ -231,7 +232,7 @@ As discussed earlier, ExtractTextPlugin does not support HMR.  If you really nee
 1. revert to/stick with [v2.x](https://github.com/numical/style-ext-html-webpack-plugin/tree/v2.0.6) of the plugin;
 2. only internalize the CSS on production builds.
 
-The former option is viable if v2.x supports your requirements but that version is no longer maintained hence the second approach is recommended. 
+The former option is viable if v2.x supports your requirements but that version is no longer maintained hence the second approach is recommended.
 
 For this, use a conditional in your webpack.config to:
 * select between ExtractTextPlugin or a loader that supports HMR such as the [style-loader](https://github.com/webpack/style-loader);
@@ -243,7 +244,7 @@ return {
   module: {
     loaders: [
       {
-        test: /\.css$/, 
+        test: /\.css$/,
         loader: DEBUG ? 'style-loader|css-loader' : ExtractTextPlugin.extract({...})
       }
     ]
