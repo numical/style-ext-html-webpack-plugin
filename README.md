@@ -280,6 +280,7 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* 3.4.0 - add explicit css file matching (thanks @mastilver for the complete PR), updated dependecies
 * 3.3.0 - add minification option (thanks @pablohpsilva for the idea)
 * 3.2.0 - runs even if `inject: false` for html-webpack-plugin; supports explicit positioning of style tags; update dependencies
 * 3.1.1 - updated README (sorry @rastasheep)

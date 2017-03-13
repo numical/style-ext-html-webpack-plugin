@@ -183,4 +183,3 @@ describe(`Explicitly Setting Position (webpack ${version.webpack})`, () => {
     testPlugin(config, expected, done);
   });
 });
-
