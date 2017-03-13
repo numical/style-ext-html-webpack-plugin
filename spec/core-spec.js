@@ -151,4 +151,3 @@ describe(`Core Functionality (webpack ${version.webpack})`, () => {
     testPlugin(config, expected, done);
   });
 });
-
