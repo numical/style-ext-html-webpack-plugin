@@ -66,7 +66,7 @@ plugins: [
 ```
 That's it.
 
-Note that for this simple configuration, HtmlWebpackPlugin's [inject](https://github.com/jantimon/html-webpack-plugin#configuration) option must be not be `false`.  However, this constraint does not apply if you specify the `position` - see 'Use Case: Specifying Position of Style Element' below
+Note that for this simple configuration, HtmlWebpackPlugin's [inject](https://github.com/jantimon/html-webpack-plugin#configuration) option must not be `false`.  However, this constraint does not apply if you specify the `position` - see 'Use Case: Specifying Position of Style Element' below
 
 
 ### Use Case: Internalize critical CSS only
@@ -75,7 +75,7 @@ Add the plugin and use more than one loader for your CSS:
 module: {
   loaders: [
     { test: /critical.css/, loader: ExtractTextPlugin.extract(...)},
-    { test: /other.css/, loader: 'style-loader!css-loader'},  << add seperate loader
+    { test: /other.css/, loader: 'style-loader!css-loader'},  << add separate loader
   ]
 }
 plugins: [
@@ -86,7 +86,7 @@ plugins: [
 ```
 
 ### Use Case: Internalize critical CSS with all other CSS in an external file
-Use two instances of ExtractTextPlugin and tell StyleExtWebpckPlugin which one to target by giving it the name of the output file:
+Use two instances of ExtractTextPlugin and tell StyleExtWebpackPlugin which one to target by giving it the name of the output file:
 ```javascript
 const internalCSS = new ExtractTextPlugin('internal.css');
 const externalCSS = new ExtractTextPlugin('styles.css');
@@ -280,6 +280,7 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* 3.4.1 - updating dependencies / typos on README
 * 3.4.0 - add explicit css file matching (thanks @mastilver for the complete PR), updated dependecies
 * 3.3.0 - add minification option (thanks @pablohpsilva for the idea)
 * 3.2.0 - runs even if `inject: false` for html-webpack-plugin; supports explicit positioning of style tags; update dependencies
