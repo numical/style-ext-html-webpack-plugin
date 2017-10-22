@@ -155,7 +155,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     });
   }
 
-  if (version.isWebpack2) {
+  if (!version.isWebpack1) {
     it('works with LoaderOptionsPlugin to minimize css', done => {
       const config = baseConfig('two_stylesheets');
       config.plugins.push(new webpack.LoaderOptionsPlugin({minimize: true}));

@@ -280,6 +280,9 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* 3.4.2 - resolved [issue 29](https://github.com/numical/style-ext-html-webpack-plugin/issues/29) - link to stylsheet not being updated (thanks @ballwood)
+        - updated dependencies
+        - added webpack3 testing
 * 3.4.1 - updating dependencies / typos on README
 * 3.4.0 - add explicit css file matching (thanks @mastilver for the complete PR), updated dependecies
 * 3.3.0 - add minification option (thanks @pablohpsilva for the idea)
