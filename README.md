@@ -280,6 +280,7 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* 3.4.3 - added node 7 & 8 testing
 * 3.4.2 - resolved [issue 29](https://github.com/numical/style-ext-html-webpack-plugin/issues/29) - link to stylsheet not being updated (thanks @ballwood)
         - updated dependencies
         - added webpack3 testing
@@ -289,7 +290,7 @@ Change History
 * 3.2.0 - runs even if `inject: false` for html-webpack-plugin; supports explicit positioning of style tags; update dependencies
 * 3.1.1 - updated README (sorry @rastasheep)
 * 3.1.0 - support multiple entry points (thanks @hagmandan); README typos fixed (thanks @eahlberg); updated all dependencies (including webpack 2.2.0)
-* v3.0.8 - webpck2 tests moved to webpack 2.2.0-rc3
+* v3.0.8 - webpack2 tests moved to webpack 2.2.0-rc3
 * v3.0.7 - webpack2 tests moved to webpack 2.2.0-rc.2 and minor fix to maintain compatability  
 * v3.0.6 - webpack1 tests moved to webpack 1.14.0
 * v3.0.5 - updated README after [issue 10](https://github.com/numical/style-ext-html-webpack-plugin/issues/10) (thanks, @Birowsky)
