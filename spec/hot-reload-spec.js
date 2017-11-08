@@ -9,22 +9,10 @@ const path = require('path');
 const rimraf = require('rimraf');
 const version = require('./helpers/versions');
 const testPlugin = require('./helpers/hot-reload-test.js');
+const { baseExpectations } = require('./expectations.js');
 
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 const PENDING = 'ExtractTextWebpackPlugin does not yet support hot reload functionality - see https://github.com/webpack/extract-text-webpack-plugin/issues/30';
-
-const baseExpectations = () => {
-  return {
-    html: [],
-    js: [],
-    files: [],
-    not: {
-      html: [],
-      js: [],
-      files: ['styles.css']
-    }
-  };
-};
 
 describe(`Hot reload functionality (webpack ${version.webpack})`, () => {
   beforeEach((done) => {

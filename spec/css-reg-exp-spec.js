@@ -10,6 +10,7 @@ const StyleExtHtmlWebpackPlugin = require('../index.js');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const testPlugin = require('./helpers/core-test.js');
 const mainTests = require('./helpers/main-tests.js');
+const { baseExpectations, multiEntryExpectations } = require('./expectations.js');
 
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -86,51 +87,6 @@ const multiEntryConfig = () => {
     })
   ];
   return config;
-};
-
-const baseExpectations = () => {
-  return {
-    html: [],
-    js: [],
-    files: [],
-    not: {
-      html: [],
-      js: [],
-      files: ['styles.css?qwerty']
-    }
-  };
-};
-
-const multiEntryExpectations = () => {
-  const expected1 = baseExpectations();
-  expected1.html = [
-    /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
-  ];
-  expected1.not.html = [
-    /<style>[\s\S]*\u0040import url\(https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower[\s\S]*<\/style>/,
-    /<style>[\s\S]*colour: grey;[\s\S]*<\/style>/,
-    /<style>[\s\S]*\[contenteditable='true'][\s\S]*<\/style>/
-  ];
-  const expected2 = baseExpectations();
-  expected2.html = [
-    /<style>[\s\S]*\u0040import url\(https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower[\s\S]*<\/style>/,
-    /<style>[\s\S]*colour: grey;[\s\S]*<\/style>/,
-    /<style>[\s\S]*\[contenteditable='true'][\s\S]*<\/style>/
-  ];
-  expected2.not.html = [
-    /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
-  ];
-  const entries = [
-    {
-      htmlFile: 'page1.html',
-      expected: expected1
-    },
-    {
-      htmlFile: 'page2.html',
-      expected: expected2
-    }
-  ];
-  return entries;
 };
 
 describe(`Custom css RegExp (webpack ${version.webpack})`, () => {

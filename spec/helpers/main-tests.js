@@ -131,7 +131,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     const config = baseConfig('one_stylesheet');
     // replace base HtmlWebpackPlugin
     config.plugins[0] = new HtmlWebpackPlugin({
-      template: path.join(__dirname, '../fixtures/html.template')
+      template: path.join(__dirname, '../fixtures/html_template_with_style.ejs')
     });
     const expected = baseExpectations();
     expected.html = [
@@ -139,6 +139,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
       /<style>div { background: blue }<\/style>/,
       /<div id='template_content'>/
     ];
+    expected.not.html = [];
     testPlugin(config, expected, done);
   });
 
