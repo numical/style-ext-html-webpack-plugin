@@ -10,7 +10,7 @@ const StyleExtHtmlWebpackPlugin = require('../index.js');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const testPlugin = require('./helpers/core-test.js');
 const mainTests = require('./helpers/main-tests.js');
-const { baseExpectations, multiEntryExpectations } = require('./expectations.js');
+const expectations = require('./expectations.js');
 
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -25,6 +25,7 @@ const baseConfig = (entry, cssFilename, cssLoaders) => {
     },
     plugins: [
       new HtmlWebpackPlugin({
+        hash: true,
         template: path.join(__dirname, 'fixtures/html_template.ejs')
       }),
       new ExtractTextPlugin(cssFilename),
@@ -70,10 +71,12 @@ const multiEntryConfig = () => {
   ];
   config.plugins = [
     new HtmlWebpackPlugin({
+      hash: true,
       chunks: ['page1'],
       filename: 'page1.html'
     }),
     new HtmlWebpackPlugin({
+      hash: true,
       chunks: ['page2'],
       filename: 'page2.html'
     }),
@@ -94,16 +97,16 @@ describe(`Core Functionality (webpack ${version.webpack})`, () => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  mainTests(baseConfig, baseExpectations, multiEntryConfig, multiEntryExpectations);
+  mainTests(baseConfig, expectations.base, multiEntryConfig, expectations.multiEntry);
 
   it('plays happily with other plugins using same html plugin event', done => {
     const config = baseConfig('one_stylesheet');
     config.plugins.push(new ScriptExtHtmlWebpackPlugin({
       defaultAttribute: 'async'
     }));
-    const expected = baseExpectations();
+    const expected = expectations.base();
     expected.html = [
-      /<script type="text\/javascript" src="index_bundle.js" async><\/script>/,
+      /<script type="text\/javascript" src="index_bundle.js[?]?[\S]*" async><\/script>/,
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
     testPlugin(config, expected, done);

@@ -1,6 +1,6 @@
 'use strict';
 
-const baseExpectations = () => {
+const base = () => {
   return {
     html: [],
     js: [],
@@ -13,8 +13,8 @@ const baseExpectations = () => {
   };
 };
 
-const multiEntryExpectations = () => {
-  const expected1 = baseExpectations();
+const multiEntry = () => {
+  const expected1 = base();
   expected1.html = [
     /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
   ];
@@ -24,7 +24,7 @@ const multiEntryExpectations = () => {
     /<style>[\s\S]*colour: grey;[\s\S]*<\/style>/,
     /<style>[\s\S]*\[contenteditable='true'][\s\S]*<\/style>/
   ];
-  const expected2 = baseExpectations();
+  const expected2 = base();
   expected2.html = [
     /<style>[\s\S]*\u0040import url\(https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower[\s\S]*<\/style>/,
     /<style>[\s\S]*colour: grey;[\s\S]*<\/style>/,
@@ -48,6 +48,6 @@ const multiEntryExpectations = () => {
 };
 
 module.exports = {
-  baseExpectations,
-  multiEntryExpectations
+  base,
+  multiEntry
 };

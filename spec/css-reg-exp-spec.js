@@ -10,7 +10,7 @@ const StyleExtHtmlWebpackPlugin = require('../index.js');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const testPlugin = require('./helpers/core-test.js');
 const mainTests = require('./helpers/main-tests.js');
-const { baseExpectations, multiEntryExpectations } = require('./expectations.js');
+const expectations = require('./expectations.js');
 
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -94,7 +94,7 @@ describe(`Custom css RegExp (webpack ${version.webpack})`, () => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  mainTests(baseConfig, baseExpectations, multiEntryConfig, multiEntryExpectations);
+  mainTests(baseConfig, expectations.base, multiEntryConfig, expectations.multiEntry);
 
   it('plays happily with other plugins using same html plugin event', done => {
     const config = baseConfig('one_stylesheet');
@@ -102,7 +102,7 @@ describe(`Custom css RegExp (webpack ${version.webpack})`, () => {
       defaultAttribute: 'async',
       cssRegExp: /\.css(\?\w{6})?$/
     }));
-    const expected = baseExpectations();
+    const expected = expectations.base();
     expected.html = [
       /<script type="text\/javascript" src="index_bundle.js" async><\/script>/,
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/

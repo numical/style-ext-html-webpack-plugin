@@ -13,7 +13,9 @@
     "test:webpack1": "VERSION=webpack1 jasmine",
     "test:webpack2": "VERSION=webpack2 jasmine",
     "test:webpack3": "VERSION=webpack3 jasmine",
-    "test:focus": "VERSION=webpack3 jasmine ./spec/set-position-spec.js",
+    "test:core": "VERSION=webpack3 jasmine ./spec/core-spec.js",
+    "test:css-reg-exp": "VERSION=webpack3 jasmine ./spec/css-reg-exp-spec.js",
+    "test:set-position-spec": "VERSION=webpack3 jasmine ./spec/set-position-spec.js",
     "node-debug": "DEBUG=StyleExt VERSION=webpack2 node-debug jasmine",
     "debug": "DEBUG=StyleExt VERSION=webpack2 jasmine"
   },

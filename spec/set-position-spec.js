@@ -9,7 +9,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const mainTests = require('./helpers/main-tests.js');
 const testPlugin = require('./helpers/core-test.js');
-const { baseExpectations, multiEntryExpectations } = require('./expectations.js');
+const expectations = require('./expectations.js');
 
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
@@ -25,6 +25,7 @@ const baseConfig = (entry, cssFilename, cssLoaders, position) => {
     },
     plugins: [
       new HtmlWebpackPlugin({
+        hash: true,
         inject: false
       }),
       new ExtractTextPlugin(cssFilename),
@@ -73,11 +74,13 @@ const multiEntryConfig = (position) => {
   ];
   config.plugins = [
     new HtmlWebpackPlugin({
+      hash: true,
       inject: false,
       chunks: ['page1'],
       filename: 'page1.html'
     }),
     new HtmlWebpackPlugin({
+      hash: true,
       inject: false,
       chunks: ['page2'],
       filename: 'page2.html'
@@ -101,11 +104,11 @@ describe(`Explicitly Setting Position (webpack ${version.webpack})`, () => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  mainTests(baseConfig, baseExpectations, multiEntryConfig, multiEntryExpectations);
+  mainTests(baseConfig, expectations.base, multiEntryConfig, expectations.multiEntry);
 
   it('positions correctly at bottom of head', done => {
     const config = baseConfig('one_stylesheet', null, null, 'head-bottom');
-    const expected = baseExpectations();
+    const expected = expectations.base();
     expected.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style><\/head>/
     ];
@@ -114,7 +117,7 @@ describe(`Explicitly Setting Position (webpack ${version.webpack})`, () => {
 
   it('positions correctly at top of head', done => {
     const config = baseConfig('one_stylesheet', null, null, 'head-top');
-    const expected = baseExpectations();
+    const expected = expectations.base();
     expected.html = [
       /<head><style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
@@ -123,7 +126,7 @@ describe(`Explicitly Setting Position (webpack ${version.webpack})`, () => {
 
   it('positions correctly at bottom of body', done => {
     const config = baseConfig('one_stylesheet', null, null, 'body-bottom');
-    const expected = baseExpectations();
+    const expected = expectations.base();
     expected.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style><\/body>/
     ];
@@ -132,7 +135,7 @@ describe(`Explicitly Setting Position (webpack ${version.webpack})`, () => {
 
   it('positions correctly at top of body', done => {
     const config = baseConfig('one_stylesheet', null, null, 'body-top');
-    const expected = baseExpectations();
+    const expected = expectations.base();
     expected.html = [
       /<body><style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
