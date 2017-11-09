@@ -24,7 +24,7 @@ const baseConfig = (entry, cssFilename, cssLoaders) => {
       filename: 'index_bundle.js'
     },
     plugins: [
-      new HtmlWebpackPlugin(),
+      new HtmlWebpackPlugin({hash: true}),
       new ExtractTextPlugin(cssFilename),
       new StyleExtHtmlWebpackPlugin({
         cssRegExp: /\.css(\?\w{6})?$/
@@ -70,10 +70,12 @@ const multiEntryConfig = () => {
   ];
   config.plugins = [
     new HtmlWebpackPlugin({
+      hash: true,
       chunks: ['page1'],
       filename: 'page1.html'
     }),
     new HtmlWebpackPlugin({
+      hash: true,
       chunks: ['page2'],
       filename: 'page2.html'
     }),
@@ -104,7 +106,7 @@ describe(`Custom css RegExp (webpack ${version.webpack})`, () => {
     }));
     const expected = expectations.base();
     expected.html = [
-      /<script type="text\/javascript" src="index_bundle.js" async><\/script>/,
+      /<script type="text\/javascript" src="index_bundle.js[?]?[\S]*" async><\/script>/,
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
     testPlugin(config, expected, done);

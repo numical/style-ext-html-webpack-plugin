@@ -280,6 +280,7 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* 3.4.5 - further fix for [issue 33](https://github.com/numical/style-ext-html-webpack-plugin/issues/33) when css filenames include '?'
 * 3.4.4 - partial resolution to [issue 33](https://github.com/numical/style-ext-html-webpack-plugin/issues/33) - link element not removed (thanks orenklein)
 * 3.4.3 - added node 7 & 8 testing
 * 3.4.2 - resolved [issue 29](https://github.com/numical/style-ext-html-webpack-plugin/issues/29) - link to stylsheet not being updated (thanks @ballwood)
