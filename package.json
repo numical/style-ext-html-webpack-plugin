@@ -17,7 +17,9 @@
     "test:css-reg-exp": "VERSION=webpack3 jasmine ./spec/css-reg-exp-spec.js",
     "test:set-position-spec": "VERSION=webpack3 jasmine ./spec/set-position-spec.js",
     "node-debug": "DEBUG=StyleExt VERSION=webpack2 node-debug jasmine",
-    "debug": "DEBUG=StyleExt VERSION=webpack2 jasmine"
+    "debug": "DEBUG=StyleExt VERSION=webpack2 jasmine",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -61,6 +63,8 @@
     "clean-css": "^4.1.9",
     "debug": "^3.1.0",
     "semistandard": "^12.0.0",
-    "webpack-sources": "^1.0.1"
-  }
+    "webpack-sources": "^1.0.1",
+    "snyk": "^1.67.0"
+  },
+  "snyk": true
 }
