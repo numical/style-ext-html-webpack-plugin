@@ -91,12 +91,12 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   it('vanilla ExtractText works with local web font', (done) => {
     const config = baseConfig('one_stylesheet_with_web_font');
     config.plugins.pop(); // removes StyleExt plugin
-    config.module.loaders.push(  // add file loader for local font file
+    config.module.loaders.push( // add file loader for local font file
       {
         test: /\.woff2$/,
         loader: 'file-loader?name=[name].[ext]'
       }
-        );
+    );
     const expected = baseExpectations();
     expected.not.html = [
       /<style>[\s\S]*font-face[\s\S]*Indie-Flower[\s\S]*<\/style>/
@@ -111,12 +111,12 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
 
   it('works with web fonts', (done) => {
     const config = baseConfig('one_stylesheet_with_web_font');
-    config.module.loaders.push(  // add file loader for local font file
+    config.module.loaders.push( // add file loader for local font file
       {
         test: /\.woff2$/,
         loader: 'file-loader?name=[name].[ext]'
       }
-        );
+    );
     const expected = baseExpectations();
     expected.html = [
       /<style>[\s\S]*font-face[\s\S]*Indie-Flower[\s\S]*<\/style>/

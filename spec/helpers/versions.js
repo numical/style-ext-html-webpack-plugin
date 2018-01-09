@@ -5,7 +5,7 @@ const setModuleVersion = require('dynavers')('dynavers.json');
 const VERSIONS = {
   webpack1: {
     isWebpack1: true,
-    webpack: '1.14.0',
+    webpack: '1.15.0',
     extractText: '1.0.1',
     extractTextLoader: (extractTextPlugin, cssLoaders) => {
       return extractTextPlugin.extract('style-loader', cssLoaders);
@@ -13,7 +13,7 @@ const VERSIONS = {
   },
   webpack2: {
     isWebpack1: false,
-    webpack: '2.6.1',
+    webpack: '2.7.0',
     extractText: '2.1.2',
     extractTextLoader: (extractTextPlugin, cssLoaders) => {
       return extractTextPlugin.extract({
@@ -24,8 +24,8 @@ const VERSIONS = {
   },
   webpack3: {
     isWebpack1: false,
-    webpack: '3.8.1',
-    extractText: '3.0.1',
+    webpack: '3.10.0',
+    extractText: '3.0.2',
     extractTextLoader: (extractTextPlugin, cssLoaders) => {
       return extractTextPlugin.extract({
         fallback: 'style-loader',
