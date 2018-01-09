@@ -301,9 +301,34 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     testPlugin(config, expected, done);
   });
 
+  it('copes with a URL public path', done => {
+    const config = baseConfig('one_stylesheet');
+    config.output.publicPath = 'https://www.github.com/wibble/';
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
+
   it('copes with a public path with specified css file', done => {
     const config = baseConfig('one_stylesheet');
     config.output.publicPath = '/wibble/';
+    config.plugins = [
+      new HtmlWebpackPlugin(),
+      new ExtractTextPlugin('styles.css'),
+      new StyleExtHtmlWebpackPlugin('styles.css')
+    ];
+    const expected = baseExpectations();
+    expected.html = [
+      /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
+
+  it('copes with a URL public path with specified css file', done => {
+    const config = baseConfig('one_stylesheet');
+    config.output.publicPath = 'https://www.github.com/wibble/';
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
