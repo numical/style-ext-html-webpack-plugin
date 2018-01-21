@@ -280,6 +280,7 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* 3.4.7 - removed legacy dependencies (thanks @ngyikp)
 * 3.4.6 - [PR 34](https://github.com/numical/style-ext-html-webpack-plugin/pull/34) - fix case where public path is a URL (thanks @jlwogren, @gvitelli)
         - updated dependencies
 * 3.4.5 - further fix for [issue 33](https://github.com/numical/style-ext-html-webpack-plugin/issues/33) when css filenames include '?'
