@@ -1,5 +1,6 @@
 module.exports = {
   plugins: [
-    require('postcss-spiffing')
+    require('postcss-spiffing'),
+    require('cssnano')
   ]
 };

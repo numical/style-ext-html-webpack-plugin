@@ -51,16 +51,6 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     testPlugin(config, expected, done);
   });
 
-  it('inlining works with postcss-loader', done => {
-    const config = baseConfig('two_stylesheets', 'styles.css', ['css-loader', 'postcss-loader']);
-    const expected = baseExpectations();
-    expected.html = [
-      // note British speeling cnverted to American spelling
-      /<style>[\s\S]*background: snow;[\s\S]*color: gray;[\s\S]*<\/style>/
-    ];
-    testPlugin(config, expected, done);
-  });
-
   it('inlining works alongside webpack css loaders', done => {
     const config = baseConfig('two_stylesheets');
     config.module.loaders = [
@@ -143,31 +133,25 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     testPlugin(config, expected, done);
   });
 
-  if (version.isWebpack1) {
-    it('works with UglifyJsPlugin to minimize css', done => {
-      const config = baseConfig('two_stylesheets');
-      config.plugins.push(new webpack.optimize.UglifyJsPlugin());
-      const expected = baseExpectations();
-      // note spaces and unnecessary symbols have been removed
-      expected.html = [
-        /<style>[\s\S]*body{background:snow}body{colour:grey}[\s\S]*<\/style>/
-      ];
-      testPlugin(config, expected, done);
-    });
-  }
+  it('works with cssnano to minimize css', done => {
+    const config = baseConfig('two_stylesheets', null, ['css-loader', 'postcss-loader']);
+    const expected = baseExpectations();
+    // note spaces and unnecessary symbols have been removed
+    expected.html = [
+      /<style>[\s\S]*body{background:snow}body{color:grey}[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
 
-  if (!version.isWebpack1) {
-    it('works with LoaderOptionsPlugin to minimize css', done => {
-      const config = baseConfig('two_stylesheets');
-      config.plugins.push(new webpack.LoaderOptionsPlugin({minimize: true}));
-      const expected = baseExpectations();
-      // note spaces and unnecessary symbols have been removed
-      expected.html = [
-        /<style>[\s\S]*body{background:snow}body{colour:grey}[\s\S]*<\/style>/
-      ];
-      testPlugin(config, expected, done);
-    });
-  }
+  it('inlining works with postcss-loader', done => {
+    const config = baseConfig('two_stylesheets', 'styles.css', ['css-loader', 'postcss-loader']);
+    const expected = baseExpectations();
+    expected.html = [
+      // note British speeling converted to American spelling, also minimzed as this is also in postcss processing
+      /<style>[\s\S]*body{background:snow}body{color:grey}[\s\S]*<\/style>/
+    ];
+    testPlugin(config, expected, done);
+  });
 
   it('vanilla ExtractText handles [name] and [id] in css filename', done => {
     const config = baseConfig('one_stylesheet', '[name][id].css');

@@ -24,8 +24,19 @@ const VERSIONS = {
   },
   webpack3: {
     isWebpack1: false,
-    webpack: '3.10.0',
+    webpack: '3.12.0',
     extractText: '3.0.2',
+    extractTextLoader: (extractTextPlugin, cssLoaders) => {
+      return extractTextPlugin.extract({
+        fallback: 'style-loader',
+        use: cssLoaders
+      });
+    }
+  },
+  webpack4: {
+    isWebpack1: false,
+    webpack: '4.17.1',
+    extractText: '4.0.0-beta.0',
     extractTextLoader: (extractTextPlugin, cssLoaders) => {
       return extractTextPlugin.extract({
         fallback: 'style-loader',

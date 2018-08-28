@@ -13,11 +13,12 @@
     "test:webpack1": "VERSION=webpack1 jasmine",
     "test:webpack2": "VERSION=webpack2 jasmine",
     "test:webpack3": "VERSION=webpack3 jasmine",
-    "test:core": "VERSION=webpack3 jasmine ./spec/core-spec.js",
-    "test:css-reg-exp": "VERSION=webpack3 jasmine ./spec/css-reg-exp-spec.js",
-    "test:set-position-spec": "VERSION=webpack3 jasmine ./spec/set-position-spec.js",
-    "node-debug": "DEBUG=StyleExt VERSION=webpack2 node-debug jasmine",
-    "debug": "DEBUG=StyleExt VERSION=webpack2 jasmine"
+    "test:webpack4": "VERSION=webpack4 jasmine",
+    "test:core": "VERSION=webpack1 jasmine ./spec/core-spec.js",
+    "test:css-reg-exp": "VERSION=webpack4 jasmine ./spec/css-reg-exp-spec.js",
+    "test:set-position-spec": "VERSION=webpack4 jasmine ./spec/set-position-spec.js",
+    "node-debug": "DEBUG=StyleExt VERSION=webpack4 node-debug jasmine",
+    "debug": "DEBUG=StyleExt VERSION=webpack4 jasmine"
   },
   "repository": {
     "type": "git",
@@ -39,26 +40,27 @@
   },
   "homepage": "https://github.com/numical/style-ext-html-webpack-plugin",
   "devDependencies": {
-    "css-loader": "^0.28.9",
+    "css-loader": "^1.0.0",
+    "cssnano": "^4.1.0",
     "denodeify": "^1.2.1",
     "dynavers": "^0.2.0",
-    "file-loader": "^1.1.6",
+    "file-loader": "^2.0.0",
     "fs-temp": "^1.1.2",
-    "html-webpack-plugin": "^2.30.1",
-    "jasmine": "^2.9.0",
+    "html-webpack-plugin": "^3.2.0",
+    "jasmine": "^3.2.0",
     "jasmine-spec-reporter": "^4.2.1",
-    "jasmine2-custom-message": "^0.8.4",
+    "jasmine2-custom-message": "^0.9.3",
     "ncp": "^2.0.0",
-    "postcss-loader": "^2.0.10",
+    "postcss-loader": "^3.0.0",
     "postcss-spiffing": "0.1.0",
     "rimraf": "^2.6.2",
-    "script-ext-html-webpack-plugin": "^1.8.8",
-    "semistandard": "^12.0.0",
-    "style-loader": "^0.19.1",
-    "url-loader": "^0.6.2"
+    "script-ext-html-webpack-plugin": "^2.0.1",
+    "semistandard": "^12.0.1",
+    "style-loader": "^0.23.0",
+    "url-loader": "^1.1.1"
   },
   "dependencies": {
-    "clean-css": "^4.1.9",
+    "clean-css": "^4.2.1",
     "debug": "^3.1.0"
   }
 }
