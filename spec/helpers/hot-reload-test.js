@@ -135,7 +135,7 @@ const iterateFn = (testDir, testIterations, metaData, done) => {
     } else {
       // more startup hack faff
       debug('no file to write but test iterations left');
-      if (version.isWebpack1 && metaData.iterationCount === 1) {
+      if (version.major === 1 && metaData.iterationCount === 1) {
         debug('adding v1 startup hack');
         metaData.v1StartupHack = addv1StartupHack(metaData);
       }

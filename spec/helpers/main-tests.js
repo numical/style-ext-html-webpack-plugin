@@ -3,16 +3,16 @@
 
 const path = require('path');
 const version = require('./versions');
-const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../../index.js');
 const testPlugin = require('./core-test.js');
 const testMultiEntry = require('./multi-entry-test.js');
+const { baseConfig, multiEntryConfig } = require('./configs.js');
 
-const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExpectations) => {
-  it('inlines a single stylesheet', done => {
-    const config = baseConfig('one_stylesheet');
+const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations) => {
+  fit('inlines a single stylesheet', done => {
+    const config = baseConfig(defaultOptions);
     const expected = baseExpectations();
     expected.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
@@ -21,7 +21,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('inlines a single stylesheet with quoted attributes and an import url', done => {
-    const config = baseConfig('one_tricky_stylesheet');
+    const config = baseConfig('one_tricky_stylesheet', defaultOptions);
     const expected = baseExpectations();
     expected.html = [
       /<style>[\s\S]*\u0040import url\(https:\/\/fonts.googleapis.com\/css\?family=Indie\+Flower[\s\S]*<\/style>/,
@@ -32,7 +32,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('inlines multiple stylesheets from a single source', done => {
-    const config = baseConfig('two_stylesheets');
+    const config = baseConfig('two_stylesheets', defaultOptions);
     const expected = baseExpectations();
     expected.html = [
       // note British spelling
@@ -42,7 +42,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('inlines multiple stylesheets from multiple sources', done => {
-    const config = baseConfig('nested_stylesheets');
+    const config = baseConfig('nested_stylesheets', defaultOptions);
     const expected = baseExpectations();
     expected.html = [
       // note British spelling
@@ -52,7 +52,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('inlining works alongside webpack css loaders', done => {
-    const config = baseConfig('two_stylesheets');
+    const config = baseConfig('two_stylesheets', defaultOptions);
     config.module.loaders = [
       {
         test: /stylesheet1.css/,
@@ -79,7 +79,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('vanilla ExtractText works with local web font', (done) => {
-    const config = baseConfig('one_stylesheet_with_web_font');
+    const config = baseConfig('one_stylesheet_with_web_font', defaultOptions);
     config.plugins.pop(); // removes StyleExt plugin
     config.module.loaders.push( // add file loader for local font file
       {
@@ -100,7 +100,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('works with web fonts', (done) => {
-    const config = baseConfig('one_stylesheet_with_web_font');
+    const config = baseConfig('one_stylesheet_with_web_font', defaultOptions);
     config.module.loaders.push( // add file loader for local font file
       {
         test: /\.woff2$/,
@@ -118,7 +118,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('works with html webpack plugin template styles', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     // replace base HtmlWebpackPlugin
     config.plugins[0] = new HtmlWebpackPlugin({
       template: path.join(__dirname, '../fixtures/html_template_with_style.ejs')
@@ -134,7 +134,10 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('works with cssnano to minimize css', done => {
-    const config = baseConfig('two_stylesheets', null, ['css-loader', 'postcss-loader']);
+    const config = baseConfig({
+      entry: 'two_stylesheets',
+      cssLoaders: ['css-loader', 'postcss-loader']
+    }, defaultOptions);
     const expected = baseExpectations();
     // note spaces and unnecessary symbols have been removed
     expected.html = [
@@ -144,7 +147,10 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('inlining works with postcss-loader', done => {
-    const config = baseConfig('two_stylesheets', 'styles.css', ['css-loader', 'postcss-loader']);
+    const config = baseConfig({
+      entry: 'two_stylesheets',
+      cssLoaders: ['css-loader', 'postcss-loader']
+    }, defaultOptions);
     const expected = baseExpectations();
     expected.html = [
       // note British speeling converted to American spelling, also minimzed as this is also in postcss processing
@@ -154,7 +160,9 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('vanilla ExtractText handles [name] and [id] in css filename', done => {
-    const config = baseConfig('one_stylesheet', '[name][id].css');
+    const config = baseConfig({
+      cssFilename: '[name][id].css'
+    }, defaultOptions);
     config.plugins.pop(); // remove StyleExt
     const expected = baseExpectations();
     expected.not.html = [
@@ -170,7 +178,9 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   // Note: why on earth test this? For people who simply add StyleExt to an existing
   // configuration with ExtractTextWebpackPlugin already in it
   it('handles [name] and [id] in css filename', done => {
-    const config = baseConfig('one_stylesheet', '[name][id].css');
+    const config = baseConfig({
+      cssFilename: '[name][id].css'
+    }, defaultOptions);
     const expected = baseExpectations();
     expected.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
@@ -184,7 +194,9 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   // Note: why on earth test this? For people who simply add StyleExt to an existing
   // configuration with ExtractTextWebpackPlugin already in it
   it('handles [contenthash] in css filename', done => {
-    const config = baseConfig('one_stylesheet', '[contenthash].css');
+    const config = baseConfig({
+      cssFilename: '[contenthash].css'
+    }, defaultOptions);
     const expected = baseExpectations();
     expected.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
@@ -195,7 +207,9 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   // Note: why on earth test this? For people who simply add StyleExt to an existing
   // configuration with ExtractTextWebpackPlugin already in it
   it('handles nested css filename', done => {
-    const config = baseConfig('one_stylesheet', 'css/styles.css');
+    const config = baseConfig({
+      cssFilename: 'css/styles.css'
+    }, defaultOptions);
     const expected = baseExpectations();
     expected.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
@@ -210,7 +224,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   it('can be targeted at one of multiple ExtractText outputs', done => {
     const toBeExtracted = new ExtractTextPlugin('toBeExtracted.css');
     const toBeIgnored = new ExtractTextPlugin('toBeIgnored.css');
-    const config = baseConfig('two_stylesheets');
+    const config = baseConfig('two_stylesheets', defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
       toBeExtracted,
@@ -246,7 +260,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('is happy when switched off for debug mode', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
@@ -262,7 +276,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('is happy if \'true\' is passed as the filename', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
@@ -276,7 +290,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('copes with a public path', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.output.publicPath = '/wibble/';
     const expected = baseExpectations();
     expected.html = [
@@ -286,7 +300,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('copes with a URL public path', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.output.publicPath = 'https://www.github.com/wibble/';
     const expected = baseExpectations();
     expected.html = [
@@ -296,7 +310,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('copes with a public path with specified css file', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.output.publicPath = '/wibble/';
     config.plugins = [
       new HtmlWebpackPlugin(),
@@ -311,7 +325,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('copes with a URL public path with specified css file', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.output.publicPath = 'https://www.github.com/wibble/';
     config.plugins = [
       new HtmlWebpackPlugin(),
@@ -326,7 +340,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('understands blank options object', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
@@ -340,7 +354,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('understands disabled in options object', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
@@ -356,7 +370,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('understands specified css file in options object', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.output.publicPath = '/wibble/';
     config.plugins = [
       new HtmlWebpackPlugin(),
@@ -381,7 +395,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('supports true minify option', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
@@ -395,7 +409,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('supports empty object minify option', done => {
-    const config = baseConfig('one_stylesheet');
+    const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
@@ -409,7 +423,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('minifies multiple stylesheets from multiple sources', done => {
-    const config = baseConfig('nested_stylesheets');
+    const config = baseConfig('nested_stylesheets', defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
@@ -423,7 +437,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
   });
 
   it('passes on minify options', done => {
-    const config = baseConfig('nested_stylesheets');
+    const config = baseConfig('nested_stylesheets', defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),

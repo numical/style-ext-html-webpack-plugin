@@ -14,7 +14,7 @@ const baseExpectations = require('./expectations.js').base;
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 const PENDING = 'ExtractTextWebpackPlugin does not yet support hot reload functionality - see https://github.com/webpack/extract-text-webpack-plugin/issues/30';
 
-describe(`Hot reload functionality (webpack ${version.webpack})`, () => {
+describe(`Hot reload functionality (webpack ${version.describe})`, () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
   });
