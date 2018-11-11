@@ -24,7 +24,7 @@ const baseConfig = (entry, cssFilename, cssLoaders) => {
       filename: 'index_bundle.js'
     },
     plugins: [
-      new HtmlWebpackPlugin({hash: true}),
+      new HtmlWebpackPlugin({ hash: true }),
       new ExtractTextPlugin(cssFilename),
       new StyleExtHtmlWebpackPlugin({
         cssRegExp: /\.css(\?\w{6})?$/

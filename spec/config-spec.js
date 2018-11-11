@@ -26,7 +26,7 @@ describe('Options', () => {
   });
 
   it('returns disabled when false passed in', () => {
-    const expected = Object.assign({}, defaultOptions, {enabled: false});
+    const expected = Object.assign({}, defaultOptions, { enabled: false });
     expect(subject(false)).toEqual(expected);
   });
 
@@ -35,13 +35,13 @@ describe('Options', () => {
   });
 
   it('if minify is passed as true, options.minify is empty object', () => {
-    const options = subject({minify: true});
+    const options = subject({ minify: true });
     expect(options.minify).toEqual({});
   });
 
   it('if minify is passed as object, options.minify is same object', () => {
     const minify = { foo: 'bar' };
-    const options = subject({minify});
+    const options = subject({ minify });
     expect(options.minify).toEqual(minify);
   });
 });

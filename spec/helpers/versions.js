@@ -24,7 +24,7 @@ const VERSIONS = {
   },
   webpack3: {
     isWebpack1: false,
-    webpack: '3.10.0',
+    webpack: '3.12.0',
     extractText: '3.0.2',
     extractTextLoader: (extractTextPlugin, cssLoaders) => {
       return extractTextPlugin.extract({

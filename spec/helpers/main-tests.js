@@ -3,7 +3,6 @@
 
 const path = require('path');
 const version = require('./versions');
-const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../../index.js');
@@ -142,32 +141,6 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     expected.not.html = [];
     testPlugin(config, expected, done);
   });
-
-  if (version.isWebpack1) {
-    it('works with UglifyJsPlugin to minimize css', done => {
-      const config = baseConfig('two_stylesheets');
-      config.plugins.push(new webpack.optimize.UglifyJsPlugin());
-      const expected = baseExpectations();
-      // note spaces and unnecessary symbols have been removed
-      expected.html = [
-        /<style>[\s\S]*body{background:snow}body{colour:grey}[\s\S]*<\/style>/
-      ];
-      testPlugin(config, expected, done);
-    });
-  }
-
-  if (!version.isWebpack1) {
-    it('works with LoaderOptionsPlugin to minimize css', done => {
-      const config = baseConfig('two_stylesheets');
-      config.plugins.push(new webpack.LoaderOptionsPlugin({minimize: true}));
-      const expected = baseExpectations();
-      // note spaces and unnecessary symbols have been removed
-      expected.html = [
-        /<style>[\s\S]*body{background:snow}body{colour:grey}[\s\S]*<\/style>/
-      ];
-      testPlugin(config, expected, done);
-    });
-  }
 
   it('vanilla ExtractText handles [name] and [id] in css filename', done => {
     const config = baseConfig('one_stylesheet', '[name][id].css');
@@ -360,7 +333,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({enabled: false})
+      new StyleExtHtmlWebpackPlugin({ enabled: false })
     ];
     const expected = baseExpectations();
     expected.files = ['styles.css'];
@@ -377,7 +350,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({file: 'styles.css'})
+      new StyleExtHtmlWebpackPlugin({ file: 'styles.css' })
     ];
     const expected = baseExpectations();
     expected.html = [
@@ -401,7 +374,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({minify: true})
+      new StyleExtHtmlWebpackPlugin({ minify: true })
     ];
     const expected = baseExpectations();
     expected.html = [
@@ -415,7 +388,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({minify: {}})
+      new StyleExtHtmlWebpackPlugin({ minify: {} })
     ];
     const expected = baseExpectations();
     expected.html = [
@@ -429,7 +402,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({minify: true})
+      new StyleExtHtmlWebpackPlugin({ minify: true })
     ];
     const expected = baseExpectations();
     expected.html = [
@@ -443,7 +416,7 @@ const mainTests = (baseConfig, baseExpectations, multiEntryConfig, multiEntryExp
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({minify: {level: 2}})
+      new StyleExtHtmlWebpackPlugin({ minify: { level: 2 } })
     ];
     const expected = baseExpectations();
     expected.html = [
