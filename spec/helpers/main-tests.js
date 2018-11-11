@@ -358,7 +358,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({enabled: false})
+      new StyleExtHtmlWebpackPlugin({ enabled: false })
     ];
     const expected = baseExpectations();
     expected.files = ['styles.css'];
@@ -375,7 +375,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({file: 'styles.css'})
+      new StyleExtHtmlWebpackPlugin({ file: 'styles.css' })
     ];
     const expected = baseExpectations();
     expected.html = [
@@ -399,7 +399,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({minify: true})
+      new StyleExtHtmlWebpackPlugin({ minify: true })
     ];
     const expected = baseExpectations();
     expected.html = [
@@ -413,7 +413,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({minify: {}})
+      new StyleExtHtmlWebpackPlugin({ minify: {} })
     ];
     const expected = baseExpectations();
     expected.html = [
@@ -427,7 +427,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({minify: true})
+      new StyleExtHtmlWebpackPlugin({ minify: true })
     ];
     const expected = baseExpectations();
     expected.html = [
@@ -441,7 +441,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     config.plugins = [
       new HtmlWebpackPlugin(),
       new ExtractTextPlugin('styles.css'),
-      new StyleExtHtmlWebpackPlugin({minify: {level: 2}})
+      new StyleExtHtmlWebpackPlugin({ minify: { level: 2 } })
     ];
     const expected = baseExpectations();
     expected.html = [

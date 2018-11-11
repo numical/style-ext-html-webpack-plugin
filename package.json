@@ -1,6 +1,6 @@
 {
   "name": "style-ext-html-webpack-plugin",
-  "version": "3.4.7",
+  "version": "3.4.8",
   "description": "Enhances html-webpack-plugin functionality by enabling inline styles.",
   "main": "index.js",
   "files": [
@@ -40,27 +40,27 @@
   },
   "homepage": "https://github.com/numical/style-ext-html-webpack-plugin",
   "devDependencies": {
-    "css-loader": "^1.0.0",
+    "css-loader": "^1.0.1",
     "cssnano": "^4.1.0",
     "denodeify": "^1.2.1",
-    "dynavers": "^0.2.0",
+    "dynavers": "^0.3.1",
     "file-loader": "^2.0.0",
     "fs-temp": "^1.1.2",
     "html-webpack-plugin": "^3.2.0",
-    "jasmine": "^3.2.0",
+    "jasmine": "^3.3.0",
     "jasmine-spec-reporter": "^4.2.1",
     "jasmine2-custom-message": "^0.9.3",
     "ncp": "^2.0.0",
     "postcss-loader": "^3.0.0",
     "postcss-spiffing": "0.1.0",
     "rimraf": "^2.6.2",
-    "script-ext-html-webpack-plugin": "^2.0.1",
-    "semistandard": "^12.0.1",
-    "style-loader": "^0.23.0",
-    "url-loader": "^1.1.1"
+    "script-ext-html-webpack-plugin": "^2.1.2",
+    "semistandard": "^13.0.1",
+    "style-loader": "^0.23.1",
+    "url-loader": "^1.1.2"
   },
   "dependencies": {
     "clean-css": "^4.2.1",
-    "debug": "^3.1.0"
+    "debug": "^4.1.0"
   }
 }

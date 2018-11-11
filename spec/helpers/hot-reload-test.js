@@ -91,7 +91,7 @@ const createConfig = (testDir) => {
     },
     plugins: [
       // note: cacheing must be OFF
-      new HtmlWebpackPlugin({cache: false}),
+      new HtmlWebpackPlugin({ cache: false }),
       new ExtractTextWebpackPlugin('styles.css'),
       new StyleExtHtmlWebpackPlugin()
     ],

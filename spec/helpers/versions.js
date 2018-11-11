@@ -35,7 +35,7 @@ const VERSIONS = {
   },
   webpack4: {
     major: 4,
-    display: '4.17.1',
+    display: '4.25.1',
     extractTextDisplay: '4.0.0-beta.0',
     extractTextLoader: (extractTextPlugin, cssLoaders) => {
       return extractTextPlugin.extract({
