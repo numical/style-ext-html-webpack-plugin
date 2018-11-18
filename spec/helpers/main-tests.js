@@ -11,7 +11,7 @@ const testMultiEntry = require('./multi-entry-test.js');
 const { baseConfig, multiEntryConfig } = require('./configs.js');
 
 const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations) => {
-  fit('inlines a single stylesheet', done => {
+  it('inlines a single stylesheet', done => {
     const config = baseConfig(defaultOptions);
     const expected = baseExpectations();
     expected.html = [
