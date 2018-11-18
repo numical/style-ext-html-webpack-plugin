@@ -26,7 +26,7 @@ const populateOptions = (options, defaultOptions) => {
     case 'undefined':
       return Object.assign({}, baseOptions, defOptions);
     case 'string':
-      return Object.assign({}, baseOptions, defOptions, {entry: options});
+      return Object.assign({}, baseOptions, defOptions, { entry: options });
     case 'object':
       return Object.assign({}, baseOptions, defOptions, options);
     default:

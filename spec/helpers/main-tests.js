@@ -53,16 +53,32 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
 
   it('inlining works alongside webpack css loaders', done => {
     const config = baseConfig('two_stylesheets', defaultOptions);
-    config.module.loaders = [
-      {
-        test: /stylesheet1.css/,
-        loader: version.extractTextLoader(ExtractTextPlugin, ['css-loader'])
-      },
-      {
-        test: /stylesheet2.css/,
-        loader: 'style-loader!css-loader'
-      }
-    ];
+    if (version.major < 4) {
+      config.module.loaders = [
+        {
+          test: /stylesheet1.css/,
+          loader: version.extractTextLoader(ExtractTextPlugin, ['css-loader'])
+        },
+        {
+          test: /stylesheet2.css/,
+          loader: 'style-loader!css-loader'
+        }
+      ];
+    } else {
+      config.module.rules = [
+        {
+          test: /stylesheet1.css/,
+          use: version.extractTextLoader(ExtractTextPlugin, ['css-loader'])
+        },
+        {
+          test: /stylesheet2.css/,
+          use: [
+            { loader: 'style-loader' },
+            { loader: 'css-loader' }
+          ]
+        }
+      ];
+    }
     const expected = baseExpectations();
     // html contains fist stylesheet content but none of second
     expected.html = [
@@ -81,12 +97,24 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
   it('vanilla ExtractText works with local web font', (done) => {
     const config = baseConfig('one_stylesheet_with_web_font', defaultOptions);
     config.plugins.pop(); // removes StyleExt plugin
-    config.module.loaders.push( // add file loader for local font file
-      {
-        test: /\.woff2$/,
-        loader: 'file-loader?name=[name].[ext]'
-      }
-    );
+    if (version.major < 4) {
+      config.module.loaders.push( // add file loader for local font file
+        {
+          test: /\.woff2$/,
+          loader: 'file-loader?name=[name].[ext]'
+        }
+      );
+    } else {
+      config.module.rules.push(
+        {
+          test: /\.woff2$/,
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]'
+          }
+        }
+      );
+    }
     const expected = baseExpectations();
     expected.not.html = [
       /<style>[\s\S]*font-face[\s\S]*Indie-Flower[\s\S]*<\/style>/
@@ -101,12 +129,24 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
 
   it('works with web fonts', (done) => {
     const config = baseConfig('one_stylesheet_with_web_font', defaultOptions);
-    config.module.loaders.push( // add file loader for local font file
-      {
-        test: /\.woff2$/,
-        loader: 'file-loader?name=[name].[ext]'
-      }
-    );
+    if (version.major < 4) {
+      config.module.loaders.push( // add file loader for local font file
+        {
+          test: /\.woff2$/,
+          loader: 'file-loader?name=[name].[ext]'
+        }
+      );
+    } else {
+      config.module.rules.push(
+        {
+          test: /\.woff2$/,
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]'
+          }
+        }
+      );
+    }
     const expected = baseExpectations();
     expected.html = [
       /<style>[\s\S]*font-face[\s\S]*Indie-Flower[\s\S]*<\/style>/
@@ -141,7 +181,8 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     const expected = baseExpectations();
     // note spaces and unnecessary symbols have been removed
     expected.html = [
-      /<style>[\s\S]*body{background:snow}body{color:grey}[\s\S]*<\/style>/
+      /<style>[\s\S]*body{background:snow}[\s\S]*<\/style>/,
+      /<style>[\s\S]*body{color:grey}[\s\S]*<\/style>/
     ];
     testPlugin(config, expected, done);
   });
@@ -154,7 +195,8 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     const expected = baseExpectations();
     expected.html = [
       // note British speeling converted to American spelling, also minimzed as this is also in postcss processing
-      /<style>[\s\S]*body{background:snow}body{color:grey}[\s\S]*<\/style>/
+      /<style>[\s\S]*body{background:snow}[\s\S]*<\/style>/,
+      /<style>[\s\S]*body{color:grey}[\s\S]*<\/style>/
     ];
     testPlugin(config, expected, done);
   });
@@ -194,8 +236,11 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
   // Note: why on earth test this? For people who simply add StyleExt to an existing
   // configuration with ExtractTextWebpackPlugin already in it
   it('handles [contenthash] in css filename', done => {
+    // 'contenthash' now a webpack reserved term
+    // see https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/763
+    const contenthash = version.major < 4 ? 'contenthash' : 'md5:contenthash:hex:20';
     const config = baseConfig({
-      cssFilename: '[contenthash].css'
+      cssFilename: `[${contenthash}].css`
     }, defaultOptions);
     const expected = baseExpectations();
     expected.html = [
@@ -231,18 +276,33 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
       toBeIgnored,
       new StyleExtHtmlWebpackPlugin('toBeExtracted.css')
     ];
-    config.module = {
-      loaders: [
-        {
-          test: /stylesheet1.css$/,
-          loader: version.extractTextLoader(toBeExtracted, ['css-loader'])
-        },
-        {
-          test: /stylesheet2.css$/,
-          loader: version.extractTextLoader(toBeIgnored, ['css-loader'])
-        }
-      ]
-    };
+    if (version.major < 4) {
+      config.module = {
+        loaders: [
+          {
+            test: /stylesheet1.css$/,
+            loader: version.extractTextLoader(toBeExtracted, ['css-loader'])
+          },
+          {
+            test: /stylesheet2.css$/,
+            loader: version.extractTextLoader(toBeIgnored, ['css-loader'])
+          }
+        ]
+      };
+    } else {
+      config.module = {
+        rules: [
+          {
+            test: /stylesheet1.css$/,
+            use: version.extractTextLoader(toBeExtracted, ['css-loader'])
+          },
+          {
+            test: /stylesheet2.css$/,
+            use: version.extractTextLoader(toBeIgnored, ['css-loader'])
+          }
+        ]
+      };
+    }
     const expected = baseExpectations();
     expected.html = [
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/

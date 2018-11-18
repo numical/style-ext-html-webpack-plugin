@@ -282,7 +282,7 @@ Change History
 
 * 4.0.0 - webpack4 support
         - removed node 5.x support
-        - node 9.x testing
+        - node 9.x, 10,x, 11.x testing
         - support for UglifyJsPlugin in Wepack 1 removed - CSS minification tested using [cssnano](https://cssnano.co/) with [postcss-loader](https://github.com/postcss/postcss-loader)  
 * 3.4.7 - removed legacy dependencies (thanks @ngyikp)
 * 3.4.6 - [PR 34](https://github.com/numical/style-ext-html-webpack-plugin/pull/34) - fix case where public path is a URL (thanks @jlwogren, @gvitelli)

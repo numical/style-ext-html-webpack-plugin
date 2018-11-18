@@ -14,11 +14,11 @@
     "test:webpack2": "VERSION=webpack2 jasmine",
     "test:webpack3": "VERSION=webpack3 jasmine",
     "test:webpack4": "VERSION=webpack4 jasmine",
-    "test:core": "VERSION=webpack3 jasmine ./spec/core-spec.js",
-    "test:css-reg-exp": "VERSION=webpack3 jasmine ./spec/css-reg-exp-spec.js",
-    "test:set-position-spec": "VERSION=webpack3 jasmine ./spec/set-position-spec.js",
-    "node-debug": "DEBUG=StyleExt VERSION=webpack3 node --inspect-brk ./node_modules/jasmine/bin/jasmine.js ./spec/set-position-spec.js",
-    "debug": "DEBUG=StyleExt VERSION=webpack3 jasmine ./spec/set-position-spec.js"
+    "test:core": "VERSION=webpack4 jasmine ./spec/core-spec.js",
+    "test:css-reg-exp": "VERSION=webpack4 jasmine ./spec/css-reg-exp-spec.js",
+    "test:set-position-spec": "VERSION=webpack4 jasmine ./spec/set-position-spec.js",
+    "node-debug": "DEBUG=StyleExt VERSION=webpack4 node --inspect-brk ./node_modules/jasmine/bin/jasmine.js ./spec/set-position-spec.js",
+    "debug": "DEBUG=StyleExt VERSION=webpack4 jasmine ./spec/set-position-spec.js"
   },
   "repository": {
     "type": "git",
