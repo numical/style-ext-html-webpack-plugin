@@ -21,7 +21,7 @@ Note: this is for internalizing `<style>`'s only - if you wish to inline `<scrip
 
 
 ## Installation
-You can be running webpack (1.x, 2.x, 3.x, 4.x) on node v6 or higher.
+You can be running webpack (3.x, 4.x) on node v6 or higher.
 
 Install the plugin with npm:
 ```shell
@@ -280,6 +280,8 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* 4.1.0 - remove webpack v1.x and webpack v2.x support
+        - updated webpack 4 testing to 4.35.2
 * 4.0.0 - webpack4 support
         - removed node 5.x support
         - node 9.x, 10,x, 11.x testing
