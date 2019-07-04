@@ -12,7 +12,7 @@ const { baseConfig } = require('./helpers/configs.js');
 
 const OUTPUT_DIR = path.join(__dirname, '../dist');
 
-describe(`Core Functionality (webpack ${version.display})`, () => {
+describe(`Core Functionality (${version.display})`, () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
   });

@@ -28,11 +28,11 @@ Install the plugin with npm:
 $ npm install style-ext-html-webpack-plugin
 ```
 
-Note: you may see the following warning:
+Note: you may see warnings of the following type:
 ```shell
 npm WARN html-webpack-plugin@XXX requires a peer of webpack@* but none was installed.
 ```
-This is fine - for testing, we dynamically download multiple version of webpack (via the [dynavers](https://github.com/numical/dynavers) module).
+This is fine - for testing, we dynamically download multiple version of webpack and its plugins (via the [dynavers](https://github.com/numical/dynavers) module).
 
 
 ## Important Upgrade Note

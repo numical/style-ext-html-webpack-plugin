@@ -18,7 +18,7 @@ const defaultOptions = {
   }
 };
 
-describe(`Custom css RegExp (webpack ${version.display})`, () => {
+describe(`Custom css RegExp (${version.display})`, () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
   });
