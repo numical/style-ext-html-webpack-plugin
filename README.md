@@ -282,6 +282,7 @@ Change History
 
 * 4.1.0 - remove webpack v1.x and webpack v2.x support
         - updated webpack 4 testing to 4.35.2
+        - added support for HtmlWebpackPlugin v4.x (thanks @SpyTec) 
 * 4.0.0 - webpack4 support
         - removed node 5.x support
         - node 9.x, 10,x, 11.x testing

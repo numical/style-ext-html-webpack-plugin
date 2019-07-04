@@ -1,6 +1,6 @@
 {
   "name": "style-ext-html-webpack-plugin",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "description": "Enhances html-webpack-plugin functionality by enabling inline styles.",
   "main": "index.js",
   "files": [
@@ -16,7 +16,7 @@
     "test:core": "VERSION=webpack4 jasmine ./spec/core-spec.js",
     "test:css-reg-exp": "VERSION=webpack4 jasmine ./spec/css-reg-exp-spec.js",
     "test:set-position-spec": "VERSION=webpack4 jasmine ./spec/set-position-spec.js",
-    "node-debug": "DEBUG=StyleExt VERSION=webpack4 node --inspect-brk ./node_modules/jasmine/bin/jasmine.js ./spec/set-position-spec.js",
+    "node-debug": "DEBUG=StyleExt VERSION=webpack4htmlPlugin4 node --inspect ./node_modules/jasmine/bin/jasmine.js ./spec/core-spec.js",
     "debug": "DEBUG=StyleExt VERSION=webpack4 jasmine ./spec/set-position-spec.js"
   },
   "repository": {

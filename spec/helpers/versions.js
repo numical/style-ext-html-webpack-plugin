@@ -3,7 +3,7 @@
 const setModuleVersion = require('dynavers')('dynavers.json');
 
 const VERSIONS = {
-  webpack3htmlPlugin3: {
+  webpack3: {
     major: 3,
     webpack: '3.12.0',
     htmlWebpackPlugin: "3.2.0",
