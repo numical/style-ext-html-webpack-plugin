@@ -3,7 +3,7 @@
 const setModuleVersion = require('dynavers')('dynavers.json');
 
 const VERSIONS = {
-  webpack3: {
+  webpack3htmlPlugin3: {
     major: 3,
     webpack: '3.12.0',
     htmlWebpackPlugin: "3.2.0",
@@ -19,6 +19,18 @@ const VERSIONS = {
     major: 4,
     webpack: '4.35.2',
     htmlWebpackPlugin: "3.2.0",
+    extractText: '4.0.0-beta.0',
+    extractTextLoader: (extractTextPlugin, cssLoaders) => {
+      return extractTextPlugin.extract({
+        fallback: 'style-loader',
+        use: cssLoaders
+      });
+    }
+  },
+  webpack4htmlPlugin4: {
+    major: 4,
+    webpack: '4.35.2',
+    htmlWebpackPlugin: "4.0.0-beta.5",
     extractText: '4.0.0-beta.0',
     extractTextLoader: (extractTextPlugin, cssLoaders) => {
       return extractTextPlugin.extract({
