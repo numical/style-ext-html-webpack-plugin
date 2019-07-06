@@ -11,7 +11,6 @@ const writeFile = makePromise(fs.writeFile);
 const testCompilation = require('./compilation-test.js');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../../index.js');
 const debug = require('debug')('StyleExt:hot-reload');
 
@@ -92,14 +91,14 @@ const createConfig = (testDir) => {
     plugins: [
       // note: cacheing must be OFF
       new HtmlWebpackPlugin({ cache: false }),
-      new ExtractTextWebpackPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin()
     ],
     module: {
       loaders: [
         {
           test: /\.css$/,
-          loader: version.extractTextLoader(ExtractTextWebpackPlugin, ['css-loader'])
+          loader: version.extractPlugin.loader(['css-loader'])
         }
       ]
     }

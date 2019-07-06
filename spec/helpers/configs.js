@@ -4,7 +4,6 @@
 const path = require('path');
 const version = require('./versions');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../../index.js');
 
 const baseOptions = Object.freeze({
@@ -56,14 +55,14 @@ const baseConfig = (options, defaultOptions) => {
     },
     plugins: [
       new HtmlWebpackPlugin(opts.htmlWebpackOptions),
-      new ExtractTextPlugin(opts.cssFilename),
+      version.extractPlugin.create(opts.cssFilename),
       new StyleExtHtmlWebpackPlugin(opts.styleExtOptions)
     ],
     module: {
       loaders: [
         {
           test: /\.css$/,
-          loader: version.extractTextLoader(ExtractTextPlugin, opts.cssLoaders)
+          loader: version.extractPlugin.loader(opts.cssLoaders)
         }
       ]
     }
@@ -72,10 +71,11 @@ const baseConfig = (options, defaultOptions) => {
 };
 
 const multiEntryConfig = () => {
-  const page1Extract = new ExtractTextPlugin('page1.css');
-  const page2Extract = new ExtractTextPlugin('page2.css');
-  const page1Loader = version.extractTextLoader(page1Extract, ['css-loader']);
-  const page2Loader = version.extractTextLoader(page2Extract, ['css-loader']);
+  const { create, loader } = version.extractPlugin;
+  const page1Extract = create('page1.css');
+  const page2Extract = create('page2.css');
+  const page1Loader = loader(['css-loader'], page1Extract);
+  const page2Loader = loader(['css-loader'], page2Extract);
   const config = baseConfig('');
   config.entry = {
     page1: path.join(__dirname, '../fixtures/page1/script.js'),

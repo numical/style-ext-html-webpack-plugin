@@ -9,14 +9,15 @@
   ],
   "scripts": {
     "pretest": "semistandard & install-module-versions dynavers.json",
-    "test": "VERSION=webpack3 jasmine && VERSION=webpack4 jasmine",
+    "test": "npm run test:webpack3 && npm run test:webpack4 && npm run test:webpack4extractTextPlugin4 && npm run test:webpack4htmlPlugin4",
     "test:webpack3": "VERSION=webpack3 jasmine",
     "test:webpack4": "VERSION=webpack4 jasmine",
+    "test:webpack4extractTextPlugin4": "VERSION=webpack4extractTextPlugin4 jasmine",
     "test:webpack4htmlPlugin4": "VERSION=webpack4htmlPlugin4 jasmine",
     "test:core": "VERSION=webpack4 jasmine ./spec/core-spec.js",
     "test:css-reg-exp": "VERSION=webpack4 jasmine ./spec/css-reg-exp-spec.js",
     "test:set-position-spec": "VERSION=webpack4 jasmine ./spec/set-position-spec.js",
-    "node-debug": "DEBUG=StyleExt VERSION=webpack4htmlPlugin4 node --inspect ./node_modules/jasmine/bin/jasmine.js ./spec/core-spec.js",
+    "node-debug": "DEBUG=StyleExt VERSION=webpack4 node --inspect ./node_modules/jasmine/bin/jasmine.js ./spec/core-spec.js",
     "debug": "DEBUG=StyleExt VERSION=webpack4 jasmine ./spec/set-position-spec.js"
   },
   "repository": {

@@ -12,14 +12,13 @@ const testPlugin = require('./helpers/hot-reload-test.js');
 const baseExpectations = require('./expectations.js').base;
 
 const OUTPUT_DIR = path.join(__dirname, '../dist');
-const PENDING = 'ExtractTextWebpackPlugin does not yet support hot reload functionality - see https://github.com/webpack/extract-text-webpack-plugin/issues/30';
 
 describe(`Hot reload functionality (${version.display})`, () => {
   beforeEach((done) => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  it('change referenced stylesheet in entry file', done => {
+  version.extractPlugin.hmrTestFn('change referenced stylesheet in entry file', done => {
     const expectations = [];
     expectations[0] = baseExpectations();
     expectations[0].html = [
@@ -36,9 +35,9 @@ describe(`Hot reload functionality (${version.display})`, () => {
       }
     ];
     testPlugin(expectations, testIterations, done);
-  }).pend(PENDING);
+  });
 
-  it('edit stylesheet referenced stylesheet by entry file', done => {
+  version.extractPlugin.hmrTestFn('edit stylesheet referenced stylesheet by entry file', done => {
     const expectations = [];
     expectations[0] = baseExpectations();
     expectations[0].html = [
@@ -55,9 +54,9 @@ describe(`Hot reload functionality (${version.display})`, () => {
       }
     ];
     testPlugin(expectations, testIterations, done);
-  }).pend(PENDING);
+  });
 
-  it('change referenced stylesheet twice', done => {
+  version.extractPlugin.hmrTestFn('change referenced stylesheet twice', done => {
     const expectations = [];
     expectations[0] = baseExpectations();
     expectations[0].html = [
@@ -82,5 +81,5 @@ describe(`Hot reload functionality (${version.display})`, () => {
       }
     ];
     testPlugin(expectations, testIterations, done);
-  }).pend(PENDING);
+  });
 });

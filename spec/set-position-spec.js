@@ -5,7 +5,6 @@ const rimraf = require('rimraf');
 const path = require('path');
 const version = require('./helpers/versions');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../index.js');
 const mainTests = require('./helpers/main-tests.js');
 const testPlugin = require('./helpers/core-test.js');
@@ -25,10 +24,11 @@ const defaultOptions = {
 
 const multiEntryConfig = (position) => {
   position = position || 'head-bottom';
-  const page1Extract = new ExtractTextPlugin('page1.css');
-  const page2Extract = new ExtractTextPlugin('page2.css');
-  const page1Loader = version.extractTextLoader(page1Extract, ['css-loader']);
-  const page2Loader = version.extractTextLoader(page2Extract, ['css-loader']);
+  const { create, loader } = version.extractPlugin;
+  const page1Extract = create('page1.css');
+  const page2Extract = create('page2.css');
+  const page1Loader = loader(['css-loader'], page1Extract);
+  const page2Loader = loader(['css-loader'], page2Extract);
   const config = baseConfig('');
   config.entry = {
     page1: path.join(__dirname, 'fixtures/page1/script.js'),

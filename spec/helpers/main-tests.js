@@ -4,7 +4,6 @@
 const path = require('path');
 const version = require('./versions');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const StyleExtHtmlWebpackPlugin = require('../../index.js');
 const testPlugin = require('./core-test.js');
 const testMultiEntry = require('./multi-entry-test.js');
@@ -57,7 +56,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
       config.module.loaders = [
         {
           test: /stylesheet1.css/,
-          loader: version.extractTextLoader(ExtractTextPlugin, ['css-loader'])
+          loader: version.extractPlugin.loader(['css-loader'])
         },
         {
           test: /stylesheet2.css/,
@@ -68,7 +67,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
       config.module.rules = [
         {
           test: /stylesheet1.css/,
-          use: version.extractTextLoader(ExtractTextPlugin, ['css-loader'])
+          use: version.extractPlugin.loader(['css-loader'])
         },
         {
           test: /stylesheet2.css/,
@@ -267,8 +266,8 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
   });
 
   it('can be targeted at one of multiple ExtractText outputs', done => {
-    const toBeExtracted = new ExtractTextPlugin('toBeExtracted.css');
-    const toBeIgnored = new ExtractTextPlugin('toBeIgnored.css');
+    const toBeExtracted = version.extractPlugin.create('toBeExtracted.css');
+    const toBeIgnored = version.extractPlugin.create('toBeIgnored.css');
     const config = baseConfig('two_stylesheets', defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
@@ -281,11 +280,11 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
         loaders: [
           {
             test: /stylesheet1.css$/,
-            loader: version.extractTextLoader(toBeExtracted, ['css-loader'])
+            loader: version.extractPlugin.loader(['css-loader'], toBeExtracted)
           },
           {
             test: /stylesheet2.css$/,
-            loader: version.extractTextLoader(toBeIgnored, ['css-loader'])
+            loader: version.extractPlugin.loader(['css-loader'], toBeIgnored)
           }
         ]
       };
@@ -294,11 +293,11 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
         rules: [
           {
             test: /stylesheet1.css$/,
-            use: version.extractTextLoader(toBeExtracted, ['css-loader'])
+            use: version.extractPlugin.loader(['css-loader'], toBeExtracted)
           },
           {
             test: /stylesheet2.css$/,
-            use: version.extractTextLoader(toBeIgnored, ['css-loader'])
+            use: version.extractPlugin.loader(['css-loader'], toBeIgnored)
           }
         ]
       };
@@ -323,7 +322,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin(false)
     ];
     const expected = baseExpectations();
@@ -339,7 +338,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin(true)
     ];
     const expected = baseExpectations();
@@ -374,7 +373,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     config.output.publicPath = '/wibble/';
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin('styles.css')
     ];
     const expected = baseExpectations();
@@ -389,7 +388,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     config.output.publicPath = 'https://www.github.com/wibble/';
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin('styles.css')
     ];
     const expected = baseExpectations();
@@ -403,7 +402,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin({})
     ];
     const expected = baseExpectations();
@@ -417,7 +416,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin({ enabled: false })
     ];
     const expected = baseExpectations();
@@ -434,7 +433,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     config.output.publicPath = '/wibble/';
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin({ file: 'styles.css' })
     ];
     const expected = baseExpectations();
@@ -444,11 +443,11 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     testPlugin(config, expected, done);
   });
 
-  it('supports multiple entry points', done => {
+  version.extractPlugin.multiEntryTestFn('supports multiple entry points', done => {
     testMultiEntry(multiEntryConfig(), multiEntryExpectations(), done);
   });
 
-  it('supports multiple entry points with public path', done => {
+  version.extractPlugin.multiEntryTestFn('supports multiple entry points with public path', done => {
     const config = multiEntryConfig();
     config.output.publicPath = '/wibble/';
     testMultiEntry(multiEntryConfig(), multiEntryExpectations(), done);
@@ -458,7 +457,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin({ minify: true })
     ];
     const expected = baseExpectations();
@@ -472,7 +471,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     const config = baseConfig(defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin({ minify: {} })
     ];
     const expected = baseExpectations();
@@ -486,7 +485,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     const config = baseConfig('nested_stylesheets', defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin({ minify: true })
     ];
     const expected = baseExpectations();
@@ -500,7 +499,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     const config = baseConfig('nested_stylesheets', defaultOptions);
     config.plugins = [
       new HtmlWebpackPlugin(),
-      new ExtractTextPlugin('styles.css'),
+      version.extractPlugin.create('styles.css'),
       new StyleExtHtmlWebpackPlugin({ minify: { level: 2 } })
     ];
     const expected = baseExpectations();
