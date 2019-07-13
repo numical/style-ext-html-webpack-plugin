@@ -4,7 +4,7 @@
 
 > **tl;dr:**
 >
-> If you use HtmlWebpackPlugin and ExtractTextPlugin or MiniCssExtractPlugin in your Webpack builds to create HTML `<link>`s to external stylesheet files, add this plugin to convert the links to ` <style>` elements containing internal (sometimes incorrectly called 'in-line') CSS.
+> If you use HtmlWebpackPlugin and ExtractTextPlugin or MiniCssExtractPlugin to `<link>` to external stylesheet files, add this plugin to convert the links into ` <style>` elements.
 
 This is an extension plugin for the [Webpack](http://webpack.github.io) plugin [HtmlWebpackPlugin](https://github.com/jantimon/html-webpack-plugin) - a plugin that simplifies the creation of HTML files to serve your webpack bundles.
 

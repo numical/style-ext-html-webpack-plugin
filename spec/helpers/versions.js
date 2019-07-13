@@ -72,8 +72,10 @@ const VERSIONS = {
     htmlWebpackPlugin: '3.2.0',
     extractPlugin: EXTRACT_PLUGINS.miniCSSExtractPlugin,
     testFn: {
-      ...testFunctions,
-      multiEntry: xit
+      hmr: xit,
+      templateStyles: it,
+      multiEntry: xit,
+      sharedEvent: it
     }
   },
   webpack4extractTextPlugin4: {
@@ -89,7 +91,7 @@ const VERSIONS = {
     htmlWebpackPlugin: '4.0.0-beta.5',
     extractPlugin: EXTRACT_PLUGINS.miniCSSExtractPlugin,
     testFn: {
-      ...testFunctions,
+      hmr: xit,
       templateStyles: xit,
       multiEntry: xit,
       sharedEvent: xit
