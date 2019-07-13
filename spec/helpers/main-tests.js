@@ -156,7 +156,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     testPlugin(config, expected, done);
   });
 
-  it('works with html webpack plugin template styles', done => {
+  version.testFn.templateStyles('works with html webpack plugin template styles', done => {
     const config = baseConfig(defaultOptions);
     // replace base HtmlWebpackPlugin
     config.plugins[0] = new HtmlWebpackPlugin({
@@ -166,7 +166,7 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     expected.html = [
       /<style[\s\S]*background: snow;[\s\S]*<\/style>/,
       /<style>div { background: blue }<\/style>/,
-      /<div id='template_content'>/
+      /<div id=("|')template_content("|')>/
     ];
     expected.not.html = [];
     testPlugin(config, expected, done);
@@ -443,11 +443,11 @@ const mainTests = (defaultOptions, baseExpectations, yyy, multiEntryExpectations
     testPlugin(config, expected, done);
   });
 
-  version.extractPlugin.multiEntryTestFn('supports multiple entry points', done => {
+  version.testFn.multiEntry('supports multiple entry points', done => {
     testMultiEntry(multiEntryConfig(), multiEntryExpectations(), done);
   });
 
-  version.extractPlugin.multiEntryTestFn('supports multiple entry points with public path', done => {
+  version.testFn.multiEntry('supports multiple entry points with public path', done => {
     const config = multiEntryConfig();
     config.output.publicPath = '/wibble/';
     testMultiEntry(multiEntryConfig(), multiEntryExpectations(), done);

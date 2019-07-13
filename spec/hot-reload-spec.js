@@ -18,7 +18,7 @@ describe(`Hot reload functionality (${version.display})`, () => {
     rimraf(OUTPUT_DIR, done);
   });
 
-  version.extractPlugin.hmrTestFn('change referenced stylesheet in entry file', done => {
+  version.testFn.hmr('change referenced stylesheet in entry file', done => {
     const expectations = [];
     expectations[0] = baseExpectations();
     expectations[0].html = [
@@ -37,7 +37,7 @@ describe(`Hot reload functionality (${version.display})`, () => {
     testPlugin(expectations, testIterations, done);
   });
 
-  version.extractPlugin.hmrTestFn('edit stylesheet referenced stylesheet by entry file', done => {
+  version.testFn.hmr('edit stylesheet referenced stylesheet by entry file', done => {
     const expectations = [];
     expectations[0] = baseExpectations();
     expectations[0].html = [
@@ -56,7 +56,7 @@ describe(`Hot reload functionality (${version.display})`, () => {
     testPlugin(expectations, testIterations, done);
   });
 
-  version.extractPlugin.hmrTestFn('change referenced stylesheet twice', done => {
+  version.testFn.hmr('change referenced stylesheet twice', done => {
     const expectations = [];
     expectations[0] = baseExpectations();
     expectations[0].html = [

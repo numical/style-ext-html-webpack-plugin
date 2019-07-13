@@ -19,14 +19,14 @@ describe(`Core Functionality (${version.display})`, () => {
 
   mainTests({}, expectations.base, null, expectations.multiEntry);
 
-  it('plays happily with other plugins using same html plugin event', done => {
+  version.testFn.sharedEvent('plays happily with other plugins using same html plugin event', done => {
     const config = baseConfig();
     config.plugins.push(new ScriptExtHtmlWebpackPlugin({
       defaultAttribute: 'async'
     }));
     const expected = expectations.base();
     expected.html = [
-      /<script type="text\/javascript" src="index_bundle.js[?]?[\S]*" async><\/script>/,
+      /<script (type="text\/javascript" )?src="index_bundle.js[?]?[\S]*" async><\/script>/,
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
     testPlugin(config, expected, done);

@@ -4,11 +4,9 @@
 const setModuleVersion = require('dynavers')('dynavers.json');
 
 class ExtractPlugin {
-  constructor ({ name, version, loader, multiEntryTestFn, hmrTestFn }) {
+  constructor ({ name, version, loader }) {
     this.name = name;
     this.version = version;
-    this.multiEntryTestFn = multiEntryTestFn;
-    this.hmrTestFn = hmrTestFn;
     this.loader = loader.bind(this);
     this.module = this.module.bind(this);
     this.create = this.create.bind(this);
@@ -38,24 +36,26 @@ const EXTRACT_PLUGINS = {
   extractTextWebpackPlugin3: new ExtractPlugin({
     name: 'extract-text-webpack-plugin',
     version: '3.0.2',
-    loader: extractTextLoader,
-    multiEntryTestFn: it,
-    hmrTestFn: xit
+    loader: extractTextLoader
   }),
   extractTextWebpackPlugin4: new ExtractPlugin({
     name: 'extract-text-webpack-plugin',
     version: '4.0.0-beta.0',
-    loader: extractTextLoader,
-    multiEntryTestFn: it,
-    hmrTestFn: xit
+    loader: extractTextLoader
   }),
   miniCSSExtractPlugin: new ExtractPlugin({
     name: 'mini-css-extract-plugin',
     version: '0.7.0',
-    loader: miniCssLoader,
-    multiEntryTestFn: xit,
-    hmrTestFn: xit
+    loader: miniCssLoader
   })
+};
+
+
+const testFunctions = {
+  hmr: xit,
+  templateStyles: it,
+  multiEntry: it,
+  sharedEvent: it
 };
 
 const VERSIONS = {
@@ -63,25 +63,37 @@ const VERSIONS = {
     major: 3,
     webpack: '3.12.0',
     htmlWebpackPlugin: '3.2.0',
-    extractPlugin: EXTRACT_PLUGINS.extractTextWebpackPlugin3
+    extractPlugin: EXTRACT_PLUGINS.extractTextWebpackPlugin3,
+    testFn: testFunctions
   },
   webpack4: {
     major: 4,
-    webpack: '4.35.2',
+    webpack: '4.35.3',
     htmlWebpackPlugin: '3.2.0',
-    extractPlugin: EXTRACT_PLUGINS.miniCSSExtractPlugin
+    extractPlugin: EXTRACT_PLUGINS.miniCSSExtractPlugin,
+    testFn: {
+      ...testFunctions,
+      multiEntry: xit
+    }
   },
   webpack4extractTextPlugin4: {
     major: 4,
-    webpack: '4.35.2',
+    webpack: '4.35.3',
     htmlWebpackPlugin: '3.2.0',
-    extractPlugin: EXTRACT_PLUGINS.extractTextWebpackPlugin4
+    extractPlugin: EXTRACT_PLUGINS.extractTextWebpackPlugin4,
+    testFn: testFunctions
   },
   webpack4htmlPlugin4: {
     major: 4,
-    webpack: '4.35.2',
+    webpack: '4.35.3',
     htmlWebpackPlugin: '4.0.0-beta.5',
-    extractPlugin: EXTRACT_PLUGINS.miniCSSExtractPlugin
+    extractPlugin: EXTRACT_PLUGINS.miniCSSExtractPlugin,
+    testFn: {
+      ...testFunctions,
+      templateStyles: xit,
+      multiEntry: xit,
+      sharedEvent: xit
+    }
   }
 };
 

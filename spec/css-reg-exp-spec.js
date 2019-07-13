@@ -25,7 +25,7 @@ describe(`Custom css RegExp (${version.display})`, () => {
 
   mainTests(defaultOptions, expectations.base, null, expectations.multiEntry);
 
-  it('plays happily with other plugins using same html plugin event', done => {
+  version.testFn.sharedEvent('plays happily with other plugins using same html plugin event', done => {
     const config = baseConfig('one_stylesheet', defaultOptions);
     config.plugins.push(new ScriptExtHtmlWebpackPlugin({
       defaultAttribute: 'async',
@@ -33,7 +33,7 @@ describe(`Custom css RegExp (${version.display})`, () => {
     }));
     const expected = expectations.base();
     expected.html = [
-      /<script type="text\/javascript" src="index_bundle.js[?]?[\S]*" async><\/script>/,
+      /<script (type="text\/javascript" )?src="index_bundle.js[?]?[\S]*" async><\/script>/,
       /<style>[\s\S]*background: snow;[\s\S]*<\/style>/
     ];
     testPlugin(config, expected, done);
