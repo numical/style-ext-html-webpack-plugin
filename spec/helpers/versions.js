@@ -11,9 +11,11 @@ class ExtractPlugin {
     this.module = this.module.bind(this);
     this.create = this.create.bind(this);
   }
+
   module () {
     return require(this.name);
   }
+
   create (filename) {
     const constructor = this.module();
     return new constructor({ filename });
@@ -29,7 +31,7 @@ const extractTextLoader = function (cssLoaders, instance) {
 };
 
 const miniCssLoader = function (cssLoaders) {
-  return [ this.module().loader, ...cssLoaders ];
+  return [this.module().loader, ...cssLoaders];
 };
 
 const EXTRACT_PLUGINS = {
@@ -49,7 +51,6 @@ const EXTRACT_PLUGINS = {
     loader: miniCssLoader
   })
 };
-
 
 const testFunctions = {
   hmr: xit,

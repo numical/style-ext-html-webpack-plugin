@@ -40,26 +40,26 @@
   },
   "homepage": "https://github.com/numical/style-ext-html-webpack-plugin",
   "devDependencies": {
-    "css-loader": "^3.0.0",
+    "css-loader": "^3.6.0",
     "cssnano": "^4.1.10",
     "denodeify": "^1.2.1",
     "dynavers": "^0.3.1",
     "file-loader": "^4.0.0",
-    "fs-temp": "^1.1.2",
-    "jasmine": "^3.4.0",
-    "jasmine-spec-reporter": "^4.2.1",
+    "fs-temp": "^1.2.1",
+    "jasmine": "^3.6.2",
+    "jasmine-spec-reporter": "^6.0.0",
     "jasmine2-custom-message": "^0.9.3",
     "ncp": "^2.0.0",
-    "postcss-loader": "^3.0.0",
+    "postcss-loader": "^4.0.4",
     "postcss-spiffing": "0.1.0",
-    "rimraf": "^2.6.3",
-    "script-ext-html-webpack-plugin": "^2.1.4",
-    "semistandard": "^13.0.1",
+    "rimraf": "^3.0.2",
+    "script-ext-html-webpack-plugin": "^2.1.5",
+    "semistandard": "^14.2.3",
     "style-loader": "^0.23.1",
-    "url-loader": "^2.0.1"
+    "url-loader": "^4.1.1"
   },
   "dependencies": {
-    "clean-css": "^4.2.1",
-    "debug": "^4.1.1"
+    "clean-css": "^4.2.3",
+    "debug": "^4.2.0"
   }
 }
