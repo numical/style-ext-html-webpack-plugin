@@ -69,7 +69,7 @@ const VERSIONS = {
   },
   webpack4: {
     major: 4,
-    webpack: '4.35.3',
+    webpack: '4.44.2',
     htmlWebpackPlugin: '3.2.0',
     extractPlugin: EXTRACT_PLUGINS.miniCSSExtractPlugin,
     testFn: {
@@ -81,14 +81,14 @@ const VERSIONS = {
   },
   webpack4extractTextPlugin4: {
     major: 4,
-    webpack: '4.35.3',
+    webpack: '4.44.2',
     htmlWebpackPlugin: '3.2.0',
     extractPlugin: EXTRACT_PLUGINS.extractTextWebpackPlugin4,
     testFn: testFunctions
   },
   webpack4htmlPlugin4: {
     major: 4,
-    webpack: '4.35.3',
+    webpack: '4.44.2',
     htmlWebpackPlugin: '4.0.0-beta.5',
     extractPlugin: EXTRACT_PLUGINS.miniCSSExtractPlugin,
     testFn: {
