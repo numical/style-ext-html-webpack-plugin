@@ -2,7 +2,27 @@
 
 [![NPM](https://nodei.co/npm/style-ext-html-webpack-plugin.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/style-ext-html-webpack-plugin/)
 
-> **tl;dr:**
+## Deprecation Warning
+
+**tl;dr**  
+This project is no longer maintained.  It does not support Webpack 5.  
+
+**A bit more detail**  
+Any look at the [project activity](https://github.com/numical/style-ext-html-webpack-plugin/pulse) will show that I have not been able to maintain this project adequately.  
+The advent of version 5 of Webpack requires another bout of refactoring that I simply have no time for.  
+Consequently v4.1.3 will be the last version of this plugin.
+My thanks to all users, and especially to all contributors, of this plugin over the years.  
+My apologies to all those whose webpack 5 migration has been made more complicated by this decision.
+
+**But I still want to use the plugin...**  
+Feel free!  
+My last update works with versions of v4.x of webpack and v4.x of html-webpack-plugin.  
+Forkers feel free!  That's what the licence is for.  
+In fact, if you fork with an intention to support on-going development, let me know!
+I'll happily link to your repository here and offer some tips (main one: ditch backward compatibility - it's a pain).  
+I will formally archive this repository at the end of the 2020. 
+
+## Summary
 >
 > If you use HtmlWebpackPlugin and ExtractTextPlugin or MiniCssExtractPlugin to `<link>` to external stylesheet files, add this plugin to convert the links into ` <style>` elements.
 
@@ -288,6 +308,8 @@ StyleExt html-webpack-plugin-alter-asset-tags: completed)
 Change History
 --------------
 
+* 4.1.3 - updated versions
+        - added end-of-life message to README
 * 4.1.1 - more docs and tests for use with [MiniCSSExtractPlugin](https://github.com/webpack-contrib/mini-css-extract-plugin) 
 * 4.1.0 - remove webpack v1.x and webpack v2.x support
         - updated webpack 4 testing to 4.35.2
