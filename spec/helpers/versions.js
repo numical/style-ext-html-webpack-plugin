@@ -11,9 +11,11 @@ class ExtractPlugin {
     this.module = this.module.bind(this);
     this.create = this.create.bind(this);
   }
+
   module () {
     return require(this.name);
   }
+
   create (filename) {
     const constructor = this.module();
     return new constructor({ filename });
@@ -29,7 +31,7 @@ const extractTextLoader = function (cssLoaders, instance) {
 };
 
 const miniCssLoader = function (cssLoaders) {
-  return [ this.module().loader, ...cssLoaders ];
+  return [this.module().loader, ...cssLoaders];
 };
 
 const EXTRACT_PLUGINS = {
@@ -50,7 +52,6 @@ const EXTRACT_PLUGINS = {
   })
 };
 
-
 const testFunctions = {
   hmr: xit,
   templateStyles: it,
@@ -68,7 +69,7 @@ const VERSIONS = {
   },
   webpack4: {
     major: 4,
-    webpack: '4.35.3',
+    webpack: '4.44.2',
     htmlWebpackPlugin: '3.2.0',
     extractPlugin: EXTRACT_PLUGINS.miniCSSExtractPlugin,
     testFn: {
@@ -80,14 +81,14 @@ const VERSIONS = {
   },
   webpack4extractTextPlugin4: {
     major: 4,
-    webpack: '4.35.3',
+    webpack: '4.44.2',
     htmlWebpackPlugin: '3.2.0',
     extractPlugin: EXTRACT_PLUGINS.extractTextWebpackPlugin4,
     testFn: testFunctions
   },
   webpack4htmlPlugin4: {
     major: 4,
-    webpack: '4.35.3',
+    webpack: '4.44.2',
     htmlWebpackPlugin: '4.0.0-beta.5',
     extractPlugin: EXTRACT_PLUGINS.miniCSSExtractPlugin,
     testFn: {
