@@ -60,6 +60,6 @@
   },
   "dependencies": {
     "clean-css": "^4.2.3",
-    "debug": "^4.2.0"
+    "debug": "^4.3.1"
   }
 }
